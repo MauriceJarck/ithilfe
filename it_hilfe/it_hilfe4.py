@@ -9,7 +9,7 @@ class device:
 
 
 class windowsWorkStation(device):
-    OS = ["Win10", "Win7"]
+    expected_OS = ["Win10", "Win7"]
 
 
 class windowsLapTop(device):
@@ -18,7 +18,7 @@ class windowsLapTop(device):
         self.largerBattery = True
         self.upgradedCPU = "False"
 
-    OS = ["Win10", "Win7"]
+    expected_OS = ["Win10", "Win7"]
 
 
 class macbook(device):
@@ -39,7 +39,7 @@ def getAvailable(list):
     if a != 0 and a <= len(list):
         return a
     else:
-        raise ValueError or IndexError
+        raise IndexError
 
 
 def view():
@@ -58,7 +58,7 @@ def register():
     new = valid_devices[newDeviceType](newDeviceName, input("enter username \n>"))
     if newDeviceName not in registered_devices.keys():
         if str(valid_devices[newDeviceType].__name__) in valid_OS.get("windows"):  # extend for more OS options/types
-            new.OS = valid_devices[newDeviceType].OS[getAvailable(valid_devices[newDeviceType].OS) - 1]
+            new.OS = valid_devices[newDeviceType].expected_OS[getAvailable(valid_devices[newDeviceType].expected_OS) - 1]
         registered_devices[new.name] = new
     else:
         # print('\033[91m' + "already taken dev name\n" + '\033[0m')

@@ -13,7 +13,6 @@ def test_device():
     assert dev1.user == "Maurice"
     assert dev1.OS == None
 
-
 def test_windowsLapTop():
     it_hilfe4.windowsLapTop("WindowsLapTop", "Maurice")
 
@@ -28,21 +27,11 @@ def test_getAvialable():
         keyboardInput([4])
         it_hilfe4.getAvailable([1, 2, 3])
     except ValueError:
-        pass
+        print("ValueError") #run: pytest it_hilfe4_test.py -s
 
     keyboardInput([1])
     assert type(it_hilfe4.getAvailable([1, 2, 3])) is int
 
-
-def test_view(capsys):
-    it_hilfe4.view()
-    captured = capsys.readouterr()
-    assert captured.out == "no device registered yet\n"
-
-def test_search(capsys):
-    it_hilfe4.search("maurice")
-    captured = capsys.readouterr()
-    assert captured.out == "no devices registered yet\n"
 
 def test_register(capsys):
     keyboardInput([1, 1, "maurice", 2])
@@ -53,13 +42,31 @@ def test_register(capsys):
     captured = capsys.readouterr()
     assert captured.out == 'already taken dev name\n\n'
 
+    it_hilfe4.registered_devices.clear()
 
-def test_view2(capsys):
+def test_view(capsys):
+    it_hilfe4.view()
+    captured = capsys.readouterr()
+    assert captured.out == "no device registered yet\n"
+
+    keyboardInput([1, 1, "maurice", 2])
+    assert it_hilfe4.register() == [0, 1, "maurice", "Win7"]
+
     it_hilfe4.view()
     captured = capsys.readouterr()
     assert captured.out == ('device name, username, Os, device type, [notes]\n' "1, maurice, Win7 , [['largerBattery', True], ['upgradedCPU', 'False']]\n")
 
-def test_search2(capsys):
+    it_hilfe4.registered_devices.clear()
+
+
+def test_search(capsys):
+    it_hilfe4.search("maurice")
+    captured = capsys.readouterr()
+    assert captured.out == "no devices registered yet\n"
+
+    keyboardInput([1, 1, "maurice", 2])
+    assert it_hilfe4.register() == [0, 1, "maurice", "Win7"]
+
     it_hilfe4.search("peter")
     captured = capsys.readouterr()
     assert captured.out == 'no match found\n'
