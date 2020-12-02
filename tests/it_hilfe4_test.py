@@ -1,6 +1,5 @@
 from it_hilfe import it_hilfe4
-import pytest
-from pytest import raises, fixture
+from pytest import *
 
 @fixture(scope="function")
 def clearDir():
@@ -36,7 +35,7 @@ def test_getAvialable(monkeypatch):
     monkeypatch.setattr("builtins.input", lambda _: 1)
     assert type(it_hilfe4.getAvailable([1, 2, 3])) is int
 
-@pytest.mark.parametrize("test_input,expected", [([1, 1, "maurice", 1],[0, 1, "maurice", "Win10"]),([2, 2, "Peter", 1],[1, 2, 'Peter', 'Win10']),([3, 3, "Heinz"],[2, 3, 'Heinz', 'MacOS']),([1, 1, "maurice", 1],[0, 1, "maurice", "Win10"])])
+@mark.parametrize("test_input,expected", [([1, 1, "maurice", 1],[0, 1, "maurice", "Win10"]),([2, 2, "Peter", 1],[1, 2, 'Peter', 'Win10']),([3, 3, "Heinz"],[2, 3, 'Heinz', 'MacOS']),([1, 1, "maurice", 1],[0, 1, "maurice", "Win10"])])
 def test_register(capsys, monkeypatch, test_input, expected,clearDir):
     inputlist = test_input
     monkeypatch.setattr("builtins.input", lambda _x: inputlist.pop(0))
