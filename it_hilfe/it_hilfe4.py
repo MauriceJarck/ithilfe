@@ -62,7 +62,6 @@ def register():
         registered_devices[new.name] = new
     else:
         print('\033[91m' + "already taken dev name\n" + '\033[0m')
-        new.user = None
     return [newDeviceType, newDeviceName, new.user, new.OS]
 
 

@@ -1,5 +1,12 @@
 from it_hilfe import it_hilfe4
-from pytest import raises
+import pytest
+from pytest import raises, fixture
+
+@fixture(scope="function")
+def clearDir():
+
+    yield
+    it_hilfe4.registered_devices.clear()
 
 
 def test_device():
@@ -29,22 +36,14 @@ def test_getAvialable(monkeypatch):
     monkeypatch.setattr("builtins.input", lambda _: 1)
     assert type(it_hilfe4.getAvailable([1, 2, 3])) is int
 
-
-def test_register(capsys, monkeypatch):
-    inputlist = [1, 1, "maurice", 1]
+@pytest.mark.parametrize("test_input,expected", [([1, 1, "maurice", 1],[0, 1, "maurice", "Win10"]),([2, 2, "Peter", 1],[1, 2, 'Peter', 'Win10']),([3, 3, "Heinz"],[2, 3, 'Heinz', 'MacOS']),([1, 1, "maurice", 1],[0, 1, "maurice", "Win10"])])
+def test_register(capsys, monkeypatch, test_input, expected,clearDir):
+    inputlist = test_input
     monkeypatch.setattr("builtins.input", lambda _x: inputlist.pop(0))
-    assert it_hilfe4.register() == [0, 1, "maurice", "Win10"]
-
-    inputlist = [1, 1, "maurice", 1]
-    monkeypatch.setattr("builtins.input", lambda _x: inputlist.pop(0))
-    it_hilfe4.register()
-    captured = capsys.readouterr()
-    assert captured.out == '\x1b[91malready taken dev name\n\x1b[0m\n'
-
-    it_hilfe4.registered_devices.clear()
+    assert it_hilfe4.register() == expected or '\x1b[91malready taken dev name\n\x1b[0m\n'
 
 
-def test_view(capsys, monkeypatch):
+def test_view(capsys, monkeypatch,clearDir):
     it_hilfe4.view()
     captured = capsys.readouterr()
     assert captured.out == "no device registered yet\n"
@@ -58,18 +57,8 @@ def test_view(capsys, monkeypatch):
     assert captured.out == (
         'device name, username, Os, device type, [notes]\n' "1, maurice, Win7 , [['largerBattery', True], ['upgradedCPU', 'False']]\n")
 
-    inputlist2 = [2, 2, "Peter", 1]
-    monkeypatch.setattr("builtins.input", lambda _x: inputlist2.pop(0))
-    assert it_hilfe4.register() == [1, 2, 'Peter', 'Win10']
 
-    inputlist2 = [3, 3, "Heinz"]
-    monkeypatch.setattr("builtins.input", lambda _x: inputlist2.pop(0))
-    assert it_hilfe4.register() == [2, 3, 'Heinz', 'MacOS']
-
-    it_hilfe4.registered_devices.clear()
-
-
-def test_search(capsys, monkeypatch):
+def test_search(capsys, monkeypatch,clearDir):
     it_hilfe4.search("maurice")
     captured = capsys.readouterr()
     assert captured.out == "no devices registered yet\n"
