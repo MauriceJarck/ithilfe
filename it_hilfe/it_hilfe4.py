@@ -61,8 +61,7 @@ def register():
             new.OS = valid_devices[newDeviceType].expected_OS[getAvailable(valid_devices[newDeviceType].expected_OS) - 1]
         registered_devices[new.name] = new
     else:
-        # print('\033[91m' + "already taken dev name\n" + '\033[0m')
-        print("already taken dev name\n")
+        print('\033[91m' + "already taken dev name\n" + '\033[0m')
         new.user = None
     return [newDeviceType, newDeviceName, new.user, new.OS]
 
@@ -84,6 +83,7 @@ def main():
                 search(input("enter name you wish to search for\n>"))
             if w == 2:
                 register()
+
             elif w == 3:
                 view()
             elif w == 4:
