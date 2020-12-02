@@ -6,7 +6,6 @@ def keyboardInput(mocked_inputs):
     builtins.input = lambda _x: input_values.pop(0)
     input_values = mocked_inputs
 
-keyboardInput([3])
 
 def test_device():
     dev1 = it_hilfe4.device("macbook", "Maurice")
@@ -15,20 +14,11 @@ def test_device():
     assert dev1.OS == None
 
 
-def test_windowsWorkStation():
-    pass
-
-
 def test_windowsLapTop():
-    wl = it_hilfe4.windowsLapTop("WindowsLapTop", "Maurice")
-    assert wl.largerBattery == True
-    assert wl.upgradedCPU == "False"
-
+    it_hilfe4.windowsLapTop("WindowsLapTop", "Maurice")
 
 def test_macbook():
-    mac = it_hilfe4.macbook("macbook", "maurice")
-    assert mac.OS == 'MacOS'
-
+    it_hilfe4.macbook("macbook", "maurice")
 
 def test_getAvialable():
     keyboardInput([1])
