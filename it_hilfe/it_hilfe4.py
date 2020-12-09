@@ -63,7 +63,7 @@ def register():
         registered_devices[new.name] = new
     else:
         print('\033[91m' + "already taken dev name\n" + '\033[0m')
-    return [newDeviceType, newDeviceName, new.user, new.OS]#for testing purposes
+    return [newDeviceType, newDeviceName, new.user, new.OS]             #for testing purposes
 
 
 def search(username):
@@ -80,7 +80,7 @@ def change_param(devicename, paramtype, newparam):
         a = registered_devices.get(x)
         if a.name == devicename:
             setattr(a, str(attributes[paramtype]), newparam)
-    return (f"{registered_devices.get(devicename).__dict__}")#for testing purposes
+    return (f"{registered_devices.get(devicename).__dict__}")           #for testing purposes
 
 def main():                                                             #to extend menue functionality add here
     print("welcome to IT service\ntype no. of what you wish to do\n")
