@@ -68,7 +68,7 @@ def test_view(capsys, monkeypatch, clearDir):
 
     view()
     captured = capsys.readouterr()
-    assert captured.out == ('\x1b[92mdevice name, username, Os, device type, [notes]\x1b[0m\n'"1, maurice, Win7 , windowsLapTop , [['largerBattery', True], ['upgradedCPU', " 'False]]\n')
+    assert captured.out == ('\x1b[92m\n' 'registered\n' '\x1b[0m\n' '\x1b[92mdevice name, username, Os, device type, [notes]\x1b[0m\n' "1, maurice, Win7 , windowsLapTop , [['largerBattery', True], ['upgradedCPU', " 'False]]\n')
 
 @mark.parametrize("test_input,expected",[
         ([1,1,"peter"], ("{'name': 1, 'user': 'peter', 'OS': 'Win7', 'largerBattery': True, " "'upgradedCPU': False}")),
@@ -89,12 +89,12 @@ def test_search(capsys, monkeypatch, clearDir):
 
     search("Heinz")
     captured = capsys.readouterr()
-    assert captured.out == '\x1b[91mno match found\n\x1b[0m\n'
+    assert captured.out == '\x1b[92m\nregistered\n\x1b[0m\n\x1b[91mno match found\n\x1b[0m\n'
 
 @mark.parametrize("test_input, expected", [
-    ([True, None, 1], ('\x1b[91m\n''sure about clearing stored data?\x1b[0m\n''\x1b[92m\n''everthing cleared\x1b[0m\n')),
-    ([False, 1, 1, "maurice"], ('\x1b[91m\n''sure about clearing stored data?\x1b[0m\n''\x1b[92m\n''cleared\x1b[0m\n')),
-    ([False, 2, 1, 1], ('\x1b[91m\n''sure about clearing stored data?\x1b[0m\n''\x1b[92m\n''cleared\x1b[0m\n'))])
+    ([True, None, 1], '\x1b[92m\n' 'registered\n' '\x1b[0m\n''\x1b[91m\n''sure about clearing stored data?\x1b[0m\n' '\x1b[92m\n' 'everthing cleared\x1b[0m\n'),
+    ([False, 1, 1, "maurice"], ('\x1b[92m\n' 'registered\n' '\x1b[0m\n' '\x1b[91m\n' 'sure about clearing stored data?\x1b[0m\n' '\x1b[92m\n' 'cleared\x1b[0m\n')),
+    ([False, 2, 1, 1], '\x1b[92m\n' 'registered\n' '\x1b[0m\n' '\x1b[91m\n' 'sure about clearing stored data?\x1b[0m\n' '\x1b[92m\n' 'cleared\x1b[0m\n')])
 def test_delete(capsys, clearDir, test_input, expected, monkeypatch, create_single_register):
     inputlist2 = test_input[2:]
     monkeypatch.setattr("builtins.input", lambda _x: inputlist2.pop(0))
@@ -132,15 +132,23 @@ def test_update(clearDir, monkeypatch):
     monkeypatch.setattr("builtins.input", lambda _x: [1].pop(0))
     delete(True, None)
 
-@mark.parametrize("test_input, expected",[([1],"")])#,([2],""),([3],""),([4],""),([5],""),([6],""),([7],""),([8],""),([0],""),([9],"")])
+@mark.parametrize("test_input, expected",
+                  [([2,1,1,"maurice",2,8], '\x1b[92m\nregistered\n\x1b[0m\n\x1b[92m\nsaved\x1b[0m\n'),
+                   ([1,"maurice",8], 'match found:  1, maurice, Win7\n\x1b[92m\nsaved\x1b[0m\n'),
+                   ([3,8],'\x1b[92mdevice name, username, Os, device type, [notes]\x1b[0m\n'"1, maurice, Win7 , windowsLapTop , [['largerBattery', True], ['upgradedCPU', " 'False]]\n' '\x1b[92m\n' 'saved\x1b[0m\n'),
+                   ([4,1,1,"peter",8],'\nchangend:  1, peter, Win7 \n\n\x1b[92m\nsaved\x1b[0m\n'),
+                   ([5,1,1,"peter",8],'\x1b[92mdelete all realated to:\x1b[0m\n' '\x1b[91m\n' 'sure about clearing stored data?\x1b[0m\n' '\x1b[92m\n' 'cleared\x1b[0m\n' '\x1b[92m\n' 'saved\x1b[0m\n'),
+                   ([2,1,1,"maurice",2,8], '\x1b[92m\nregistered\n\x1b[0m\n\x1b[92m\nsaved\x1b[0m\n'),
+                   ([6,1,8],'\x1b[91m\n' 'sure about clearing stored data?\x1b[0m\n' '\x1b[92m\n' 'everthing cleared\x1b[0m\n' '\x1b[92m\n' 'saved\x1b[0m\n'),
+                   ([2,1,1,"maurice",2,8], '\x1b[92m\nregistered\n\x1b[0m\n\x1b[92m\nsaved\x1b[0m\n'),
+                   ([7,8],'\x1b[92m\nsaved\x1b[0m\n'),
+                   ([8],'\x1b[92m\nsaved\x1b[0m\n'),
+                   ([0,8],'\x1b[91m\n' 'index must belong to range of available choices\n' '\x1b[0m\n' '\x1b[92m\n' 'saved\x1b[0m\n'),
+                   ([9,8],'\x1b[91m\n' 'index must belong to range of available choices\n' '\x1b[0m\n' '\x1b[92m\n' 'saved\x1b[0m\n')])
 def test_main(test_input,expected,  monkeypatch, capsys):
 
     monkeypatch.setattr("builtins.input", lambda _x: test_input.pop(0))
     main()
     captured = capsys.readouterr()
     assert captured.out == expected
-
-    monkeypatch.setattr("builtins.input", lambda _x: [8].pop(0))
-
-
 

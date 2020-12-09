@@ -66,6 +66,8 @@ def register():
         registered_devices[new.name] = new
     else:
         print('\033[91m' + "\nalready taken dev name\n" + '\033[0m')
+    print('\033[92m' + "\nregistered\n" + '\033[0m')
+
     return [newDeviceType, newDeviceName, new.user, new.OS]  # for testing purposes
 
 
@@ -143,7 +145,6 @@ def update():
 
 
 def main():
-    # print('\033[92m' + "welcome to IT service" + '\033[0m')
     saved = None
 
     while True:
@@ -186,6 +187,7 @@ def main():
 if __name__ == "__main__":
     try:
         update()
+        print('\033[92m' + "welcome to IT service" + '\033[0m')
         main()
     except PermissionError:
         print('\033[91m' + "\ncsv file already opened in another program => close csv file, restart program \n" + '\033[0m')
