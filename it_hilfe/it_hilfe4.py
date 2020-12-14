@@ -28,11 +28,11 @@ class macbook(device):
 
 
 registered_devices = {}
-options = ["search by username", "register new", "view all", "change parameter", "quit program"]    #to extend functionality add new menue options here
-attributes = ["name", "user", "OS", "upgradedCPU", "largerBattery"]                                 #to extend functionality add new attributes here
-valid_OS = {"windows": ["windowsLapTop", "windowsWorkStation"], "apple": ["macbook"],               #to extend variety of OS add os type as key and vaild devices as value to dict
+options = ["search by username", "register new", "view all", "change parameter", "quit program"]  # to extend functionality add new menue options here
+attributes = ["name", "user", "OS", "upgradedCPU", "largerBattery"]  # to extend functionality add new attributes here
+valid_OS = {"windows": ["windowsLapTop", "windowsWorkStation"], "apple": ["macbook"],  # to extend variety of OS add os type as key and vaild devices as value to dict
             "Linux": ["LinuxWorkstation, LinuxLapTop"]}
-valid_devices = [windowsLapTop, windowsWorkStation, macbook]                                        #to add more classes add class here
+valid_devices = [windowsLapTop, windowsWorkStation, macbook]  # to add more classes add class here
 
 
 def getAvailable(list):
@@ -45,13 +45,12 @@ def getAvailable(list):
 
 def view():
     if len(registered_devices) != 0:
-        print("device name, username, Os, device type, [notes]")
+        content = ["device name, username, Os, device type, [notes]\n"]
         for x in registered_devices.keys():
-            print(registered_devices.get(x), ",", [[y, registered_devices.get(x).__dict__.get(y)] for y in
-                                                   list(registered_devices.get(x).__dict__)[3:]])
+            content.append(f"{registered_devices.get(x)}, {[[y, registered_devices.get(x).__dict__.get(y)] for y in list(registered_devices.get(x).__dict__)[3:]]}\n")
     else:
-        print("no device registered yet")
-
+        return "no device registered yet\n"
+    return content
 
 def register():
     newDeviceType = getAvailable([x.__name__ for x in valid_devices]) - 1
@@ -62,44 +61,45 @@ def register():
             new.OS = valid_devices[newDeviceType].expected_OS[getAvailable(valid_devices[newDeviceType].expected_OS) - 1]
         registered_devices[new.name] = new
     else:
-        print('\033[91m' + "already taken dev name\n" + '\033[0m')
-    return [newDeviceType, newDeviceName, new.user, new.OS]             #for testing purposes
+        return '\033[91m' + "already taken dev name\n" + '\033[0m'
+    return [newDeviceType, newDeviceName, new.user, new.OS]  # for testing purposes
 
 
 def search(username):
+    msg = []
     if len(registered_devices) == 0:
-        print("no devices registered yet")
+        return "\nno devices registered yet\n"
     else:
-        if not [print("match found: ", registered_devices.get(x)) for x in registered_devices.keys() if
-                registered_devices.get(x).user == username]:
-            print("no match found")
-
+        if not [msg.append(f"match found: {registered_devices.get(x)}\n") for x in registered_devices.keys() if registered_devices.get(x).user == username]:
+            return "\nno match found\n"
+    return msg
 
 def change_param(devicename, paramtype, newparam):
     for x in registered_devices:
         a = registered_devices.get(x)
         if a.name == devicename:
             setattr(a, str(attributes[paramtype]), newparam)
-    return (f"{registered_devices.get(devicename).__dict__}")           #for testing purposes
+    return (f"{registered_devices.get(devicename).__dict__}")  # for testing purposes
 
-def main():                                                             #to extend menue functionality add here
+
+def main():  # to extend menue functionality add here
     print("welcome to IT service\ntype no. of what you wish to do\n")
     while True:
         try:
             w = getAvailable(options)
             if w == 1:
-                search(input("enter name you wish to search for\n>"))
+                print("\n","".join(search(input("enter name you wish to search for\n>"))))
             if w == 2:
-                register()
+                print("\n" + str(register()) + "\n")
             elif w == 3:
-                view()
+                print("".join(view()))
             elif w == 4:
                 if len(registered_devices) != 0:
                     name = int(input("existent devicenames: {}\nenter devicename you want to change \n> ".format(
-                            " ".join(str(list(registered_devices.keys()))))))
+                        " ".join(str(list(registered_devices.keys()))))))
                     type = getAvailable(list(registered_devices.get(name).__dict__.keys())[1:])
                     print(name)
-                    change_param(name,type,input("enter new parameter > "))
+                    change_param(name, type, input("enter new parameter > "))
 
                 else:
                     print("no devices registered yet")
@@ -109,6 +109,7 @@ def main():                                                             #to exte
         except(ValueError, IndexError):
             print('\033[91m' + "index can only be int and must belong to range of available choices\n" + '\033[0m')
     quit(0)
+
 
 if __name__ == "__main__":
     main()
