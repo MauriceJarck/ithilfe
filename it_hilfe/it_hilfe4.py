@@ -38,7 +38,7 @@ valid_devices = [windowsLapTop, windowsWorkStation, macbook]  # to add more clas
 def getAvailable(list):
     a = int(input("\n".join("{}:{}".format(i + 1, x) for i, x in enumerate(list)) + "\n>"))
     if a != 0 and a <= len(list):
-        return a
+        return [a]
     else:
         raise IndexError
 
@@ -53,12 +53,12 @@ def view():
     return content
 
 def register():
-    newDeviceType = getAvailable([x.__name__ for x in valid_devices]) - 1
+    newDeviceType = getAvailable([x.__name__ for x in valid_devices]).pop(0) - 1
     newDeviceName = int(input("enter devicename as int \nalready taken:{}\n>".format(' '.join(str(list(registered_devices.keys()))))))
     new = valid_devices[newDeviceType](newDeviceName, input("enter username \n>"))
     if newDeviceName not in registered_devices.keys():
         if str(valid_devices[newDeviceType].__name__) in valid_OS.get("windows"):  # extend for more OS options/types
-            new.OS = valid_devices[newDeviceType].expected_OS[getAvailable(valid_devices[newDeviceType].expected_OS) - 1]
+            new.OS = valid_devices[newDeviceType].expected_OS[getAvailable(valid_devices[newDeviceType].expected_OS).pop(0) - 1]
         registered_devices[new.name] = new
     else:
         return ['\033[91m' + "already taken dev name\n" + '\033[0m']

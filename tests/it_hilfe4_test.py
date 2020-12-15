@@ -42,7 +42,7 @@ def test_WinWorkStation():
 
 def test_getAvialable(monkeypatch):
     monkeypatch.setattr("builtins.input", lambda _: 1)
-    assert it_hilfe4.getAvailable([1, 2, 3]) == 1
+    assert it_hilfe4.getAvailable([1, 2, 3]) == [1]
 
     with raises(IndexError) as Error:
         monkeypatch.setattr("builtins.input", lambda _: 4)
