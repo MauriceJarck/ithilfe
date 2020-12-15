@@ -49,7 +49,7 @@ def view():
         for x in registered_devices.keys():
             content.append(f"{registered_devices.get(x)}, {[[y, registered_devices.get(x).__dict__.get(y)] for y in list(registered_devices.get(x).__dict__)[3:]]}\n")
     else:
-        return "no device registered yet\n"
+        content = [ "no device registered yet\n"]
     return content
 
 def register():
@@ -61,17 +61,17 @@ def register():
             new.OS = valid_devices[newDeviceType].expected_OS[getAvailable(valid_devices[newDeviceType].expected_OS) - 1]
         registered_devices[new.name] = new
     else:
-        return '\033[91m' + "already taken dev name\n" + '\033[0m'
+        return ['\033[91m' + "already taken dev name\n" + '\033[0m']
     return [newDeviceType, newDeviceName, new.user, new.OS]  # for testing purposes
 
 
 def search(username):
     msg = []
     if len(registered_devices) == 0:
-        return "\nno devices registered yet\n"
+        msg =  ["\nno devices registered yet\n"]
     else:
         if not [msg.append(f"match found: {registered_devices.get(x)}\n") for x in registered_devices.keys() if registered_devices.get(x).user == username]:
-            return "\nno match found\n"
+            msg = ["\nno match found\n"]
     return msg
 
 def change_param(devicename, paramtype, newparam):
@@ -79,7 +79,8 @@ def change_param(devicename, paramtype, newparam):
         a = registered_devices.get(x)
         if a.name == devicename:
             setattr(a, str(attributes[paramtype]), newparam)
-    return (f"{registered_devices.get(devicename).__dict__}")  # for testing purposes
+    print([registered_devices.get(devicename).__dict__])
+    return [registered_devices.get(devicename).__dict__]  # for testing purposes
 
 
 def main():  # to extend menue functionality add here
@@ -90,7 +91,7 @@ def main():  # to extend menue functionality add here
             if w == 1:
                 print("\n","".join(search(input("enter name you wish to search for\n>"))))
             if w == 2:
-                print("\n" + str(register()) + "\n")
+                print("\nentered:\n" + str(register()) + "\n")
             elif w == 3:
                 print("".join(view()))
             elif w == 4:

@@ -56,7 +56,7 @@ def test_getAvialable(monkeypatch):
 def test_register(monkeypatch, test_input, expected, clearDir):
     inputlist = test_input
     monkeypatch.setattr("builtins.input", lambda _x: inputlist.pop(0))
-    assert it_hilfe4.register() == expected or '\x1b[91malready taken dev name\n\x1b[0m\n'
+    assert it_hilfe4.register() == expected or ['\x1b[91malready taken dev name\n\x1b[0m\n']
 
 
 def test_view(create_single_register):
@@ -64,14 +64,14 @@ def test_view(create_single_register):
 
     it_hilfe4.registered_devices.clear()
 
-    assert it_hilfe4.view() == "no device registered yet\n"
+    assert it_hilfe4.view() == ["no device registered yet\n"]
 
 
 @mark.parametrize("test_input,expected", [
-    ([1, 1, "peter"], ("{'name': 1, 'user': 'peter', 'OS': 'Win7', 'largerBattery': True, " "'upgradedCPU': False}")),
-    ([1, 2, "Win10"], ("{'name': 1, 'user': 'maurice', 'OS': 'Win10', 'largerBattery': True, " "'upgradedCPU': False}")),
-    ([1, 3, True], ("{'name': 1, 'user': 'maurice', 'OS': 'Win7', 'largerBattery': True, " "'upgradedCPU': True}")),
-    ([1, 4, False], ("{'name': 1, 'user': 'maurice', 'OS': 'Win7', 'largerBattery': False, " "'upgradedCPU': False}"))])
+    ([1, 1, "peter"], [{'name': 1, 'user': 'peter', 'OS': 'Win7', 'largerBattery': True, 'upgradedCPU': False}]),
+    ([1, 2, "Win10"], [{'name': 1, 'user': 'maurice', 'OS': 'Win10', 'largerBattery': True, 'upgradedCPU': False}]),
+    ([1, 3, True], [{'name': 1, 'user': 'maurice', 'OS': 'Win7', 'largerBattery': True, 'upgradedCPU': True}]),
+    ([1, 4, False], [{'name': 1, 'user': 'maurice', 'OS': 'Win7', 'largerBattery': False, 'upgradedCPU': False}])])
 def test_change(test_input, expected, create_single_register):
     assert it_hilfe4.change_param(test_input[0], test_input[1], test_input[2]) == expected
 
