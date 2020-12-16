@@ -86,6 +86,7 @@ def change_param(devicename, paramtype, newparam):
             setattr(a, str(attributes[paramtype]), newparam)
             return str(a)
 
+#test change
 
 def main():  # to extend menu functionality add here
     print("welcome to IT service\ntype no. of what you wish to do\n")

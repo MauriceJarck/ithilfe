@@ -21,6 +21,7 @@ def test_device():
     assert dev1.user == "Maurice"
     assert dev1.OS == None
 
+#test change
 
 def test_windowsLapTop():
     dev1 = it_hilfe4.WindowsLapTop("1", "Maurice")
