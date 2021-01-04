@@ -29,13 +29,12 @@ class Macbook(Device):
     def __init__(self, name, user):
         super().__init__(name, user)
         self.OS = "MacOS"
+    expected_OS = ["MacOS"]
 
 
 registered_devices = {}
 options = ["search by username", "register new", "view all", "change parameter", "quit program"]  # to extend functionality add new menu options here
 attributes = ["name", "user", "OS", "upgradedCPU", "largerBattery"]  # to extend functionality add new attributes here
-valid_OS = {"windows": ["WindowsLapTop", "WindowsWorkStation"], "macos": ["Macbook"],  # to extend variety of OS add os type as key and valid devices as value to dict
-            "Linux": ["LinuxWorkstation, LinuxLapTop"]}
 valid_devices = [WindowsLapTop, WindowsWorkStation, Macbook]  # to add more classes add class here
 
 
@@ -60,7 +59,7 @@ def register():
     newdevicename = int(input("enter devicename as int \nalready taken:{}\n>".format(' '.join(str(list(registered_devices.keys()))))))
     new = valid_devices[newdevicetype](newdevicename, input("enter username \n>"))
     if newdevicename not in registered_devices.keys():
-        if str(valid_devices[newdevicetype].__name__) in valid_OS.get("windows"):  # extend for more OS options/types
+        if len(valid_devices[newdevicetype].expected_OS) > 1 :  # extend for more OS options/types
             new.OS = valid_devices[newdevicetype].expected_OS[get_available(valid_devices[newdevicetype].expected_OS) - 1]
         registered_devices[new.name] = new
         content = f"{newdevicetype}, {newdevicename}, {new.user}, {new.OS}"  # for testing purposes
