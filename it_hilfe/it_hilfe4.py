@@ -20,7 +20,7 @@ class WindowsLapTop(Device):
         self.upgradedCPU = False
 
     def __str__(self):
-        return f"device name: {self.name}, username: {self.user}, OS: {self.OS}, devtype: {self.__class__.__name__}, largerBattery: {self.largerBattery}, upgradedCPU: {self.upgradedCPU}"
+        return f"device name: {self.name}, username: {self.user}, OS: {self.OS}, largerBattery: {self.largerBattery}, upgradedCPU: {self.upgradedCPU}, devtype: {self.__class__.__name__},"
 
     expected_OS = ["Win10", "Win7"]
 
@@ -79,14 +79,18 @@ def search(username):
     return msg
 
 
-def change_param(devicename, paramtype, newparam):
+def change_param(devicename, paramtype):
     for x in registered_devices:
         a = registered_devices.get(x)
         if a.name == devicename:
-            setattr(a, str(attributes[paramtype]), newparam)
-            return str(a)
+            if paramtype == 2: #OS
+                newparam = a.expected_OS[get_available(a.expected_OS)-1]
+            else:
+                newparam = input("enter new parameter\n>")
 
-#test change
+            setattr(a, str(attributes[paramtype]), newparam)
+            return a
+
 
 def main():  # to extend menu functionality add here
     print("welcome to IT service\ntype no. of what you wish to do\n")
@@ -103,8 +107,8 @@ def main():  # to extend menu functionality add here
                 if len(registered_devices) != 0:
                     name = int(input("existent devicenames: {}\nenter devicename you want to change \n> ".format(" ".join(str(list(registered_devices.keys()))))))
                     print("enter value num. you want to change")
-                    paramtype = get_available(str(registered_devices.get(name)).split(", ")[1:])  #provide only keys to choose which are also mentioned in class __str__ func
-                    print(change_param(name, paramtype, input("enter new parameter \n> ")), "\n")
+                    paramtype = get_available(str(registered_devices.get(name)).split(", ")[1:-1])  #provide only keys to choose which are also mentioned in class __str__ func
+                    print(change_param(name, paramtype), "\n")
                 else:
                     print("no devices registered yet")
             elif w == 5:
