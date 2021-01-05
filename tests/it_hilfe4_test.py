@@ -3,13 +3,7 @@ from pytest import fixture, raises, mark
 
 
 @fixture(scope="function")
-def clearDir():
-    yield
-    it_hilfe4.registered_devices.clear()
-
-
-@fixture(scope="function")
-def create_single_register(monkeypatch):
+def create_single_register():
     new = it_hilfe4.WindowsLapTop(1, "maurice")
     new.OS = "Win7"
     it_hilfe4.registered_devices[new.name] = new
@@ -29,7 +23,7 @@ def test_windowsLapTop():
 
 
 def test_macbook():
-    dev1 = it_hilfe4.WindowsLapTop("2", "Maurice")
+    dev1 = it_hilfe4.Macbook("2", "Maurice")
     assert dev1.name == "2"
     assert dev1.user == "Maurice"
 
@@ -44,21 +38,20 @@ def test_getAvialable(monkeypatch):
     monkeypatch.setattr("builtins.input", lambda _: 1)
     assert it_hilfe4.get_available([1, 2, 3]) == 1
 
-    with raises(IndexError) as Error:
+    with raises(IndexError):
         monkeypatch.setattr("builtins.input", lambda _: 4)
         it_hilfe4.get_available([1, 2, 3])
-    assert Error.type is IndexError
 
 
 @mark.parametrize("test_input,expected",
-                  [([1, 1, "maurice", 1], '0, 1, "maurice", "Win10"'),
-                   ([2, 2, "Peter", 1], "1, 2, 'Peter', 'Win10'"),
-                   ([3, 3, "Heinz"], "2, 3, 'Heinz', 'MacOS'"),
-                   ([1, 1, "maurice", 1], '0, 1, "maurice", "Win10"')])
-def test_register(monkeypatch, test_input, expected, clearDir):
+                  [([1, 1, "maurice", 1], '0, 1, maurice, Win10'),
+                   ([2, 2, "Peter", 1], "1, 2, Peter, Win10"),
+                   ([3, 3, "Heinz"], "2, 3, Heinz, MacOS"),
+                   ([1, 1, "maurice", 1], '\x1b[91malready taken dev name\n\x1b[0m')])
+def test_register(monkeypatch, test_input, expected):
     inputlist = test_input
     monkeypatch.setattr("builtins.input", lambda _x: inputlist.pop(0))
-    assert it_hilfe4.register() == expected or '\x1b[91malready taken dev name\n\x1b[0m\n'
+    assert it_hilfe4.register() == expected
 
 
 def test_view(create_single_register):
