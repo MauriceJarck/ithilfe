@@ -4,33 +4,33 @@ from pytest import fixture, raises, mark
 
 @fixture(scope="function")
 def create_single_register():
-    new = it_hilfe4.WindowsLapTop(1, "maurice")
+    new = it_hilfe4.WindowsLapTop(1, "Maurice")
     new.OS = "Win7"
-    it_hilfe4.registered_devices[new._name] = new
+    it_hilfe4.registered_devices[new.name] = new
 
 
 def test_device():
-    dev1 = it_hilfe4.Device("1", "Maurice")
-    assert dev1._name == "1"
+    dev1 = it_hilfe4.Device(1, "Maurice")
+    assert dev1.name == 1
     assert dev1.user == "Maurice"
     assert dev1.OS == None
 
 
 def test_windowsLapTop():
-    dev1 = it_hilfe4.WindowsLapTop("1", "Maurice")
-    assert dev1._name == "1"
+    dev1 = it_hilfe4.WindowsLapTop(1, "Maurice")
+    assert dev1.name == 1
     assert dev1.user == "Maurice"
 
 
 def test_macbook():
-    dev1 = it_hilfe4.Macbook("2", "Maurice")
-    assert dev1._name == "2"
+    dev1 = it_hilfe4.Macbook(2, "Maurice")
+    assert dev1.name == 2
     assert dev1.user == "Maurice"
 
 
 def test_WinWorkStation():
-    dev1 = it_hilfe4.WindowsWorkStation("3", "Maurice")
-    assert dev1._name == "3"
+    dev1 = it_hilfe4.WindowsWorkStation(3, "Maurice")
+    assert dev1.name == 3
     assert dev1.user == "Maurice"
 
 
@@ -59,9 +59,9 @@ def test_view():
 
     new = it_hilfe4.WindowsLapTop(1, "maurice")
     new.OS = "Win7"
-    it_hilfe4.registered_devices[new._name] = new
+    it_hilfe4.registered_devices[new.name] = new
 
-    assert it_hilfe4.view() == ('1, maurice, Win7, WindowsLapTop, largerbattery: True, upgradedCPU: False\n')
+    assert it_hilfe4.view() == ('1, maurice, Win7, WindowsLapTop, largerbattery: True, upgradedCPU: False')
 
     it_hilfe4.registered_devices.clear()
 
@@ -70,9 +70,9 @@ def test_view():
 
 @mark.parametrize("test_input,expected", [
     ([1, "user", "peter"], ('1, peter, Win7, WindowsLapTop, largerbattery: True, upgradedCPU: False')),
-    ([1, "OS", 2],('1, maurice, Win7, WindowsLapTop, largerbattery: True, upgradedCPU: False')),
-    ([1, "largerBattery", False], ('1, maurice, Win7, WindowsLapTop, largerbattery: False, upgradedCPU: False')),
-    ([1, "upgradedCPU", True], ("1, maurice, Win7, WindowsLapTop, largerbattery: True, upgradedCPU: True"))])
+    ([1, "OS", 2],('1, Maurice, Win7, WindowsLapTop, largerbattery: True, upgradedCPU: False')),
+    ([1, "largerBattery", False], ('1, Maurice, Win7, WindowsLapTop, largerbattery: False, upgradedCPU: False')),
+    ([1, "upgradedCPU", True], ("1, Maurice, Win7, WindowsLapTop, largerbattery: True, upgradedCPU: True"))])
 def test_change(test_input, expected, create_single_register, monkeypatch):
 
     monkeypatch.setattr("builtins.input", lambda _x: test_input[2])
@@ -80,7 +80,7 @@ def test_change(test_input, expected, create_single_register, monkeypatch):
 
 
 def test_search(create_single_register):
-    assert it_hilfe4.search("maurice") == ['match found: 1, maurice, Win7, WindowsLapTop, largerbattery: True, ' 'upgradedCPU: False\n']
+    assert it_hilfe4.search("Maurice") == ['match found: 1, Maurice, Win7, WindowsLapTop, largerbattery: True, ' 'upgradedCPU: False\n']
 
     assert it_hilfe4.search("Heinz") == ['\nno match found\n']
 

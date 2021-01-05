@@ -1,41 +1,41 @@
 class Device:
     def __init__(self, name, user):
-        self._name = name
+        self.name = name
         self.user = user
         self.OS = None
 
     def __str__(self):
-        return f"{self._name}, {self.user}, {self.OS}, {self.__class__.__name__}"
+        return f"{self.name}, {self.user}, {self.OS}, {self.__class__.__name__}"
 
+    visible_attr = ["user", "OS"]
 
 class WindowsWorkStation(Device):
-    expected_OS = ["Win10", "Win7"]
+    expected_OS = ["Win10", "Win7"] # extend for more OS options/types
 
 
 class WindowsLapTop(Device):
     def __init__(self, name, user):
         super().__init__(name, user)
-        self._bitlockkey = 1234
+        self.bitlockkey = 1234
         self.largerBattery = True
         self.upgradedCPU = False
 
     def __str__(self):
-        return f"{self._name}, {self.user}, {self.OS}, {self.__class__.__name__}, largerbattery: {self.largerBattery}, upgradedCPU: {self.upgradedCPU}"
+        return f"{self.name}, {self.user}, {self.OS}, {self.__class__.__name__}, largerbattery: {self.largerBattery}, upgradedCPU: {self.upgradedCPU}"
 
-    expected_OS = ["Win10", "Win7"]
-
+    expected_OS = ["Win10", "Win7"] # extend for more OS options/types
+    visible_attr = ["user", "OS", "largerBattery", "upgradedCPU"]
 
 class Macbook(Device):
     def __init__(self, name, user):
         super().__init__(name, user)
         self.OS = "MacOS"
 
-    expected_OS = ["MacOS"]
+    expected_OS = ["MacOS"] # extend for more OS options/types
 
 
 registered_devices = {}
 options = ["search by username", "register new", "view all", "change parameter", "quit program"]  # to extend functionality add new menu options here
-attributes = ["name", "user", "OS", "upgradedCPU", "largerBattery"]  # to extend functionality add new attributes here
 valid_devices = [WindowsLapTop, WindowsWorkStation, Macbook]  # to add more classes add class here
 
 
@@ -49,22 +49,18 @@ def get_available(optionslist):
 
 def view():
     print("\nname, user, OS, devtype, notes")
-    if len(registered_devices) != 0:
-        msg = "\n".join([str(registered_devices.get(x)) for x in registered_devices.keys()]) + "\n"
-    else:
-        msg = "no device registered yet\n"
-    return msg
+    return "\n".join([str(x) for x in registered_devices.values()]) or "no device registered yet\n"
 
 
 def register():
     newdevicetype = get_available(valid_devices)
     newdevicename = int(
-        input("enter devicename as int \nalready taken:{}\n>".format(' '.join(str(list(registered_devices.keys()))))))
+        input("enter devicename \nalready taken:{}\n>".format(' '.join(str(list(registered_devices.keys()))))))
     new = newdevicetype(newdevicename, input("enter username \n>"))
     if newdevicename not in registered_devices.keys():
-        if len(newdevicetype.expected_OS) > 1:  # extend for more OS options/types
+        if len(newdevicetype.expected_OS) > 1:
             new.OS = get_available(newdevicetype.expected_OS)
-        registered_devices[new._name] = new
+        registered_devices[new.name] = new
         content = f"{newdevicename}, {new.user}, {new.OS}, {newdevicetype.__name__}"  # for testing purposes
     else:
         content = '\033[91m' + "already taken dev name\n" + '\033[0m'
@@ -72,13 +68,10 @@ def register():
 
 
 def search(username):
-    msg = []
     if len(registered_devices) == 0:
         msg = ["\nno devices registered yet\n"]
     else:
-        if not [msg.append(f"match found: {registered_devices.get(x)}\n") for x in registered_devices.keys() if
-                registered_devices.get(x).user == username]:
-            msg = ["\nno match found\n"]
+        msg = [f"match found: {x}\n" for x in registered_devices.values() if x.user == username] or ["\nno match found\n"]
     return msg
 
 
@@ -103,18 +96,18 @@ def main():  # to extend menu functionality add here
             if w == "register new":
                 print("\nentered:\n" + str(register()) + "\n")
             elif w == "view all":
-                print("".join(view()))
+                print(view()+ "\n")
             elif w == "change parameter":
                 if len(registered_devices) != 0:
                     name = int(input("existent devicenames: {}\nenter devicename you want to change \n> ".format(" ".join(str(list(registered_devices.keys()))))))
                     print("enter value num. you want to change")
-                    paramtype = get_available([x for x in registered_devices.get(name).__dict__.keys() if str(x).startswith("_") == False])  # provide only keys to choose which are not considrerd private
-                    change_param(name, paramtype)
+                    paramtype = get_available(registered_devices[name].visible_attr)
+                    print("\n" + change_param(name, paramtype) + "\n")
                 else:
                     print("no devices registered yet")
             elif w == "quit program":
                 break
-        except(ValueError, IndexError, AttributeError):
+        except(ValueError, IndexError, AttributeError, KeyError):
             print('\033[91m' + "index can only be int and must belong to range of available choices\n" + '\033[0m')
     quit(0)
 
