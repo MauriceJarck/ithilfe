@@ -79,16 +79,14 @@ def search(username):
 
 
 def change_param(devicename, paramtype):
-    for x in registered_devices:
-        a = registered_devices.get(x)
-        if a.name == devicename:
-            if paramtype == 2: #OS
-                newparam = a.expected_OS[get_available(a.expected_OS)-1]
-            else:
-                newparam = input("enter new parameter\n>")
+    a = registered_devices.get(devicename)
+    if paramtype == 2: #OS
+        newparam = a.expected_OS[get_available(a.expected_OS)-1]
+    else:
+        newparam = input("enter new parameter\n>")
 
-            setattr(a, str(attributes[paramtype]), newparam)
-            return a
+    setattr(a, str(attributes[paramtype]), newparam)
+    return a
 
 
 def main():  # to extend menu functionality add here
