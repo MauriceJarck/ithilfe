@@ -7,31 +7,42 @@ def create_single_register():
     new = it_hilfe4.WindowsLapTop(1, "Maurice")
     new.OS = "Win7"
     it_hilfe4.registered_devices[new.name] = new
+    assert new.name == 1
+    assert new.user == "Maurice"
+    assert new.OS == "Win7"
+    assert new.bitlockkey == 1234
+    assert new.largerBattery is True
+    assert new.upgradedCPU is False
 
 
-def test_device():
+def test_Device():
     dev1 = it_hilfe4.Device(1, "Maurice")
     assert dev1.name == 1
     assert dev1.user == "Maurice"
-    assert dev1.OS == None
+    assert dev1.OS is None
+    assert str(dev1) == "1, Maurice, None, Device"
 
 
-def test_windowsLapTop():
+def test_WindowsLapTop():
     dev1 = it_hilfe4.WindowsLapTop(1, "Maurice")
     assert dev1.name == 1
     assert dev1.user == "Maurice"
+    assert str(dev1) == "1, Maurice, None, WindowsLapTop, largerbattery: True, upgradedCPU: False"
 
 
-def test_macbook():
+
+def test_Macbook():
     dev1 = it_hilfe4.Macbook(2, "Maurice")
     assert dev1.name == 2
     assert dev1.user == "Maurice"
+    assert str(dev1) == "2, Maurice, MacOS, Macbook"
 
 
 def test_WinWorkStation():
     dev1 = it_hilfe4.WindowsWorkStation(3, "Maurice")
     assert dev1.name == 3
     assert dev1.user == "Maurice"
+    assert str(dev1) == "3, Maurice, None, WindowsWorkStation"
 
 
 def test_getAvialable(monkeypatch):
@@ -44,14 +55,26 @@ def test_getAvialable(monkeypatch):
 
 
 @mark.parametrize("test_input,expected",
-                  [([1, 1, "maurice", 1], '1, maurice, Win10, WindowsLapTop'),
-                   ([2, 2, "Peter", 1], '2, Peter, Win10, WindowsWorkStation'),
-                   ([3, 3, "Heinz"], '3, Heinz, MacOS, Macbook'),
-                   ([1, 1, "maurice", 1], '\x1b[91malready taken dev name\n\x1b[0m')])
+                  [([1, 1, "maurice", 1], [1, "maurice", "Win10", "WindowsLapTop", True, False, 1234]),
+                   ([2, 2, "Peter", 1], [2, "Peter", "Win10", "WindowsWorkStation"]),
+                   ([3, 3, "Heinz"], [3, "Heinz", "MacOS", "Macbook"]),
+                   ([1, 1, "maurice", 1], [])])
 def test_register(monkeypatch, test_input, expected):
-    inputlist = test_input
-    monkeypatch.setattr("builtins.input", lambda _x: inputlist.pop(0))
-    assert it_hilfe4.register() == expected
+    monkeypatch.setattr("builtins.input", lambda _x: test_input.pop(0))
+    func = it_hilfe4.register()
+    if func is not None:
+        assert func.name == expected[0]
+        assert func.user == expected[1]
+        assert func.OS == expected[2]
+        assert func.__class__.__name__ == expected[3]
+        try:
+            assert func.largerBattery == expected[4]
+            assert func.upgradedCPU == expected[5]
+            assert func.bitlockkey == expected[6]
+        except AttributeError:
+            pass
+    else:
+        assert func is None
 
 
 def test_view():
@@ -60,30 +83,48 @@ def test_view():
     new = it_hilfe4.WindowsLapTop(1, "maurice")
     new.OS = "Win7"
     it_hilfe4.registered_devices[new.name] = new
-
-    assert it_hilfe4.view() == ('1, maurice, Win7, WindowsLapTop, largerbattery: True, upgradedCPU: False')
+    func = it_hilfe4.view()
+    assert func[0].name == 1
+    assert func[0].user == "maurice"
+    assert func[0].OS == "Win7"
+    assert func[0].__class__.__name__ == "WindowsLapTop"
+    assert func[0].largerBattery is True
+    assert func[0].upgradedCPU is False
+    assert func[0].bitlockkey == 1234
 
     it_hilfe4.registered_devices.clear()
 
-    assert it_hilfe4.view() == "no device registered yet\n"
-
+    assert it_hilfe4.view() == []
 
 @mark.parametrize("test_input,expected", [
-    ([1, "user", "peter"], ('1, peter, Win7, WindowsLapTop, largerbattery: True, upgradedCPU: False')),
-    ([1, "OS", 2],('1, Maurice, Win7, WindowsLapTop, largerbattery: True, upgradedCPU: False')),
-    ([1, "largerBattery", False], ('1, Maurice, Win7, WindowsLapTop, largerbattery: False, upgradedCPU: False')),
-    ([1, "upgradedCPU", True], ("1, Maurice, Win7, WindowsLapTop, largerbattery: True, upgradedCPU: True"))])
+    ([1, "user", "peter"], [1, "peter", "Win7", "WindowsLapTop", True, False]),
+    ([1, "OS", 2], [1, "Maurice", "Win7", "WindowsLapTop", True, False]),
+    ([1, "largerBattery", False], [1, "Maurice", "Win7", "WindowsLapTop", False, False]),
+    ([1, "upgradedCPU", True], [1, "Maurice", "Win7", "WindowsLapTop", True, True])])
 def test_change(test_input, expected, create_single_register, monkeypatch):
 
     monkeypatch.setattr("builtins.input", lambda _x: test_input[2])
-    assert it_hilfe4.change_param(test_input[0], test_input[1]) == expected
+    func = it_hilfe4.change_param(test_input[0], test_input[1])
+
+    assert func.name == expected[0]
+    assert func.user == expected[1]
+    assert func.OS == expected[2]
+    assert func.__class__.__name__ == expected[3]
+    assert func.largerBattery == expected[4]
+    assert func.upgradedCPU == expected[5]
 
 
 def test_search(create_single_register):
-    assert it_hilfe4.search("Maurice") == ['match found: 1, Maurice, Win7, WindowsLapTop, largerbattery: True, ' 'upgradedCPU: False\n']
+    func = it_hilfe4.search("Maurice")
+    assert func[0].name == 1
+    assert func[0].user == "Maurice"
+    assert func[0].OS == "Win7"
+    assert func[0].__class__.__name__ == "WindowsLapTop"
+    assert func[0].largerBattery is True
+    assert  func[0].upgradedCPU is False
 
-    assert it_hilfe4.search("Heinz") == ['\nno match found\n']
+    assert it_hilfe4.search("Heinz") == []
 
     it_hilfe4.registered_devices.clear()
 
-    assert it_hilfe4.search("maurice") == ["\nno devices registered yet\n"]
+    assert it_hilfe4.search("maurice") == []
