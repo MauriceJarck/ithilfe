@@ -55,7 +55,7 @@ def view():
 
 def register():
     newdevicetype = get_available(valid_devices)
-    newdevicename = input("enter devicename \nalready taken:{}\n>".format(' '.join(str(list(registered_devices.keys())))))
+    newdevicename = input("enter devicename \nalready taken: {}\n>".format(', '.join([str(x) for x in list(registered_devices.keys())]) or "None"))
     new = newdevicetype(newdevicename, input("enter username \n>"))
     if newdevicename not in registered_devices.keys():
         if len(newdevicetype.expected_OS) > 1:
@@ -84,7 +84,7 @@ def main():  # to extend menu functionality add here
             w = get_available(options)
             if w == "search by username":
                 if len(registered_devices) != 0:
-                    print("".join([str(x) for x in search(input("enter username you wish to search for\n>"))]) or '\033[91m' + "no match found\n" + '\033[0m')
+                    print("\n"+"".join([str(x) for x in search(input("enter username you wish to search for\n>"))]), "\n" or '\033[91m' + "no match found\n" + '\033[0m')
                 else:
                     print('\033[91m' + "no device registered yet\n" + '\033[0m')
             if w == "register new":
@@ -92,14 +92,14 @@ def main():  # to extend menu functionality add here
                 if a is None:
                     print('\033[91m' + "already taken dev name\n" + '\033[0m')
                 else:
-                    print(a)
+                    print("\n" + str(a) + "\n")
             elif w == "view all":
-                print("\n".join([str(x) for x in view()]) or '\033[91m' + "no device registered yet\n" + '\033[0m')
+                print("\n".join([str(x) for x in view()]),"\n" or '\033[91m' + "no device registered yet\n" + '\033[0m')
             elif w == "change parameter":
                 if len(registered_devices) != 0:
-                    name = input("existent devicenames: {}\nenter devicename you want to change \n> ".format(" ".join(str(list(registered_devices.keys())))))
+                    name = input("existent devicenames: {}\nenter devicename you want to change \n> ".format(", ".join(list(registered_devices.keys()))))
                     paramtype = get_available(registered_devices[name].visible_attr)
-                    print("\n" + change_param(name, paramtype) + "\n")
+                    print("\n" + str(change_param(name, paramtype)) + "\n")
                 else:
                     print('\033[91m' + "no device registered yet\n" + '\033[0m')
             elif w == "quit program":
