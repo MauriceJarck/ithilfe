@@ -2,7 +2,7 @@ from it_hilfe import it_hilfe4
 from pytest import fixture, raises, mark
 from sys import setrecursionlimit
 
-setrecursionlimit(68)  # avoid too much unnecessary recursions
+setrecursionlimit(70)  # avoid too much unnecessary recursions
 
 
 @fixture(scope="function")
@@ -50,6 +50,10 @@ def test_WinWorkStation():
 def test_getAvialable(monkeypatch, capsys):
     monkeypatch.setattr("builtins.input", lambda _: 1)
     assert it_hilfe4.get_available(["search by username", "register new", "view all"]) == "search by username"
+
+    with raises(RecursionError):  # tests is input is wrong val gets invoked
+        monkeypatch.setattr("builtins.input", lambda _: -1)
+        it_hilfe4.get_available(["search by username", "register new", "view all"])
 
     with raises(RecursionError):  # tests is input is wrong val gets invoked
         monkeypatch.setattr("builtins.input", lambda _: ["a"].pop(0))
