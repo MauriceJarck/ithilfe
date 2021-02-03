@@ -1,3 +1,9 @@
+class AlreadyTakenNameError(Exception):
+    pass
+
+class NothingRegisteredError(Exception):
+    pass
+
 class Device:
     def __init__(self, name, user):
         self.name = name
@@ -7,7 +13,7 @@ class Device:
     def __str__(self):
         return f"{self.name}, {self.user}, {self.OS}, {self.__class__.__name__}"
 
-    visible_attr = ["user", "OS"]
+    visible_attr = ["user", "OS"]  # Attributes available to change for user
 
 
 class WindowsWorkStation(Device):
@@ -25,7 +31,7 @@ class WindowsLapTop(Device):
         return f"{self.name}, {self.user}, {self.OS}, {self.__class__.__name__}, largerbattery: {self.largerBattery}, upgradedCPU: {self.upgradedCPU}"
 
     expected_OS = ["Win10", "Win7"]  # extend for more OS options/types
-    visible_attr = ["user", "OS", "largerBattery", "upgradedCPU"]
+    visible_attr = ["user", "OS", "largerBattery", "upgradedCPU"]  # Attributes available to change for user
 
 
 class Macbook(Device):
@@ -40,90 +46,122 @@ registered_devices = {}
 options = ["search by username", "register new", "view all", "change parameter", "quit program"]  # to extend str rep of new menue functionality add here
 valid_devices = [WindowsLapTop, WindowsWorkStation, Macbook]  # to add more classes add class here
 
-def get_available(optionslist):
-    try:
-        if optionslist[len(optionslist)-1] != "help":
-            optionslist = optionslist+["help"]
-        a = int(input("\n".join(["{}:{}".format(i + 1, x) if type(x) == str else "{}:{}".format(i + 1, x.__name__) for i, x in enumerate(optionslist)])+"\n>"))
-    except(ValueError):
-        print('\033[91m' + "\nindex can only be int, retry:\n" + '\033[0m')
-        return str(get_available(optionslist))
-    except KeyboardInterrupt:
-        raise KeyboardInterrupt
-    else:
-        if a <= len(optionslist) and a >= 1:
-            if optionslist[a-1] == "help":
-                print("\nwhen running in terminal: press ctrl+c+return to exit current menue => back to  main\n")
-                return get_available(optionslist)
-            return optionslist[a-1]
-        else:
-            print('\033[91m' + "\nindex must belong to range of available choices, retry:\n" + '\033[0m')
-            return get_available(optionslist)
 
+def get_available(optionslist):
+    a = int(input("\n".join(["{}:{}".format(i + 1, x) if type(x) == str else "{}:{}".format(i + 1, x.__name__) for i, x in enumerate(optionslist)])+"\n>"))
+
+    if a > len(optionslist) or a <= 0:
+        raise IndexError
+    else:
+        return optionslist[a - 1]
 
 def view():
     print("\nname, user, OS, devtype, notes")
     return [x for x in registered_devices.values()]
 
 
-def register():
-    newdevicename = input("enter devicename \nalready taken: {}\n>".format(', '.join([str(x) for x in list(registered_devices.keys())]) or "None"))
-    if newdevicename not in registered_devices.keys():
-        newdevicetype = get_available(valid_devices)
-        new = newdevicetype(newdevicename, input("enter username \n>"))
-        if len(newdevicetype.expected_OS) > 1:
-            new.OS = get_available(newdevicetype.expected_OS)
-        registered_devices[new.name] = new
-        return new
-    else:
-        print('\033[91m' + "already taken dev name\n" + '\033[0m')
-        return register()
+def register(newdevicename, newdevicetype, os, username):
+    new = newdevicetype(newdevicename, username)
+    new.OS = os
+    registered_devices[new.name] = new
+    return new
 
 
 def search(username):
-    return [x for x in registered_devices.values() if x.user == username] or ['\033[91m' + "no match found\n" + '\033[0m']
+    return [x for x in registered_devices.values() if x.user == username]
 
 
-def change_param():
-    try:
-        devicename = input("existent devicenames: {}\nenter devicename you want to change \n> ".format(", ".join([str(x) for x in list(registered_devices.keys())])))
-        paramtype= get_available(registered_devices[devicename].visible_attr)
-        a = registered_devices.get(devicename)
-        print("current val:", getattr(a, paramtype))
-        if paramtype == "OS":
-            setattr(a, paramtype, get_available(a.expected_OS))
-        else:
-            setattr(a, paramtype, input("enter new parameter\n>"))
-        return a
-    except KeyError:
-        print('\033[91m' + "\nnot found, retry:\n" + '\033[0m')
-        return change_param()
+def change_param(devicename, paramtype, newval):
+    a = registered_devices.get(devicename)
+    print("current val:", getattr(a, paramtype))
+    setattr(a, paramtype, newval)
+    return a
 
 def main():  # to extend menu functionality add here
-    print("welcome to IT service\ntype no. of what you wish to do\n")
     while True:
-        try:
-            w = get_available(options)
-            if len(registered_devices) >= 0:
-                if w == "register new":
-                    print("\n" + str(register()) + "\n")
-                elif w == "quit program":
-                    quit(0)
+        count = 0
+        while count < 3:  # num of tries until you'll get thrown back to options menu
+            try:
+                if count == 0:
+                    w = get_available(options)
 
-            if len(registered_devices) != 0:
-                if w == "search by username":
-                    print("\n"+"\n".join([str(x) for x in search(input(f"enter username to search for, available: {', '.join([str(x) for x in set([x.user for x in list(registered_devices.values())])])}\n>"))]))
-                elif w == "view all":
-                    print("\n".join([str(x) for x in view()]), "\n" or '\033[91m' + "no device registered yet\n" + '\033[0m')
-                elif w == "change parameter":
-                    print("\n" + str(change_param()) + "\n")
-            else:
+                if len(registered_devices) >= 0:
+                    if w == "register new":
+                        if not locals().get("newdevicetype"):
+                            newdevicetype = get_available(valid_devices)
+                        if not locals().get("OS"):
+                            OS = get_available(newdevicetype.expected_OS)
+                        if not locals().get("newdevicename"):
+                            newdevicename = input("enter devicename \nalready taken: {}\n>".format(', '.join([str(x) for x in list(registered_devices.keys())]) or "None"))
+                            if newdevicename in registered_devices.keys() or newdevicename == "":
+                                del newdevicename
+                                raise AlreadyTakenNameError
+                        if not locals().get("user"):
+                            user = input("enter username \n>")
+                            if user == "":
+                                raise ValueError
+                        print("\n" + str(register(newdevicename, newdevicetype, OS, user)) + "\n")
+                        break
+
+                    elif w == "quit program":
+                        return "end"
+
+                if len(registered_devices) != 0:
+                    if w == "search by username":
+                        a = search(input(f"enter username to search for, available: {', '.join([str(x) for x in set([x.user for x in list(registered_devices.values())])])}\n>"))
+                        if len(a) != 0:
+                            print("\n"+"\n".join([str(x) for x in a]))
+                        else:
+                            count += 1
+                            raise KeyError
+
+                    elif w == "view all":
+                        print("\n".join([str(x) for x in view()]))
+
+                    elif w == "change parameter":
+                        if not locals().get("devicename"):
+                            devicename = input("existent devicenames: {}\nenter devicename you want to change \n> ".format(", ".join([str(x) for x in list(registered_devices.keys())])))
+                        if devicename not in registered_devices.keys():
+                            del devicename
+                            raise KeyError
+                        if not locals().get("paramtype"):
+                            paramtype = get_available(registered_devices[devicename].visible_attr)
+
+                        if paramtype == "OS":
+                            os = get_available(registered_devices.get(devicename).expected_OS)
+                        else:
+                            os = input("enter new parameter\n>")
+
+                        print("\n" + str(change_param(devicename, paramtype, os)) + "\n")
+                        break
+                else:
+                    raise NothingRegisteredError
+
+            except NothingRegisteredError:
                 print('\033[91m' + "no device registered yet\n" + '\033[0m')
+            except ValueError:
+                print('\033[91m' + "\nindex can only be int, retry:\n" + '\033[0m')
+                count += 1
+            except IndexError:
+                print('\033[91m' + "\nindex must belong to range of available choices, retry:\n" + '\033[0m')
+                count += 1
+            except AlreadyTakenNameError:
+                print('\033[91m' + "already taken dev name\n" + '\033[0m')
+                count += 1
+            except KeyError:
+                print('\033[91m' + "nothing found\n" + '\033[0m')
+                count += 1
+            except UnboundLocalError:
+                break
 
-
-        except(KeyboardInterrupt):
-            print("\nback to the roots\n" )
-
+        try:
+            if w == "register new":
+                del newdevicename, newdevicetype, OS, user
+            elif w == "change parameter":
+                del devicename, paramtype
+        except UnboundLocalError:
+            print("del problem")
 
 if __name__ == "__main__":
+    print("welcome to IT service\ntype no. of what you wish to do\n")
     main()
