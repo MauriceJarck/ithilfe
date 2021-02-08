@@ -1,8 +1,10 @@
 class AlreadyTakenNameError(Exception):
     pass
 
+
 class NothingRegisteredError(Exception):
     pass
+
 
 class Device:
     def __init__(self, name, user):
@@ -43,7 +45,7 @@ class Macbook(Device):
 
 
 registered_devices = {}
-options = ["search by username", "register new", "view all", "change parameter", "quit program"]  # to extend str rep of new menue functionality add here
+options = ["search by username", "register new", "view all", "change parameter", "quit program"]  # to extend str rep of new menu functionality add here
 valid_devices = [WindowsLapTop, WindowsWorkStation, Macbook]  # to add more classes add class here
 
 
@@ -54,6 +56,7 @@ def get_available(optionslist):
         raise IndexError
     else:
         return optionslist[a - 1]
+
 
 def view():
     print("\nname, user, OS, devtype, notes")
@@ -77,30 +80,33 @@ def change_param(devicename, paramtype, newval):
     setattr(a, paramtype, newval)
     return a
 
+
 def main():  # to extend menu functionality add here
     while True:
         count = 0
+        newdevicetype, newdevicename, os, user, devicename, paramtype, w = None, None, None, None, None, None, None
+
         while count < 3:  # num of tries until you'll get thrown back to options menu
             try:
-                if count == 0:
+                if w is None:
                     w = get_available(options)
 
                 if len(registered_devices) >= 0:
                     if w == "register new":
-                        if not locals().get("newdevicetype"):
+                        if newdevicetype is None:
                             newdevicetype = get_available(valid_devices)
-                        if not locals().get("OS"):
-                            OS = get_available(newdevicetype.expected_OS)
-                        if not locals().get("newdevicename"):
+                        if os is None:
+                            os = get_available(newdevicetype.expected_OS)
+                        if newdevicename is None:
                             newdevicename = input("enter devicename \nalready taken: {}\n>".format(', '.join([str(x) for x in list(registered_devices.keys())]) or "None"))
                             if newdevicename in registered_devices.keys() or newdevicename == "":
-                                del newdevicename
+                                newdevicename = None
                                 raise AlreadyTakenNameError
-                        if not locals().get("user"):
+                        if user is None:
                             user = input("enter username \n>")
                             if user == "":
                                 raise ValueError
-                        print("\n" + str(register(newdevicename, newdevicetype, OS, user)) + "\n")
+                        print("\n" + str(register(newdevicename, newdevicetype, os, user)) + "\n")
                         break
 
                     elif w == "quit program":
@@ -111,34 +117,35 @@ def main():  # to extend menu functionality add here
                         a = search(input(f"enter username to search for, available: {', '.join([str(x) for x in set([x.user for x in list(registered_devices.values())])])}\n>"))
                         if len(a) != 0:
                             print("\n"+"\n".join([str(x) for x in a]))
+                            break
                         else:
-                            count += 1
                             raise KeyError
 
                     elif w == "view all":
                         print("\n".join([str(x) for x in view()]))
+                        break
 
                     elif w == "change parameter":
-                        if not locals().get("devicename"):
+                        if devicename is None:
                             devicename = input("existent devicenames: {}\nenter devicename you want to change \n> ".format(", ".join([str(x) for x in list(registered_devices.keys())])))
-                        if devicename not in registered_devices.keys():
-                            del devicename
-                            raise KeyError
-                        if not locals().get("paramtype"):
+                            if devicename not in registered_devices.keys():
+                                devicename = None
+                                raise KeyError
+                        if paramtype is None:
                             paramtype = get_available(registered_devices[devicename].visible_attr)
-
                         if paramtype == "OS":
-                            os = get_available(registered_devices.get(devicename).expected_OS)
+                            newval = get_available(registered_devices.get(devicename).expected_OS)
                         else:
-                            os = input("enter new parameter\n>")
+                            newval = input("enter new parameter\n>")
 
-                        print("\n" + str(change_param(devicename, paramtype, os)) + "\n")
+                        print("\n" + str(change_param(devicename, paramtype, newval)) + "\n")
                         break
                 else:
                     raise NothingRegisteredError
 
             except NothingRegisteredError:
                 print('\033[91m' + "no device registered yet\n" + '\033[0m')
+                break
             except ValueError:
                 print('\033[91m' + "\nindex can only be int, retry:\n" + '\033[0m')
                 count += 1
@@ -154,13 +161,6 @@ def main():  # to extend menu functionality add here
             except UnboundLocalError:
                 break
 
-        try:
-            if w == "register new":
-                del newdevicename, newdevicetype, OS, user
-            elif w == "change parameter":
-                del devicename, paramtype
-        except UnboundLocalError:
-            print("del problem")
 
 if __name__ == "__main__":
     print("welcome to IT service\ntype no. of what you wish to do\n")
