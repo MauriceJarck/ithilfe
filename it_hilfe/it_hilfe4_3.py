@@ -2,7 +2,6 @@ from tkinter import scrolledtext, messagebox, filedialog
 import tkinter as tk
 import tkinter.ttk as ttk
 import csv
-from datetime import datetime
 
 
 class EmptyFieldError(Exception):
@@ -10,6 +9,10 @@ class EmptyFieldError(Exception):
 
 
 class AlreadyTakenNameError(Exception):
+    pass
+
+
+class NotSameLengthError(Exception):
     pass
 
 
@@ -68,33 +71,32 @@ class Main(tk.Frame):
         # content setup
         self.btregister = tk.Button(root, text="Register", command=lambda: self.register(None)).grid(row=0, column=0)
         self.btsearch = tk.Button(root, text="Search", command=lambda: self.search(None)).grid(row=1, column=0)
-        self.btchange_param = tk.Button(root, text="Change", command=lambda: self.change_param(None)).grid(row=2, column=0)
+        self.btchange_param = tk.Button(root, text="Change", command=lambda: self.change_param(None, True)).grid(row=2, column=0)
         self.btdelete = tk.Button(root, text="Delete selected", command=lambda: self.delete(False)).grid(row=3, column=0)
         self.columns = ('dev name', 'username', 'OS', 'type', 'comment')
-        self.tree = ttk.Treeview(root, height=25, columns=self.columns)
-
-
-        # Set the heading
-        self.tree.heading('#0', text='no.')
-        self.tree.heading('#1', text='dev name')
-        self.tree.heading('#2', text='username')
-        self.tree.heading('#3', text='OS')
-        self.tree.heading('#4', text='type')
-        self.tree.heading('#5', text='comment')
+        self.treeview = ttk.Treeview(root, height=25, columns=self.columns)
 
         # Specify attributes of the columns
-        self.tree.column('#0', stretch=tk.YES)
-        self.tree.column('#1', stretch=tk.YES)
-        self.tree.column('#2', stretch=tk.YES)
-        self.tree.column('#3', stretch=tk.YES)
-        self.tree.column('#4', stretch=tk.YES)
-        self.tree.column('#5', stretch=tk.YES)
+        self.treeview.column('#0', stretch=tk.YES)
+        self.treeview.column('#1', stretch=tk.YES)
+        self.treeview.column('#2', stretch=tk.YES)
+        self.treeview.column('#3', stretch=tk.YES)
+        self.treeview.column('#4', stretch=tk.YES)
+        self.treeview.column('#5', stretch=tk.YES)
 
-        self.tree.grid(row=7, column=1, columnspan=1, sticky='nsew')
-        self.treeview = self.tree
+        self.treeview.grid(row=7, column=1, columnspan=1, sticky='nsew')
 
         self.id = 0
         self.iid = 0
+
+        # Set the heading
+
+        self.treeview.heading('#0', text='no.')
+        self.treeview.heading('#1', text='dev name')
+        self.treeview.heading('#2', text='username')
+        self.treeview.heading('#3', text='OS')
+        self.treeview.heading('#4', text='type')
+        self.treeview.heading('#5', text='comment')
 
         self.treeview.heading(column="#1", command=lambda: self.sort(1))
         self.treeview.heading(column="#2", command=lambda: self.sort(2))
@@ -102,6 +104,11 @@ class Main(tk.Frame):
         self.treeview.heading(column="#4", command=lambda: self.sort(4))
         self.treeview.heading(column="#5", command=lambda: self.sort(5))
 
+        verscrlbar = ttk.Scrollbar(root, orient="vertical", command=self.treeview.yview)
+        verscrlbar.grid(row=7, column=1, sticky="nes")
+        self.treeview.configure(yscrollcommand=verscrlbar.set)
+        self.entrycount = tk.Label(root, text=f"currently {self.id} entrys")
+        self.entrycount.grid(row=8, column=1)
 
         # menu row setup
         menu = tk.Menu(self)
@@ -113,28 +120,35 @@ class Main(tk.Frame):
         fileMenu.add_command(label="Delete all", command=lambda: self.delete(True))
         fileMenu.add_command(label="new database", command=lambda: self.newFile(None))
         fileMenu.add_command(label="open database", command=self.browseFiles, accelerator="Crtl+o")
-        fileMenu.add_command(label="Exit", command=lambda: root.destroy)
+        fileMenu.add_command(label="Exit", command=lambda: self.destroy)
 
         commandsMenu = tk.Menu(self)
         menu.add_cascade(label="Edit", menu=commandsMenu)
         commandsMenu.add_command(label="register new", command=lambda: self.register(None), accelerator="Ctrl+n")
         commandsMenu.add_command(label="find", command=lambda: self.search(None), accelerator="Ctrl+f")
-        commandsMenu.add_command(label="change parameter", command=lambda: self.change_param(None), accelerator="Ctrl+d")
+        commandsMenu.add_command(label="change parameter", command=lambda: self.change_param(None, True), accelerator="Ctrl+d")
 
         #shortcut binds
         self.bind_all("<Control-n>", lambda x: self.register(None))
         self.bind_all("<Control-f>", lambda x: self.search(None))
-        self.bind_all("<Control-d>", lambda x: self.change_param(None))
+        self.bind_all("<Control-d>", lambda x: self.change_param(None, True))
         self.bind_all("<Control-s>", lambda x: self.save(False))
         self.bind_all("<Control-o>", lambda x: self.browseFiles)
+        self.bind_all("<Double-Button-1>", lambda x: self.change_param(None, False))
 
 
     def validate_data(self, data, command):
         try:
             self.t.Lmessage.config(fg="red")
             for x in data.values():
-                if  command == "register" and onscreen.get("entry")[0][1].get() in registered_devices.keys() :
-                    raise AlreadyTakenNameError
+                if  command == "register":
+                    devname = data.get("entry")[0][1].get().split("-")
+                    if onscreen.get("entry")[0][1].get() in registered_devices.keys() :
+                        raise AlreadyTakenNameError
+                    if len([x for x in range(int(devname[0]), int(devname[1])+1)]) != len(data.get("entry")[1][1].get().split(",")):
+                        raise NotSameLengthError
+                    if len([int(x) for x in range(int(devname[0]), int(devname[1])+1)]) < 0:
+                        raise Exception
                 elif command == "change_param" and self.t.var.get() == "OS" and data.get("entry")[0][1].get() not in registered_devices.get(data.get("liBo")[0][1].get("anchor")).expected_OS  :
                     raise AttributeError
                 for a in x:
@@ -144,29 +158,40 @@ class Main(tk.Frame):
                         raise EmptyFieldError
                     elif isinstance(a[1], tk.Radiobutton) and self.t.var.get() == "":
                         raise EmptyFieldError
-
+        except NotSameLengthError:
+            self.t.Lmessage.config(text="if using multi create range devname == len usernames")
         except EmptyFieldError:
             self.t.Lmessage.config(text="fill all fields")
         except AlreadyTakenNameError:
             self.t.Lmessage.config(text="already taken dev name")
         except AttributeError:
             self.t.Lmessage.config(text="not available OS type")
+        except ValueError:
+            self.t.Lmessage.config(text="wrong input type")
         except tk.TclError:
             print("!")
         else:
-            getattr(Main, command)(ithilfe, data)
+            if command != "change_param":
+                getattr(Main, command)(ithilfe, data)
+            else:
+                self.change_param(data, None)
 
     def register(self, data):
         if data is None:
             self.t = SubWindow("register", ["enter dev name", "enter username"], ["enter dev type", "enter os"], valid_devices, ["entry", "liBo", "radio", "textbox"], True)
         else:
             try:
-                edevname = data.get("entry")[0][1].get()
-                eusername = data.get("entry")[1][1].get()
+                edevname = data.get("entry")[0][1].get().split("-")
+                eusername = data.get("entry")[1][1].get().split(",")
                 lidevtype = data.get("liBo")[0][1].get("active")
                 lios = self.t.var.get()
                 comment = data.get("textbox")[0][1].get("1.0", "end-1c")
-                registered_devices[edevname] = [x for x in valid_devices if x.__name__ == lidevtype].pop(0)(edevname, eusername, lios, comment)
+                gendevnames = [x for x in range(int(edevname[0]), int(edevname[1])+1)]
+                print(gendevnames, eusername)
+                for x in gendevnames:
+                    # print(gendevnames[x], eusername[x])
+                    registered_devices[gendevnames[x-1]] = [x for x in valid_devices if x.__name__ == lidevtype].pop(0)(gendevnames[x-1], eusername[x-1], lios, comment)
+
                 self.t.Lmessage.config(text="")
             except tk.TclError:
                 pass
@@ -187,9 +212,13 @@ class Main(tk.Frame):
         except tk.TclError:
             pass
 
-    def change_param(self, data):
+    def change_param(self, data, state):
         if data is None:
-            self.t = SubWindow("change_param", ["enter new value"], ["choose device", "choose param"], list(registered_devices.keys()), ["liBo", "radio", "entry"], False)
+            if state:
+                self.t = SubWindow("change_param", ["enter new value"], ["choose device", "choose param"], list(registered_devices.keys()), ["liBo", "radio", "entry"], False)
+            else:
+                self.t = SubWindow("change_param", ["enter new value"], ["chosen device", "choose param"], [str(self.treeview.item(self.treeview.focus()).get("values")[0])], ["liBo", "radio", "entry"], False)
+
         else:
             devicename = data.get("liBo")[0][1].get("anchor")
             paramtype = self.t.var.get()
@@ -205,22 +234,30 @@ class Main(tk.Frame):
     def browseFiles(self):
         try:
             self.filename = filedialog.askopenfilename(initialdir=r"C:\Users\maurice.jarck\Documents\Projects\it_hilfe\data", title="open database",  filetypes=(("csv files", "*.csv*"), ("all files", "*.*")))
+            registered_devices.clear()
             self.update()
         except FileNotFoundError:
             print("File not found")
 
     def newFile(self, data):
         if data is None:
-            self.asknew = SubWindow("newFile", ["enter new filename"], [], [], ["entry"], False)
+            self.t = SubWindow("newFile", ["enter new filename"], [], [], ["entry"], False)
         else:
             filename = data.get("entry")[0][1].get()
             newfilepath = filedialog.askdirectory(initialdir="/", title="select directory for new file")
-            with open(f"{newfilepath}/{filename}.csv", "w") as newfile:
-                pass
 
             self.filename = f"{newfilepath}/{filename}.csv"
+
+            self.treeview.delete(*self.treeview.get_children())
+            registered_devices.clear()
+
+            with open(f"{self.filename}", 'w', newline='') as csvfile:
+                fieldnames = ["name", "username", "OS", "device_type", "extras", "comment"]
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+
             self.update()
-            self.asknew.destroy()
+            self.t.destroy()
 
     def save(self, excel):
         with open(f"{self.filename}", 'w', newline='') as csvfile:
@@ -241,7 +278,7 @@ class Main(tk.Frame):
                 csvfile.write("sep = ,\n")
 
     def update(self):
-        try:
+        # try:
             with open(f"{self.filename}", "r+") as csvfile:  # update registered_devices
                 data = csvfile.readlines()
                 if data[0] == "sep = ,\n":  # overwrite sep = \n
@@ -249,9 +286,10 @@ class Main(tk.Frame):
                     for x in data[1:]:
                         csvfile.write(x)
 
+            self.treeview.delete(*self.treeview.get_children())
+
             with open(f"{self.filename}", "r+") as csvfile:
                 reader = csv.DictReader(csvfile)
-                self.treeview.delete(*self.treeview.get_children())
                 self.id = 0
                 for row in reader:
                     new = [x for x in valid_devices if x.__name__ == row["device_type"]].pop(0)(row["name"], row["username"], row["OS"], row["comment"])
@@ -259,14 +297,39 @@ class Main(tk.Frame):
                     self.treeview.insert('', 'end',  iid=self.iid, text=str(self.id) ,values=(row["name"], row["username"], row["OS"], row["device_type"], row["comment"]))
                     self.iid = self.iid + 1
                     self.id = self.id + 1
-        except IndexError:
-            pass  # nothing to update
+                    self.entrycount.config(text=f"currently {self.id} entrys")
+
+    # except IndexError:
+        #     pass  # nothing to update
 
     def delete(self, all):
 
         if not all:
-            row_id = int(self.tree.focus())
-            self.treeview.delete(row_id)
+            pass
+            # row_id = int(self.treeview.focus())
+            # selc_dev_name = self.treeview.item(row_id).get("values")[0]
+            # print(selc_dev_name)
+            # with open(f"{self.filename}", "r+") as csvfile:
+            #     reader = csvfile.readlines()
+            #     i = 0
+            #     for row in reader:
+            #         if row.split(",")[0] == (str(selc_dev_name)):
+            #             tokeep = reader[reader.index(row)+1:]
+            #             for a in row:
+            #                 if repr(a) != "\n":
+            #                     csvfile.write(" ")
+            #                 csvfile.write("\n")
+            #             csvfile.seek(i)
+            #             for x in tokeep:
+            #                 csvfile.write(x)
+            #
+            #         i += len(row)
+
+
+            # self.treeview.delete(row_id)
+
+
+
 
         else:
             MsgBox = tk.messagebox.askquestion('delete everting', 'Are you sure you want to delete everything', icon='warning')
@@ -275,17 +338,13 @@ class Main(tk.Frame):
                     csvfile.truncate()
                     registered_devices.clear()
                     self.treeview.delete(*self.treeview.get_children())
+                    fieldnames = ["name", "username", "OS", "device_type", "extras", "comment"]
+                    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                    writer.writeheader()
 
         self.update()
 
     def sort(self, col):
-
-        # if globals().get("reverse") == True:
-        #     reverse = False
-        # else:
-        #     reverse = True
-        #
-        # print(reverse)
 
         a = [(self.treeview.item(x).get("values")[col-1], self.treeview.index(x)) for x in list(self.treeview.get_children())]
         b = sorted(a, key=lambda x: (isinstance(x[0], str), x[0].lower() if isinstance(x[0], str) else x[0]))
@@ -328,7 +387,7 @@ class SubWindow(tk.Frame):
                     onscreen.get("entry").append([Elabel, Entry])
 
             if len(self.liBoLabelList) != 0:
-                liBolabel = tk.Label(self.t,  text=self.liBoLabelList[0])  # .grid(row=len(self.entryLabelList)+self.order.index("liBo"), column=0)
+                liBolabel = tk.Label(self.t,  text=self.liBoLabelList[0])
 
                 self.liBo = tk.Listbox(self.t, selectmode="single", height=4)
                 scrollbar = tk.Scrollbar(self.t, orient="vertical")
