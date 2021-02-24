@@ -1,0 +1,3 @@
+sep = ,
+name,username,OS,device_type,notes
+1,maurice,Win7,WindowsLapTop,"[('largerBattery', True), ('upgradedCPU', False)]"
