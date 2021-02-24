@@ -124,7 +124,7 @@ def test_change(main_window, qtbot):
     main_window.inComboBoxDevicename.setCurrentIndex(1)
     main_window.inComboBoxChangeParamtype.setCurrentIndex(2)
     main_window.inComboBoxChangeNewval.setCurrentIndex(1)
-    qtbot.stop()
+    # qtbot.stop()
     qtbot.mouseClick(main_window.btChange, QtCore.Qt.LeftButton)
     assert main_window.stackedWidget.currentIndex() == 0
 
