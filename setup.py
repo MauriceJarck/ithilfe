@@ -4,7 +4,7 @@ except ImportError:
     from distutils.core import setup
 
 config = {
-    'description': 'skeleton test',
+    'description': 'help it',
     'author': 'Maurice',
     # 'url': 'URL to get it at.',
     # 'download_url': 'Where to download it.',

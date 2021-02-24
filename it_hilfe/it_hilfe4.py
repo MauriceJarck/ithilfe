@@ -77,9 +77,14 @@ def change_param():
     return [c]
 
 
-print("welcome to IT service\n")
-while True:
-    try:
-        print("".join(str(get_available(["enter no fitting to your needs"], [[search, register, view, change_param, quit]])[0]()[0]))+"\n")
-    except IndexError:
-        print("that's it\n")
+def main():
+    print("welcome to IT service\n")
+    while True:
+        try:
+            print("".join(str(get_available(["enter no fitting to your needs"], [[search, register, view, change_param, quit]])[0]()[0]))+"\n")
+        except IndexError:
+            print("that's it\n")
+
+
+if __name__ == '__main__':
+    main()
