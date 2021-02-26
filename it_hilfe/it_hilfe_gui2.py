@@ -1,3 +1,4 @@
+import os
 import sys
 import csv
 import datetime
@@ -122,7 +123,9 @@ class MainWindow(QMainWindow):
 
             """
         super(MainWindow, self).__init__()
-        loadUi("../it_hilfe/mainWindow.ui", self)
+        my_path = os.path.abspath(os.path.dirname(__file__))
+        path = os.path.join(my_path, "../it_hilfe/mainWindow.ui")
+        loadUi(path, self)
         # etc
         self.fname = None
         self.dir = None
@@ -393,7 +396,9 @@ class StartScreen(QWidget):
         loads interface aka .ui file"""
 
         super(StartScreen, self).__init__()
-        loadUi("../it_hilfe/startscreen.ui", self)
+        my_path = os.path.abspath(os.path.dirname(__file__))
+        path = os.path.join(my_path, "../it_hilfe/startscreen.ui")
+        loadUi(path, self)
         self.show()
         self.timer = QtCore.QTimer()
         self.timer.singleShot(1500, self.on_elapsed)
