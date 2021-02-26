@@ -2,7 +2,7 @@ import pytest
 import csv
 from datetime import datetime
 from PyQt5 import QtCore
-from it_hilfe_gui2 import MainWindow, StartScreen, registered_devices   
+from it_hilfe.it_hilfe_gui2 import MainWindow, StartScreen, registered_devices
 
 
 @pytest.fixture
