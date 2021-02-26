@@ -122,7 +122,7 @@ class MainWindow(QMainWindow):
 
             """
         super(MainWindow, self).__init__()
-        loadUi("../data/mainWindow.ui", self)
+        loadUi("../it_hilfe/mainWindow.ui", self)
         # etc
         self.fname = None
         self.dir = None
@@ -393,7 +393,7 @@ class StartScreen(QWidget):
         loads interface aka .ui file"""
 
         super(StartScreen, self).__init__()
-        loadUi("../data/startscreen.ui", self)
+        loadUi("../it_hilfe/startscreen.ui", self)
         self.show()
         self.timer = QtCore.QTimer()
         self.timer.singleShot(1500, self.on_elapsed)
