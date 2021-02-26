@@ -124,7 +124,7 @@ class MainWindow(QMainWindow):
             """
         super(MainWindow, self).__init__()
         my_path = os.path.abspath(os.path.dirname(__file__))
-        path = os.path.join(my_path, "../it_hilfe/mainWindow.ui")
+        path = os.path.join(my_path, "../data/mainWindow.ui")
         loadUi(path, self)
         # etc
         self.fname = None
@@ -397,7 +397,7 @@ class StartScreen(QWidget):
 
         super(StartScreen, self).__init__()
         my_path = os.path.abspath(os.path.dirname(__file__))
-        path = os.path.join(my_path, "../it_hilfe/startscreen.ui")
+        path = os.path.join(my_path, "../data/startscreen.ui")
         loadUi(path, self)
         self.show()
         self.timer = QtCore.QTimer()
