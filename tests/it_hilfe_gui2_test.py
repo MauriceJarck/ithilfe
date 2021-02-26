@@ -2,7 +2,7 @@ import pytest
 import csv
 from datetime import datetime
 from PyQt5 import QtCore
-from it_hilfe import it_hilfe_gui2
+import it_hilfe_gui2
 
 
 @pytest.fixture
