@@ -35,4 +35,5 @@ jobs:
     - name: Test with pytest
       run: |
         set PYTHONPATH=it_hilfe
+        set DATA=data
         python -m pytest
