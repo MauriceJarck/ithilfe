@@ -2,19 +2,19 @@ import pytest
 import csv
 from datetime import datetime
 from PyQt5 import QtCore
-import it_hilfe_gui2
+from it_hilfe_gui2 import MainWindow, StartScreen, registered_devices   
 
 
 @pytest.fixture
 def main_window(qtbot):
-    var = it_hilfe_gui2.MainWindow()
+    var = MainWindow()
     qtbot.addWidget(var)
     return var
 
 
 @pytest.fixture
 def start_screen(qtbot):
-    var = it_hilfe_gui2.StartScreen()
+    var = StartScreen()
     qtbot.addWidget(var)
     return var
 
@@ -129,7 +129,7 @@ def test_change(main_window, qtbot):
     assert main_window.stackedWidget.currentIndex() == 0
 
     # check nothing registered
-    it_hilfe_gui2.registered_devices.clear()
+    registered_devices.clear()
     main_window.fname = None
     qtbot.keyClick(main_window, "d", modifier=QtCore.Qt.ControlModifier)
     qtbot.mouseClick(main_window.btChange, QtCore.Qt.LeftButton)
