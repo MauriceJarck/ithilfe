@@ -66,7 +66,7 @@ def test_p_register_validate_open(main_window, qtbot, create_csv):
 
     main_window.inUsername.clear()
     main_window.inDevicename.clear()
-    main_window.fname = r"C:\Users\maurice.jarck\Documents\Projects\it_hilfe\tests\testCSV.csv"
+    main_window.fname = "testCSV.csv"
 
     # comboboxes not filled
     main_window.inUsername.setText("maurice")
@@ -118,7 +118,7 @@ def test_p_register_validate_open(main_window, qtbot, create_csv):
 
 def test_change(main_window, qtbot):
     # valid change
-    main_window.fname = r"C:\Users\maurice.jarck\Documents\Projects\it_hilfe\tests\testCSV.csv"
+    main_window.fname = "testCSV.csv"
     main_window.open(True)
     qtbot.keyClick(main_window, "d", modifier=QtCore.Qt.ControlModifier)
     main_window.inComboBoxDevicename.setCurrentIndex(1)
@@ -141,7 +141,7 @@ def test_change(main_window, qtbot):
 
 def test_search(main_window, qtbot, create_csv):
 
-    main_window.fname = r"C:\Users\maurice.jarck\Documents\Projects\it_hilfe\tests\testCSV.csv"
+    main_window.fname = "testCSV.csv"
     main_window.open(True)
     qtbot.keyClick(main_window, "f", modifier=QtCore.Qt.ControlModifier)
     assert main_window.stackedWidget.currentIndex() == 2
