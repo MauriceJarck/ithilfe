@@ -151,7 +151,6 @@ def update():
 
 def main():
     saved = None
-
     while True:
         try:
             w = get_available(options)

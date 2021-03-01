@@ -83,7 +83,7 @@ def main():
         try:
             print("".join(str(get_available(["enter no fitting to your needs"], [[search, register, view, change_param, quit]])[0]()[0]))+"\n")
         except IndexError:
-            print("that's it\n")
+            print("thats it\n")
 
 
 if __name__ == '__main__':
