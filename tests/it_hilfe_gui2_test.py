@@ -2,19 +2,19 @@ import pytest
 import csv
 from datetime import datetime
 from PySide2 import QtCore
-from it_hilfe.it_hilfe_gui2 import MainWindow, StartScreen, registered_devices
+from it_hilfe.it_hilfe_gui2_logic import MainWindowLogic, StartScreen_logic, registered_devices
 
 
 @pytest.fixture
 def main_window(qtbot):
-    var = MainWindow()
+    var = MainWindowLogic()
     qtbot.addWidget(var)
     return var
 
 
 @pytest.fixture
 def start_screen(qtbot):
-    var = StartScreen()
+    var = StartScreen_logic()
     qtbot.addWidget(var)
     return var
 
@@ -40,7 +40,7 @@ def create_csv():
 
 
 def test_startscreen(start_screen):
-    assert start_screen.win.label.text() == "welcome"
+    assert start_screen.win.txt_label.text() == "Welcome"
 
 
 def test_p_register_validate_open(main_window, qtbot, create_csv):
@@ -103,18 +103,18 @@ def test_p_register_validate_open(main_window, qtbot, create_csv):
     qtbot.mouseClick(main_window.win.btCancelRegister, QtCore.Qt.LeftButton)
     assert main_window.win.stackedWidget.currentIndex() == 0
     main_window.open(True)
-    count = main_window.win.tableWidgetAllRegistered.rowCount()
+    count = main_window.win.pViewTable.rowCount()
     # register new
     qtbot.keyClick(main_window, "n", modifier=QtCore.Qt.ControlModifier)
     assert main_window.win.stackedWidget.currentIndex() == 1
     main_window.win.inUsername.setText("maurice")
     main_window.win.inDevicename.setText("2")
     main_window.win.inComboboxDevicetype.setCurrentIndex(2)
-    main_window.win.inComboBoxRegisterOS.setCurrentIndex(1)
+    main_window.win.inComboboxOs.setCurrentIndex(1)
     qtbot.mouseClick(main_window.win.btRegister, QtCore.Qt.LeftButton)
     assert main_window.win.stackedWidget.currentIndex() == 0
     # get len(already displayed registrations) after new reg
-    assert main_window.win.tableWidgetAllRegistered.rowCount() == count + 1
+    assert main_window.win.pViewTable.rowCount() == count + 1
 
 def test_change(main_window, qtbot):
     # valid change
@@ -146,7 +146,7 @@ def test_search(main_window, qtbot, create_csv):
     qtbot.keyClick(main_window, "f", modifier=QtCore.Qt.ControlModifier)
     assert main_window.win.stackedWidget.currentIndex() == 2
 
-    qtbot.mouseClick(main_window.win.cancelSearch, QtCore.Qt.LeftButton)
+    qtbot.mouseClick(main_window.win.btCancelSearch, QtCore.Qt.LeftButton)
     assert main_window.win.stackedWidget.currentIndex() == 0
 
     main_window.win.inUserSearch.setText("peter")
@@ -156,7 +156,7 @@ def test_search(main_window, qtbot, create_csv):
     main_window.win.inUserSearch.setText("maurice")
     qtbot.mouseClick(main_window.win.btSearch, QtCore.Qt.LeftButton)
     assert main_window.win.statusbar.currentMessage() == "found 1 match/es"
-    assert main_window.win.tableWidgetSearch.rowCount() == 1
+    assert main_window.win.pSearchTable.rowCount() == 1
 
     main_window.win.inUserSearch.clear()
     qtbot.mouseClick(main_window.win.btSearch, QtCore.Qt.LeftButton)

@@ -1,36 +1,31 @@
-import os
 import sys
 import csv
 import datetime
 
-from PySide2.QtCore import QFile
-from PySide2.QtGui import QPixmap, QIcon
-from PySide2.QtWidgets import QApplication, QMainWindow, QFileDialog, QWidget
+from PySide2.QtWidgets import QApplication, QFileDialog, QWidget
 from PySide2 import QtWidgets, QtCore
-from PySide2.QtUiTools import QUiLoader
-
 import it_hilfe.devices as devices
+from it_hilfe.it_hilfe_gui2_layout import MainWindowUi, StartScreenUi
 
 registered_devices = {}
 valid_devices = [devices.WindowsLapTop, devices.WindowsWorkStation, devices.Macbook]
 
 
-class MainWindow(QMainWindow):
+class MainWindowLogic(QWidget):
     """handles all action on MainWin"""
 
     def __init__(self):
         """inits MainWindow class
+
             configuring parameters of MainWindow class and inherits from QtWidget.QMainWindow
             loads .ui file sets up file and directory path vars, inits click events(menuebar, coboboxes, btns) and
             shows gui the first time
+
             """
-        super(MainWindow, self).__init__()
-        my_path = os.path.abspath(os.path.dirname(__file__))
-        path = os.path.join(my_path, "../data/mainWindow.ui")
-        loader = QUiLoader()
-        ui_file = QFile(path)
-        self.win = loader.load(ui_file)
-        self.win.setWindowIcon(QIcon("../data/favicon.ico"))
+        super(MainWindowLogic, self).__init__()
+        self.win = MainWindowUi()
+        self.win.show()
+
         # etc
         self.fname = None
         self.dir = None
@@ -40,16 +35,16 @@ class MainWindow(QMainWindow):
         self.win.inChangeNewval.returnPressed.connect(lambda: self.validate(self.change, data=2, checkregistered=True))
         self.win.inNewFilename.returnPressed.connect(lambda: self.validate(self.new, [self.win.inNewFilepath, self.win.inNewFilename], data=False))
         # doubleclick
-        self.win.tableWidgetAllRegistered.cellDoubleClicked.connect(lambda: self.d_click_table_devicename(self.win.tableWidgetAllRegistered.currentItem().text()))
-        self.win.tableWidgetSearch.cellDoubleClicked.connect(lambda: self.d_click_table_devicename(self.win.tableWidgetSearch.currentItem().text()))
+        self.win.pViewTable.cellDoubleClicked.connect(lambda: self.d_click_table_devicename(self.win.pViewTable.currentItem().text()))
+        self.win.pSearchTable.cellDoubleClicked.connect(lambda: self.d_click_table_devicename(self.win.pSearchTable.currentItem().text()))
         # comboboxes
         self.win.inComboboxDevicetype.addItems(["choose here"]+[x.__name__ for x in valid_devices])
-        self.win.inComboboxDevicetype.currentIndexChanged.connect(lambda: self.update_combobox(self.win.inComboBoxRegisterOS, valid_devices[self.win.inComboboxDevicetype.currentIndex()-1].expected_OS))
+        self.win.inComboboxDevicetype.currentIndexChanged.connect(lambda: self.update_combobox(self.win.inComboboxOs, valid_devices[self.win.inComboboxDevicetype.currentIndex()-1].expected_OS))
         # btns
         self.win.btSearch.clicked.connect(lambda: self.validate(self.search, [self.win.inUserSearch], checkregistered=True))
         self.win.btRegisterNew.clicked.connect(lambda: self.win.stackedWidget.setCurrentWidget(self.win.pRegister))
         self.win.btRegister.clicked.connect(lambda: self.validate(self.register, line_edit_list=[self.win.inUsername, self.win.inDevicename],
-                                                              combo_box_list=[self.win.inComboboxDevicetype, self.win.inComboBoxRegisterOS],
+                                                              combo_box_list=[self.win.inComboboxDevicetype, self.win.inComboboxOs],
                                                               forbidden=list(registered_devices.keys()), checkfname=True))
         self.win.btChange.clicked.connect(lambda: self.validate(self.change, data=2, checkregistered=True))
         self.win.btCreate.clicked.connect(lambda: self.validate(self.new, [self.win.inNewFilepath, self.win.inNewFilename], data=False))
@@ -61,19 +56,21 @@ class MainWindow(QMainWindow):
         self.win.actionOpen.triggered.connect(lambda: self.open(False))
         self.win.actionSave.triggered.connect(self.save)
         self.win.actionNew.triggered.connect(lambda: self.new(True))
-        # cancel
-        self.win.btCancelRegister.clicked.connect(lambda: self.cancel([self.win.inUsername, self.win.inDevicename, self.win.inComboBoxRegisterOS, self.win.textEditComment]))
-        self.win.cancelSearch.clicked.connect(lambda: self.cancel([self.win.inUserSearch]))
+        # # cancel
+        self.win.btCancelRegister.clicked.connect(lambda: self.cancel([self.win.inUsername, self.win.inDevicename, self.win.inComboboxOs, self.win.textEditComment]))
+        self.win.btCancelSearch.clicked.connect(lambda: self.cancel([self.win.inUserSearch]))
         self.win.btCancelChange.clicked.connect(lambda: self.cancel([self.win.inComboBoxChangeParamtype, self.win.inComboBoxChangeNewval, self.win.inChangeNewval]))
         # funcs
-        self.update_table(self.win.tableWidgetAllRegistered, registered_devices.values())
-        self.win.show()
+        self.update_table(self.win.pViewTable, registered_devices.values())
 
-    def cancel(self, widgets: list)->None:
+    def cancel(self, widgets: list) -> None:
         """click event for all cancel buttons
+
         shows fist page in stacked widget and clears all widgets in widgets
+
         Args:
                widgets: defines list containing widgets to clear, only widgets with method .clear() are possible
+
         Returns:
             None
             """
@@ -83,6 +80,7 @@ class MainWindow(QMainWindow):
 
     def update_combobox(self, box, data: list) -> None:
         """ clears combo box
+
         updates combobox so that old content not needed any more isnt displayed and adds 'choose here' dummy
         to ensure an index change will be made (updating next box depends on index change)
         Args:
@@ -96,10 +94,13 @@ class MainWindow(QMainWindow):
 
     def update_table(self, table, content) -> None:
         """updates any table with data of registered_devices
+
         first clears table, then fills up with new values
+
         Args:
             table: instance of pyqt5.QtWidgets.qTable
             content: instances of any device of which its attributes will be content of table
+
         Returns:
             None"""
         row = 0
@@ -118,6 +119,7 @@ class MainWindow(QMainWindow):
 
     def d_click_table_devicename(self, referenz: str) -> None:
         """handels double click event on devicename in table widget
+
         Args:
             referenz: current selceted text of cell
         Returns:
@@ -129,6 +131,7 @@ class MainWindow(QMainWindow):
 
     def validate(self, command, line_edit_list: list = None, combo_box_list: list = None, data = None, allowed: list = None, forbidden: list = None, checkfname: bool = None, checkregistered: bool = None) -> None:
         """validates user input
+
         Args:
             command: function to be called after vailidation process if finished
             line_edit_list: contents pyqt5.QtWidgets.QlineEdit instances to be checked if empty or current text in forbidden or not in allowed
@@ -138,6 +141,7 @@ class MainWindow(QMainWindow):
             forbidden: houses keys which are not allowed to be entered
             checkfname: check weather an file path exists or not
             checkregistered: check weather something is already registered or not
+
         Returns:
             None"""
 
@@ -174,22 +178,22 @@ class MainWindow(QMainWindow):
 
     def register(self) -> None:
         """registers a new device and saves it int csv"""
-        new = valid_devices[self.win.inComboBoxRegisterOS.currentIndex()](self.win.inDevicename.text(), self.win.inUsername.text(), self.win.textEditComment.toPlainText(), str(datetime.datetime.now()))
-        new.OS = self.win.inComboBoxRegisterOS.currentText()
+        new = valid_devices[self.win.inComboboxOs.currentIndex()](self.win.inDevicename.text(), self.win.inUsername.text(), self.win.textEditComment.toPlainText(), str(datetime.datetime.now()))
+        new.OS = self.win.inComboboxOs.currentText()
         registered_devices[self.win.inDevicename.text()] = new
         self.win.stackedWidget.setCurrentWidget(self.win.pView)
         self.win.inDevicename.clear()
         self.win.inUsername.clear()
-        self.win.inComboBoxRegisterOS.clear()
+        self.win.inComboboxOs.clear()
         self.win.textEditComment.clear()
-        self.update_table(self.win.tableWidgetAllRegistered, registered_devices.values())
+        self.update_table(self.win.pViewTable, registered_devices.values())
         self.save()
 
     def search(self) -> None:
         """searches for a given username in registered devices and outputs on statusbar"""
         results = [x for x in registered_devices.values() if x.user == self.win.inUserSearch.text()]
         if len(results) >= 1:
-            self.update_table(self.win.tableWidgetSearch, results)
+            self.update_table(self.win.pSearchTable, results)
             self.win.statusbar.showMessage(f"found {len(results)} match/es")
         else:
             self.win.statusbar.showMessage("nothing found")
@@ -197,7 +201,7 @@ class MainWindow(QMainWindow):
     def change(self, x: int) -> None:
         """changes existing device parameters
         x == 0: fill combobox,
-        x == 1: paramtypeIndex has changed, based on that new valtype is determined
+        x == 1: paramtypeIndex has changed, based on that the new valtype is determined
         x == 2: retrieve data, change parameter, clear, and save
         Args:
             x: determines a which state to execute this function """
@@ -209,10 +213,12 @@ class MainWindow(QMainWindow):
             self.win.inComboBoxChangeParamtype.currentIndexChanged.connect(lambda: self.change(1))
         elif x == 1:
             if self.win.inComboBoxChangeParamtype.currentText() != "OS":
-                self.win.stackedWidget2.setCurrentWidget(self.win.pLineEdit)
+                self.win.changeStackedWidget.setCurrentWidget(self.win.pLineEdit)
+                self.win.statusbar.showMessage(f"current username: {registered_devices.get(self.win.inComboBoxDevicename.currentText()).user}")
             else:
-                self.win.stackedWidget2.setCurrentWidget(self.win.pComboBox)
+                self.win.changeStackedWidget.setCurrentWidget(self.win.pComboBox)
                 self.win.inComboBoxChangeNewval.addItems(["choose here"] + registered_devices.get(self.win.inComboBoxDevicename.currentText()).expected_OS)
+                self.win.statusbar.showMessage(f"current os: {registered_devices.get(self.win.inComboBoxDevicename.currentText()).OS}")
         elif x == 2:
             _class = registered_devices.get(self.win.inComboBoxDevicename.currentText())
             paramtype = self.win.inComboBoxChangeParamtype.currentText()
@@ -221,7 +227,7 @@ class MainWindow(QMainWindow):
             else:
                 newval = self.win.inChangeNewval.text()
             setattr(_class, paramtype, newval)
-            self.update_table(self.win.tableWidgetAllRegistered, registered_devices.values())
+            self.update_table(self.win.pViewTable, registered_devices.values())
             self.win.stackedWidget.setCurrentWidget(self.win.pView)
 
             self.win.inComboBoxChangeParamtype.clear()
@@ -242,7 +248,7 @@ class MainWindow(QMainWindow):
                 new = [x for x in valid_devices if x.__name__ == row["device_type"]].pop(0)(row["name"], row["username"], row["comment"], row["datetime"])
                 new.OS = row["OS"]
                 registered_devices[row["name"]] = new
-        self.update_table(self.win.tableWidgetAllRegistered, registered_devices.values())
+        self.update_table(self.win.pViewTable, registered_devices.values())
 
     def save(self) -> None:
         """saves content fo registered_devices into specified csv file"""
@@ -267,6 +273,7 @@ class MainWindow(QMainWindow):
 
     def new(self, stage: bool) -> None:
         """creates new csv file to save into
+
         stage is True: set filepath
         stage is False: set new name, save
         Args:
@@ -278,36 +285,27 @@ class MainWindow(QMainWindow):
         else:
             self.fname = self.dir + f"/{self.win.inNewFilename.text()}.csv"
             self.save()
-            self.win.tableWidgetAllRegistered.clearContents()
+            self.win.pViewTable.clearContents()
             self.win.stackedWidget.setCurrentWidget(self.win.pView)
 
 
-class StartScreen(QWidget):
-    """startscreen to be displayed at begining"""
+class StartScreen_logic(QWidget):
+    """contains startscreen logic to be displayed at begining"""
     def __init__(self) -> None:
-        """inits StartScreen class
-        loads interface aka .ui file"""
-
-        super(StartScreen, self).__init__()
-        my_path = os.path.abspath(os.path.dirname(__file__))
-        path = os.path.join(my_path, "../data/startscreen.ui")
-        loader = QUiLoader()
-        ui_file = QFile(path)
-        self.win = loader.load(ui_file)
-        self.win.label_2.setPixmap(QPixmap("../data/startscreenPic.png"))
+        """inits StartScreen_logic class"""
+        super(StartScreen_logic, self).__init__()
+        self.win = StartScreenUi()
         self.win.show()
-        self.win.setWindowIcon(QIcon("../data/favicon.ico"))
         self.timer = QtCore.QTimer()
         self.timer.singleShot(1500, self.on_elapsed)
 
     def on_elapsed(self) -> None:
         """closes StartStartsceen Window and creates instance of MainWindow"""
         self.win.close()
-        MainWindow()
+        self.main = MainWindowLogic()
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    startscreen = StartScreen()
-
+    startscreen = StartScreen_logic()
     sys.exit(app.exec_())
