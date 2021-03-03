@@ -1,5 +1,5 @@
 
-![action](https://github.com/JackWolf24/ithilfe/actions/workflows/python-app.yml/badge.svg)
+![test](https://github.com/JackWolf24/ithilfe/actions/workflows/python-app.yml/badge.svg)
 ![test](https://img.shields.io/badge/pytestcov-coverage-brightgreen)
 
 # ithilfe
