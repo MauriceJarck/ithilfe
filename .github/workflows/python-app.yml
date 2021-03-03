@@ -36,4 +36,4 @@ jobs:
       run: |
         set PYTHONPATH=it_hilfe
         set DATA=data
-        python -m pytest --cov=ithilfe 
+        python -m pytest --cov=it_hilfe
