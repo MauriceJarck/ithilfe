@@ -6,3 +6,6 @@ __pycache__
 
 /junk/
 
+/bin
+
+/tests/.coverage
