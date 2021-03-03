@@ -1,6 +1,6 @@
 
 ![test](https://github.com/JackWolf24/ithilfe/actions/workflows/python-app.yml/badge.svg)
-![test](https://img.shields.io/badge/pytestcov-100%-brightgreen)
+![test](https://img.shields.io/badge/pytestcov-coverage-brightgreen)
 
 # ithilfe
 ## description
