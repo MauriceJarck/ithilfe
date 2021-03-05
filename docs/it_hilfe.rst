@@ -4,34 +4,26 @@ it\_hilfe package
 Submodules
 ----------
 
-it\_hilfe.it\_hilfe4 module
----------------------------
+it\_hilfe.devices module
+------------------------
 
-.. automodule:: it_hilfe.it_hilfe4
+.. automodule:: it_hilfe.devices
    :members:
    :undoc-members:
    :show-inheritance:
 
-it\_hilfe.it\_hilfe4\_2 module
-------------------------------
+it\_hilfe.it\_hilfe\_gui2\_layout module
+----------------------------------------
 
-.. automodule:: it_hilfe.it_hilfe4_2
+.. automodule:: it_hilfe.it_hilfe_gui2_layout
    :members:
    :undoc-members:
    :show-inheritance:
 
-it\_hilfe.it\_hilfe4\_3 module
-------------------------------
+it\_hilfe.it\_hilfe\_gui2\_logic module
+---------------------------------------
 
-.. automodule:: it_hilfe.it_hilfe4_3
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-it\_hilfe.it\_hilfe\_gui2 module
---------------------------------
-
-.. automodule:: it_hilfe.it_hilfe_gui2
+.. automodule:: it_hilfe.it_hilfe_gui2_logic
    :members:
    :undoc-members:
    :show-inheritance:

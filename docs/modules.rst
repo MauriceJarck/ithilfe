@@ -5,5 +5,3 @@ it_hilfe
    :maxdepth: 4
 
    it_hilfe
-   setup
-   tests

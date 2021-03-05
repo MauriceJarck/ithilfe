@@ -11,15 +11,18 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-import sys
+import sysp
 sys.path.insert(0, os.path.abspath('..'))
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'it_hilfe/it_hilfe_gui2'
-copyright = '2021, Maurice Jarck'
-author = 'Maurice Jarck'
+project = 'ithilfe'
+copyright = '2021, Maurice'
+author = 'Maurice'
+
+# The full version, including alpha/beta/rc tags
+release = '0.1'
 
 
 # -- General configuration ---------------------------------------------------
@@ -27,8 +30,7 @@ author = 'Maurice Jarck'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinxcontrib.napoleon']
-
+extensions = ["sphinx.ext.autodoc", 'sphinx.ext.napoleon']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
