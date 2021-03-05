@@ -39,8 +39,8 @@ jobs:
         python -m pytest --cov=it_hilfe
     - name: docbuild with sphinx
       run: |
-        sphinx-quickstart
-        python setupdoc.py
+        cd docs
+        make html
 
 
 
