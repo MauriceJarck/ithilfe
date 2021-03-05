@@ -23,11 +23,15 @@ on https://github.com/JackWolf24/ithilfe choose version (different branches)
 
 in your terminal:
 
-  ```git clone https://github.com/JackWolf24/ithilfe.git```
+  ```
+  git clone https://github.com/JackWolf24/ithilfe.git
+  ```
   
   cd in repo
   
-  ```pip install -r requirements.txt```
+  ```
+  pip install -r requirements.txt
+  ```
   
 ## usage
 in your terminal:
@@ -35,12 +39,15 @@ in your terminal:
   
   if cloned main branch:
   
-  `pyhton it_hilfe_gui2_logic`
-  
+  ```
+  pyhton it_hilfe_gui2_logic
+  ```
   
   else a file that starts with it_hilfe.py:
   
-  `python <a file that starts with it_hilfe>.py`
+  ```
+  python <a file that starts with it_hilfe>.py
+  ```
   
   The programs itselfs are self-explanatory. 
   
@@ -48,18 +55,24 @@ in your terminal:
 
   cd into ithilfe/
   
-  `pyinstaller --name "it hilfe" --onefile --noconsole --icon ./data/favicon.ico ./it_hilfe/it_hilfe_gui2_logic.py`
+  ```
+  pyinstaller --name "it hilfe" --onefile --noconsole --icon ./data/favicon.ico ./it_hilfe/it_hilfe_gui2_logic.py
+  ```
   
   after process beeing finished, the exe file is located in 
   
-  `ithilfe/dist`
+  ```
+  ithilfe/dist
+  ```
   
 
 ## generate latest docmentation as html
 
   cd into ithilfe/docs
   
-  `make <Builder>`
+  ```
+  make <Builder>
+  ```
   
   This will update the docs according to existing docstrings. The file can be found in:
   
