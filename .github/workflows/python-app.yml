@@ -43,7 +43,6 @@ jobs:
         make html
     - name: built .exe with pyinstaller
       run: |
-        cd..
         pyinstaller --name "it hilfe" --onefile --noconsole --icon ./data/favicon.ico ./it_hilfe/it_hilfe_gui2_logic.py
         rmdir /Q /S build
         
