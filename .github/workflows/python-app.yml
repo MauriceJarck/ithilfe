@@ -43,9 +43,16 @@ jobs:
         make html
     - name: built .exe with pyinstaller
       run: |
-        pyinstaller --name "it hilfe" --onefile --noconsole --icon ./data/favicon.ico ./it_hilfe/it_hilfe_gui2_logic.py
-        cd..
-        rmdir /Q /S build
-        
-
+        pyinstaller --name "it_hilfe" --onefile --noconsole --icon ./data/favicon.ico ./it_hilfe/it_hilfe_gui2_logic.py
+        rmdir /Q build
+    - name: Archive doc html
+      uses: actions/upload-artifact@v2
+      with:
+        name: it_hile_latest_html_doc
+        path: ./docs/_build/html/it_hilfe.html
+    - name: Archive exe
+      uses: actions/upload-artifact@v2
+      with:
+        name: it_hile_latest_exe
+        path: ./dist/it_hilfe.exe
 
