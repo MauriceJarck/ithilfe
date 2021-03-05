@@ -44,6 +44,7 @@ jobs:
     - name: built .exe with pyinstaller
       run: |
         pyinstaller --name "it hilfe" --onefile --noconsole --icon ./data/favicon.ico ./it_hilfe/it_hilfe_gui2_logic.py
+        cd..
         rmdir /Q /S build
         
 
