@@ -48,7 +48,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: it_hile_latest_html_doc
-        path: ./docs/_build/html/it_hilfe.html
+        path: ./docs/_build/html
     - name: Archive exe
       uses: actions/upload-artifact@v2
       with:
