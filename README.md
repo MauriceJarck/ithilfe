@@ -9,6 +9,8 @@ Available as console or gui app (check out corresponding branches).
 ## disclaimer
 The content of this readme focues on Windows(win 10 teseted only). 
 
+Latest docs and exe can be found in artifacts of last ci run.
+
 ## dependencies
 - python 3.7 https://www.python.org/downloads/release/python-379/
 - git installed https://git-scm.com/downloads
