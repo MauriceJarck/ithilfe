@@ -1,22 +1,20 @@
 import os
-
 import pytest
 import csv
-from datetime import datetime
 from PySide2 import QtCore
-from it_hilfe.it_hilfe_gui2_logic import MainWindowLogic, StartScreen_logic, registered_devices
+from it_hilfe.it_hilfe_gui2 import MainWindowUi, StartScreenUi, registered_devices
 
 
 @pytest.fixture
 def main_window(qtbot):
-    var = MainWindowLogic()
+    var = MainWindowUi()
     qtbot.addWidget(var)
     return var
 
 
 @pytest.fixture
 def start_screen(qtbot):
-    var = StartScreen_logic()
+    var = StartScreenUi()
     qtbot.addWidget(var)
     return var
 
