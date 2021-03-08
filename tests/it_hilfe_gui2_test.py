@@ -116,6 +116,7 @@ def test_p_register_validate_open(main_window, qtbot, create_csv):
     # get len(already displayed registrations) after new reg
     assert main_window.win.pViewTable.rowCount() == count + 1
 
+
 def test_change(main_window, qtbot):
     # valid change
     main_window.fname = "testCSV.csv"
@@ -139,6 +140,7 @@ def test_change(main_window, qtbot):
     qtbot.mouseClick(main_window.win.btCancelRegister, QtCore.Qt.LeftButton)
     assert main_window.win.stackedWidget.currentIndex() == 0
 
+
 def test_search(main_window, qtbot, create_csv):
 
     main_window.fname = "testCSV.csv"
@@ -161,6 +163,7 @@ def test_search(main_window, qtbot, create_csv):
     main_window.win.inUserSearch.clear()
     qtbot.mouseClick(main_window.win.btSearch, QtCore.Qt.LeftButton)
     assert main_window.win.inUserSearch.text() == "fill all fields"
+
 
 def test_print(qtbot, main_window, create_csv):
     qtbot.keyClick(main_window, "p", modifier=QtCore.Qt.ControlModifier)
