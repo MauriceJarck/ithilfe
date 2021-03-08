@@ -35,7 +35,7 @@ def create_csv():
              "device_type": "WindowsWorkStation",
              "extras": [],
              "comment": "toller pc",
-             "datetime": str(datetime.now())
+             "datetime": "2021-03-08 11:09:50.368570"
              })
 
 
@@ -162,4 +162,13 @@ def test_search(main_window, qtbot, create_csv):
     qtbot.mouseClick(main_window.win.btSearch, QtCore.Qt.LeftButton)
     assert main_window.win.inUserSearch.text() == "fill all fields"
 
+def test_print(qtbot, main_window, create_csv):
+    qtbot.keyClick(main_window, "p", modifier=QtCore.Qt.ControlModifier)
+    assert main_window.win.statusbar.currentMessage() == "no file path specified, visit Ctrl+o or menuebar/edit/open to fix"
+
+    main_window.fname = "testCSV.csv"
+    main_window.open(True)
+    assert main_window.win.statusbar.currentMessage() == ""
+    main_window.print(True)
+    assert main_window.document.toPlainText() == 'name,username,OS,device_type,comment,extras,datetime\n' ' \n'' 1,maurice,win10,WindowsWorkStation,toller pc,[],2021-03-08 11:09:50.368570\n' ' \n'
 

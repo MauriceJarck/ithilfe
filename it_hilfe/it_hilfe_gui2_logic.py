@@ -2,7 +2,8 @@ import sys
 import csv
 import datetime
 
-from PySide2.QtWidgets import QApplication, QFileDialog, QWidget
+from PySide2.QtPrintSupport import QPrinter, QPrintPreviewDialog
+from PySide2.QtWidgets import QApplication, QFileDialog, QWidget, QDialog
 from PySide2 import QtWidgets, QtCore
 import it_hilfe.devices as devices
 from it_hilfe.it_hilfe_gui2_layout import MainWindowUi, StartScreenUi
@@ -56,6 +57,7 @@ class MainWindowLogic(QWidget):
         self.win.actionOpen.triggered.connect(lambda: self.open(False))
         self.win.actionSave.triggered.connect(self.save)
         self.win.actionNew.triggered.connect(lambda: self.new(True))
+        self.win.actionPrint.triggered.connect(lambda: self.validate(self.print, data=False, checkfname=True))
         # # cancel
         self.win.btCancelRegister.clicked.connect(lambda: self.cancel([self.win.inUsername, self.win.inDevicename, self.win.inComboboxOs, self.win.textEditComment]))
         self.win.btCancelSearch.clicked.connect(lambda: self.cancel([self.win.inUserSearch]))
@@ -203,6 +205,7 @@ class MainWindowLogic(QWidget):
         x == 0: fill combobox,
         x == 1: paramtypeIndex has changed, based on that the new valtype is determined
         x == 2: retrieve data, change parameter, clear, and save
+
         Args:
             x: determines a which state to execute this function """
         if x == 0:
@@ -248,6 +251,8 @@ class MainWindowLogic(QWidget):
                 new = [x for x in valid_devices if x.__name__ == row["device_type"]].pop(0)(row["name"], row["username"], row["comment"], row["datetime"])
                 new.OS = row["OS"]
                 registered_devices[row["name"]] = new
+
+        self.win.statusbar.showMessage("")
         self.update_table(self.win.pViewTable, registered_devices.values())
 
     def save(self) -> None:
@@ -288,6 +293,19 @@ class MainWindowLogic(QWidget):
             self.win.pViewTable.clearContents()
             self.win.stackedWidget.setCurrentWidget(self.win.pView)
 
+    def print(self, test) -> None:
+        """setup and preview pViewTable for paper printing"""
+        with open(self.fname) as f:
+            text = " ".join(f.readlines())
+        self.document = QtWidgets.QTextEdit()
+        self.document.setText(text)
+
+        if not test:
+            printer = QPrinter()
+            previewDialog = QPrintPreviewDialog(printer, self)
+
+            previewDialog.paintRequested.connect(lambda: self.document.print_(printer))
+            previewDialog.exec_()
 
 class StartScreen_logic(QWidget):
     """contains startscreen logic to be displayed at begining"""

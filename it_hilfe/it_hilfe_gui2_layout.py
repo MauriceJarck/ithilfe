@@ -1,4 +1,5 @@
 from PySide2.QtGui import QPixmap, QIcon, QFont, QKeySequence
+from PySide2.QtPrintSupport import QPrinter, QPrintDialog
 from PySide2.QtWidgets import QMainWindow, QWidget
 from PySide2 import QtWidgets, QtCore
 
@@ -18,13 +19,17 @@ class MainWindowUi(QMainWindow):
         self.actionOpen = QtWidgets.QAction("open")
         self.actionSave = QtWidgets.QAction("save")
         self.actionNew = QtWidgets.QAction("new")
+        self.actionPrint = QtWidgets.QAction("print")
+        self.actionPrint.setShortcut(QKeySequence("Ctrl+p"))
         self.actionOpen.setShortcut(QKeySequence("Ctrl+o"))
         self.actionSave.setShortcut(QKeySequence("Ctrl+s"))
 
-        self.menuEdit = self.menuBar.addMenu("edit")
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addAction(self.actionSave)
         self.menuFile.addAction(self.actionNew)
+        self.menuFile.addAction(self.actionPrint)
+
+        self.menuEdit = self.menuBar.addMenu("edit")
         self.actionRegister = QtWidgets.QAction("register")
         self.actionSearch = QtWidgets.QAction("search")
         self.actionChange = QtWidgets.QAction("change")
