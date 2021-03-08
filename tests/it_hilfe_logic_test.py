@@ -33,7 +33,7 @@ def test_search(create_one_entry, cleanup_registered_devices):
     results = logic.search("maurice", registered_devices)
 
     assert len(results) == 1
-    assert results[0] == "maurice"
+    assert results[0].user == "maurice"
 
 
 
