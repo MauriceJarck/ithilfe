@@ -42,7 +42,7 @@ in your terminal:
   if cloned main branch:
   
   ```
-  pyhton it_hilfe_gui2_logic
+  pyhton it_hilfe_gui2.py
   ```
   
   else a file that starts with it_hilfe.py:
@@ -58,7 +58,7 @@ in your terminal:
   cd into ithilfe/
   
   ```
-  pyinstaller --name "it hilfe" --onefile --noconsole --icon ./data/favicon.ico ./it_hilfe/it_hilfe_gui2_logic.py
+  pyinstaller --name "it hilfe" --onefile --noconsole --icon ./data/favicon.ico ./it_hilfe/it_hilfe_gui2.py
   ```
   
   after process beeing finished, the exe file is located in 
