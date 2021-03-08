@@ -197,4 +197,4 @@ def test_new(main_window, qtbot):
 
     qtbot.mouseClick(main_window.win.btCreate, QtCore.Qt.LeftButton)
     assert main_window.win.stackedWidget.currentWidget() == main_window.win.pView
-    os.remove("newCSV.csv")
+    # os.remove("newCSV.csv")
