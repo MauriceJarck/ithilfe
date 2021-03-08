@@ -25,7 +25,7 @@ class Device:
         Returns:
             String representation of Device instance
         """
-        return f"{self.name}, {self.user}, {self.OS}, {self.__class__.__name__}, {self.comment}"
+        return f"{self.name}, {self.user}, {self.OS}, {self.__class__.__name__}, {self.comment}, {self.datetime}"
 
     visible_attr = ["user", "OS"]
     """list of attributes which can be modified by the user"""
