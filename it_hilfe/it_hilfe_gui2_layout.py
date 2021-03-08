@@ -23,6 +23,10 @@ class MainWindowUi(QMainWindow):
         self.actionPrint.setShortcut(QKeySequence("Ctrl+p"))
         self.actionOpen.setShortcut(QKeySequence("Ctrl+o"))
         self.actionSave.setShortcut(QKeySequence("Ctrl+s"))
+        self.actionPrint.setIcon(QIcon("../data/print.ico"))
+        self.actionOpen.setIcon(QIcon("../data/open.ico"))
+        self.actionSave.setIcon(QIcon("../data/save.ico"))
+        self.actionNew.setIcon(QIcon("../data/newfile.ico"))
 
         self.menuFile.addAction(self.actionOpen)
         self.menuFile.addAction(self.actionSave)
@@ -36,6 +40,10 @@ class MainWindowUi(QMainWindow):
         self.actionRegister.setShortcut(QKeySequence("Ctrl+n"))
         self.actionSearch.setShortcut(QKeySequence("Ctrl+f"))
         self.actionChange.setShortcut(QKeySequence("Ctrl+d"))
+        self.actionSearch.setIcon(QIcon("../data/search.ico"))
+        self.actionChange.setIcon(QIcon("../data/change.ico"))
+        self.actionRegister.setIcon(QIcon("../data/register.ico"))
+
 
         self.menuEdit.addAction(self.actionRegister)
         self.menuEdit.addAction(self.actionSearch)
