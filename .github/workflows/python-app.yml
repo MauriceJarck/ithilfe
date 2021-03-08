@@ -47,7 +47,7 @@ jobs:
         make html
     - name: built .exe with pyinstaller
       run: |
-        pyinstaller --name "it_hilfe" --onefile --noconsole --icon ./data/favicon.ico ./it_hilfe/it_hilfe_gui2_logic.py
+        pyinstaller --name "it_hilfe" --onefile --noconsole --icon ./data/favicon.ico ./it_hilfe/it_hilfe_gui2.py
     - name:  put doc html to artifacts 
       uses: actions/upload-artifact@v2
       with:
