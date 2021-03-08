@@ -276,7 +276,7 @@ class MainWindowLogic(QWidget):
                          "datetime": x.datetime
                          })
 
-    def new(self, stage: bool) -> None:
+    def new(self, stage: bool, test: bool=False) -> None:
         """creates new csv file to save into
 
         stage is True: set filepath
@@ -284,7 +284,8 @@ class MainWindowLogic(QWidget):
         Args:
             stage: determines a which stage to execute this function """
         if stage is True:
-            self.dir = QFileDialog.getExistingDirectory(self, "select a folder", "c://")
+            if not test:
+                self.dir = QFileDialog.getExistingDirectory(self, "select a folder", "c://")
             self.win.stackedWidget.setCurrentWidget(self.win.pCreate)
             self.win.inNewFilepath.setText(self.dir)
         else:
@@ -303,7 +304,6 @@ class MainWindowLogic(QWidget):
         if not test:
             printer = QPrinter()
             previewDialog = QPrintPreviewDialog(printer, self)
-
             previewDialog.paintRequested.connect(lambda: self.document.print_(printer))
             previewDialog.exec_()
 

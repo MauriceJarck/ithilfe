@@ -115,6 +115,17 @@ def test_p_register_validate_open(main_window, qtbot, create_csv):
     assert main_window.win.stackedWidget.currentIndex() == 0
     # get len(already displayed registrations) after new reg
     assert main_window.win.pViewTable.rowCount() == count + 1
+    count += 1
+    qtbot.keyClick(main_window, "n", modifier=QtCore.Qt.ControlModifier)
+    assert main_window.win.stackedWidget.currentIndex() == 1
+    main_window.win.inUsername.setText("maurice")
+    main_window.win.inDevicename.setText("3")
+    main_window.win.inComboboxDevicetype.setCurrentIndex(1)
+    main_window.win.inComboboxOs.setCurrentIndex(2)
+    qtbot.mouseClick(main_window.win.btRegister, QtCore.Qt.LeftButton)
+    assert main_window.win.stackedWidget.currentIndex() == 0
+    # get len(already displayed registrations) after new reg
+    assert main_window.win.pViewTable.rowCount() == count + 1
 
 
 def test_change(main_window, qtbot):
@@ -175,3 +186,12 @@ def test_print(qtbot, main_window, create_csv):
     main_window.print(True)
     assert main_window.document.toPlainText() == 'name,username,OS,device_type,comment,extras,datetime\n' ' \n'' 1,maurice,win10,WindowsWorkStation,toller pc,[],2021-03-08 11:09:50.368570\n' ' \n'
 
+def test_new(main_window, qtbot):
+
+    main_window.dir = r"C:\Users\maurice.jarck\Documents\Projects\it_hilfe\tests"
+    main_window.new(True, test=True)
+    assert main_window.win.stackedWidget.currentIndex() == 4
+    main_window.win.inNewFilename.setText("newCSV")
+
+    qtbot.mouseClick(main_window.win.btCreate, QtCore.Qt.LeftButton)
+    assert main_window.win.stackedWidget.currentWidget() == main_window.win.pView
