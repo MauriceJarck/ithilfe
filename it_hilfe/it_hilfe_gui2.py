@@ -422,7 +422,7 @@ class MainWindowUi(QMainWindow):
             else:
                 newval = self.inChangeNewval.text()
             logic.change_param(self.inComboBoxDevicename.currentText(), paramtype, newval, registered_devices)
-            self.inComboBoxDevicename.clear()
+            # self.inComboBoxDevicename.clear()
             self.inComboBoxChangeParamtype.clear()
             self.inComboBoxChangeNewval.clear()
             self.update_table(self.pViewTable, registered_devices.values())
