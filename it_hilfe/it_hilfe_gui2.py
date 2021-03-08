@@ -7,7 +7,7 @@ from PySide2.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PySide2.QtWidgets import QMainWindow, QWidget, QApplication, QFileDialog
 from PySide2 import QtWidgets, QtCore
 import it_hilfe.devices as devices
-import it_hilfe_logic as logic
+import it_hilfe.it_hilfe_logic as logic
 
 registered_devices = {}
 valid_devices = [devices.WindowsLapTop, devices.WindowsWorkStation, devices.Macbook]
