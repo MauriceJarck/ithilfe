@@ -1,3 +1,5 @@
+import os
+
 import pytest
 import csv
 from datetime import datetime
@@ -188,10 +190,11 @@ def test_print(qtbot, main_window, create_csv):
 
 def test_new(main_window, qtbot):
 
-    main_window.dir = r"C:\Users\maurice.jarck\Documents\Projects\it_hilfe\tests"
+    main_window.dir = ".."
     main_window.new(True, test=True)
     assert main_window.win.stackedWidget.currentIndex() == 4
     main_window.win.inNewFilename.setText("newCSV")
 
     qtbot.mouseClick(main_window.win.btCreate, QtCore.Qt.LeftButton)
     assert main_window.win.stackedWidget.currentWidget() == main_window.win.pView
+    os.remove("newCSV.csv")
