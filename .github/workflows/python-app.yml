@@ -37,7 +37,7 @@ jobs:
         set PYTHONPATH=it_hilfe
         set DATA=data
         python -m pytest --cov=it_hilfe
-    - name: upadate coverage badge
+    - name: update coverage badge
       run: |
         cd .github
         python update_cov_badge.py
@@ -48,12 +48,12 @@ jobs:
     - name: built .exe with pyinstaller
       run: |
         pyinstaller --name "it_hilfe" --onefile --noconsole --icon ./data/favicon.ico ./it_hilfe/it_hilfe_gui2_logic.py
-    - name: Archive doc html
+    - name:  put doc html to artifacts 
       uses: actions/upload-artifact@v2
       with:
         name: it_hile_latest_html_doc
         path: ./docs/_build/html
-    - name: Archive exe
+    - name: put exe to artifacts
       uses: actions/upload-artifact@v2
       with:
         name: it_hile_latest_exe
