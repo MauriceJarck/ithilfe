@@ -37,6 +37,10 @@ jobs:
         set PYTHONPATH=it_hilfe
         set DATA=data
         python -m pytest --cov=it_hilfe
+    - name: upadate coverage badge
+      run: |
+        cd .github
+        python update_cov_badge.py
     - name: docbuild with sphinx
       run: |
         cd docs
