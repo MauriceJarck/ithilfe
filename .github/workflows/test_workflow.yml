@@ -22,8 +22,7 @@ jobs:
         python-version: 3.9
         
     - name: Get the percentage
-      env: 
-        COV: 90
+      run: echo "COV=42" >> $GITHUB_ENV
       
     - name: update the cov badge 
       uses: schneegans/dynamic-badges-action@v1.0.0
