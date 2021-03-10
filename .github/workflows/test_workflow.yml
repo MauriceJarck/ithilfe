@@ -23,7 +23,7 @@ jobs:
     - name: Set the value
       id: step_one
       run: |
-          set action_state "yellow" 
+          set action_state = "yellow" 
     - name: Use the value
       id: step_two
       run: |
