@@ -22,7 +22,7 @@ jobs:
         python-version: 3.9
         
     - name: Get the percentage
-      run: echo "ANSWER=42" >> $GITHUB_ENV
+      run: echo "COV=95" >> $GITHUB_ENV
       
     - name: Create the Badge if cov >= 90%
       if: "${{ env.COV }} >= 90"
