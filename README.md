@@ -1,5 +1,5 @@
 
-![action](https://github.com/JackWolf24/ithilfe/actions/workflows/python-app.yml/badge.svg) ![badge](https://github.com/JackWolf24/ithilfe/blob/main/.github/cov_badge.svg)
+![action](https://github.com/JackWolf24/ithilfe/actions/workflows/python-app.yml/badge.svg) ![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/<user>/<gist-ID>/raw/test.json)
 
 Ithilfe is a simple programm to help a It Department keeping track of devices in house. 
 
