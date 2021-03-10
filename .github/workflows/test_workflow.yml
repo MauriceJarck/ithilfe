@@ -21,18 +21,18 @@ jobs:
       with:
         python-version: 3.9
         
-    - name: Get the percentage
-      run: echo "COV=42" >> $GITHUB_ENV
+    - name: Get the Numbers
+      run: echo "ANSWER=42" >> $GITHUB_ENV
       
-    - name: update the cov badge 
+    - name: Create the Badge
       uses: schneegans/dynamic-badges-action@v1.0.0
-      with: 
+      with:
         auth: ${{ secrets.GIST_TOKEN }}
         gistID: 5dfef24b289a9890e7d579140ca0ae15
         filename: test.json
-        label: coverage
-        message: ${{env.COV}}
-        color: green 
+        label: The Answer is
+        message: ${{ env.ANSWER }}
+        color: green
         
     
           
