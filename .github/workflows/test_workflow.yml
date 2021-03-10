@@ -32,7 +32,7 @@ jobs:
         gistID: 5dfef24b289a9890e7d579140ca0ae15
         filename: test.json
         label: coverage
-        message: env.COV
+        message: "${{env.COV}}"
         color: green 
         
     - name: update the Badge if cov <= 90%
@@ -43,7 +43,7 @@ jobs:
         gistID: 5dfef24b289a9890e7d579140ca0ae15
         filename: test.json
         label: coverage
-        message: env.COV
+        message: "${{env.COV}}"
         color: orange 
           
           
