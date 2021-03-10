@@ -22,27 +22,27 @@ jobs:
         python-version: 3.9
     - name: Get the Numbers
       run: echo "ANSWER=42" >> $GITHUB_ENV
-    - name: Create the Badge
+    - name: Create the Badge <= 90%
+      
       uses: schneegans/dynamic-badges-action@v1.0.0
-      with: |
-         if [[${{ env.ANSWER }} <= 90]]; then 
-          auth: ${{ secrets.GIST_SECRET }}
-          gistID: <gist-ID>
-          filename: answer.json
-          label: The Answer is
-          message: ${{ env.ANSWER }}
-          color: green 
-         fi
-         
-         if [[${{ env.ANSWER }} < 90]]; then 
-          auth: ${{ secrets.GIST_SECRET }}
-          gistID: <gist-ID>
-          filename: answer.json
-          label: The Answer is
-          message: ${{ env.ANSWER }}
-          color: orange 
-         fi  
-       
+      with: 
+        if: "${{ env.COV }} <= 90"
+        auth: ${{ secrets.GIST_SECRET }}
+        gistID: 5dfef24b289a9890e7d579140ca0ae15"
+        filename: answer.json
+        label: coverage
+        message: ${{ env.COV }}
+        color: green 
+    - name: Create the Badge <= 90%
+      uses: schneegans/dynamic-badges-action@v1.0.0
+      with:
+        if: "${{ env.ANSWER }} <= 90"
+        auth: ${{ secrets.GIST_SECRET }}
+        gistID: 5dfef24b289a9890e7d579140ca0ae15"
+        filename: answer.json
+        label: coverage
+        message: ${{ env.COV }}
+        color: orange 
           
           
           
