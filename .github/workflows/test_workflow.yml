@@ -23,7 +23,7 @@ jobs:
     - name: Set the value
       id: step_one
       run: |
-          SET color="yellow" 
+          set color="yellow" 
     - name: Use the value
       id: step_two
       run: |
