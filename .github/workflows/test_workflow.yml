@@ -23,11 +23,11 @@ jobs:
     - name: Set the value
       id: step_one
       run: |
-          set color="yellow" 
+          set message="hallo" 
     - name: Use the value
       id: step_two
       run: |
-          echo %color%
+          echo %message%
         
     
           
