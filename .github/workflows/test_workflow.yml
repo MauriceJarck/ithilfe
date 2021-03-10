@@ -24,14 +24,22 @@ jobs:
       run: echo "ANSWER=42" >> $GITHUB_ENV
     - name: Create the Badge
       uses: schneegans/dynamic-badges-action@v1.0.0
-      with:
-        auth: ${{ secrets.GIST_SECRET }}
-        gistID: <gist-ID>
-        filename: answer.json
-        label: The Answer is
-        message: ${{ env.ANSWER }}
-        if [['${{ env.ANSWER }} == 42]]; then color: green fi
-           
+      with: |
+         if [['${{ env.ANSWER }} <= 90]]; then 
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: <gist-ID>
+          filename: answer.json
+          label: The Answer is
+          message: ${{ env.ANSWER }}
+          color: green 
+         if [['${{ env.ANSWER }} < 90]]; then 
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: <gist-ID>
+          filename: answer.json
+          label: The Answer is
+          message: ${{ env.ANSWER }}
+          color: orange 
+         fi  
        
           
           
