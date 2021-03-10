@@ -22,29 +22,20 @@ jobs:
         python-version: 3.9
         
     - name: Get the percentage
-      run: echo "COV=95" >> $GITHUB_ENV
+      env: 
+        COV: 90
       
-    - name: Create the Badge if cov >= 90%
-      if: ${{ env.COV >= 90}} 
+    - name: update the cov badge 
       uses: schneegans/dynamic-badges-action@v1.0.0
       with: 
         auth: ${{ secrets.GIST_TOKEN }}
         gistID: 5dfef24b289a9890e7d579140ca0ae15
         filename: test.json
         label: coverage
-        message: "${{env.COV}}"
+        message: ${{env.COV}}
         color: green 
         
-    - name: update the Badge if cov <= 90%
-      if: ${{ env.COV <= 90}} 
-      uses: schneegans/dynamic-badges-action@v1.0.0
-      with:
-        auth: ${{ secrets.GIST_TOKEN }}
-        gistID: 5dfef24b289a9890e7d579140ca0ae15
-        filename: test.json
-        label: coverage
-        message: "${{env.COV}}"
-        color: orange 
+    
           
           
           
