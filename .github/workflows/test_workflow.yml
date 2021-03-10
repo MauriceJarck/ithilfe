@@ -23,6 +23,9 @@ jobs:
     - name: Get the Numbers
       run: echo "ANSWER=42" >> $GITHUB_ENV
       
+    - name: echo env var
+      run: echo "${{ env.ANSWER }}"
+      
     - name: Create the Badge
       uses: schneegans/dynamic-badges-action@v1.0.0
       with:
