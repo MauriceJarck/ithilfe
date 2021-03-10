@@ -31,7 +31,7 @@ jobs:
         gistID: 5dfef24b289a9890e7d579140ca0ae15
         filename: test.json
         label: The Answer is
-        message: answer
+        message: ${{env.ANSWER}}
         color: green
         
     
