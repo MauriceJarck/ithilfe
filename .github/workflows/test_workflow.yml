@@ -32,6 +32,8 @@ jobs:
           label: The Answer is
           message: ${{ env.ANSWER }}
           color: green 
+         fi
+         
          if [['${{ env.ANSWER }} < 90]]; then 
           auth: ${{ secrets.GIST_SECRET }}
           gistID: <gist-ID>
