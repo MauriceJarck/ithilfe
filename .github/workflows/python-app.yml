@@ -37,10 +37,15 @@ jobs:
         set PYTHONPATH=it_hilfe
         set DATA=data
         python -m pytest --cov=it_hilfe
-    - name: update coverage badge
-      run: |
-        cd .github
-        python update_cov_badge.py
+    - name: Create Awesome Badge
+      uses: schneegans/dynamic-badges-action@v1.0.0
+      with:
+        auth: ${{ secrets.GIST_TOKEN }}
+        gistID: 5dfef24b289a9890e7d579140ca0ae15
+        filename: test.json
+        label: Hello
+        message: World
+        color: orange
     - name: docbuild with sphinx
       run: |
         cd docs
