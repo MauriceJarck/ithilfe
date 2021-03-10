@@ -28,7 +28,7 @@ jobs:
       if: "${{ env.COV }} >= 90"
       uses: schneegans/dynamic-badges-action@v1.0.0
       with: 
-        auth: ${{ secrets.GIST_SECRET }}
+        auth: ${{ secrets.GIST_TOKEN }}
         gistID: 5dfef24b289a9890e7d579140ca0ae15
         filename: test.json
         label: coverage
@@ -39,7 +39,7 @@ jobs:
       if: "${{ env.ANSWER }} <= 90"
       uses: schneegans/dynamic-badges-action@v1.0.0
       with:
-        auth: ${{ secrets.GIST_SECRET }}
+        auth: ${{ secrets.GIST_TOKEN }}
         gistID: 5dfef24b289a9890e7d579140ca0ae15
         filename: test.json
         label: coverage
