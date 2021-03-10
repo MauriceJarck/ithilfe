@@ -29,7 +29,7 @@ jobs:
       uses: schneegans/dynamic-badges-action@v1.0.0
       with: 
         auth: ${{ secrets.GIST_SECRET }}
-        gistID: 5dfef24b289a9890e7d579140ca0ae15"
+        gistID: 5dfef24b289a9890e7d579140ca0ae15
         filename: test.json
         label: coverage
         message: ${{ env.COV }}
@@ -40,7 +40,7 @@ jobs:
       uses: schneegans/dynamic-badges-action@v1.0.0
       with:
         auth: ${{ secrets.GIST_SECRET }}
-        gistID: 5dfef24b289a9890e7d579140ca0ae15"
+        gistID: 5dfef24b289a9890e7d579140ca0ae15
         filename: test.json
         label: coverage
         message: ${{ env.COV }}
