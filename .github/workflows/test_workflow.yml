@@ -30,7 +30,7 @@ jobs:
       with: 
         auth: ${{ secrets.GIST_SECRET }}
         gistID: 5dfef24b289a9890e7d579140ca0ae15"
-        filename: answer.json
+        filename: test.json
         label: coverage
         message: ${{ env.COV }}
         color: green 
@@ -41,7 +41,7 @@ jobs:
       with:
         auth: ${{ secrets.GIST_SECRET }}
         gistID: 5dfef24b289a9890e7d579140ca0ae15"
-        filename: answer.json
+        filename: test.json
         label: coverage
         message: ${{ env.COV }}
         color: orange 
