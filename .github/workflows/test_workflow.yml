@@ -15,10 +15,10 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.9
+    - name: Set up Python 3.7
       uses: actions/setup-python@v2
       with:
-        python-version: 3.9
+        python-version: 3.7
         
     - name: Get the Numbers
       run: echo "ANSWER=42" >> $GITHUB_ENV
@@ -30,7 +30,7 @@ jobs:
         gistID: 5dfef24b289a9890e7d579140ca0ae15
         filename: test.json
         label: The Answer is
-        message: ${{env.ANSWER}}
+        message: ${{ env.ANSWER }}
         color: green
         
     
