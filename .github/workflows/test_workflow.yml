@@ -22,15 +22,15 @@ jobs:
     - name: Set the value
       run: |
           set COVERAGE="100"
-          setx COV "90"
+          
           echo %COVERAGE%  
-          echo %COV%
+          
       shell: cmd
     - name: Use the value
       run: |
-        echo on 
+        
         echo %COVERAGE%
-        echo %COV%
+        
       shell: cmd
     
           
