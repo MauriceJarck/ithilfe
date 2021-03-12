@@ -12,23 +12,22 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.7
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
-      
-    - name: Set the value
-      id: step_one
-      run: |
-          set message="hallo" 
+    - name: set-env
+      uses: allenevans/set-env@v2.0.0
+      with:
+          COVERAGE: '100%'
     - name: Use the value
-      id: step_two
       run: |
-          echo %message%
-        
+          $env:COVERAGE
+          printenv
+
     
           
           
