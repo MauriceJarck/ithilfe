@@ -20,23 +20,23 @@ jobs:
       with:
         python-version: 3.7
     - name: set-env
-      id: set env var
+      id: set_env_var
       shell: cmd
       run: |
         echo 'COVERAGE = 100' > $GITHUB_ENV
         echo ${{ env.COVERAGE }}
         echo "hallo"
     - name: test env
-      id: step test
+      id: test_env
       run: 
         echo ${{ env.COVERAGE }}
     - name: get percentage
-      id: get percentage
+      id: get_percentage
       run: |
         cd .github
         python update_cov_badge.py
     - name: update badge
-      id: update badge
+      id: update_badge
       uses: schneegans/dynamic-badges-action@v1.0.0
       with:
         auth: ${{ secrets.GIST_TOKEN }}
