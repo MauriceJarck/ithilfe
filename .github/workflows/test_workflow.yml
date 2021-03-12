@@ -20,9 +20,14 @@ jobs:
       with:
         python-version: 3.7
     - name: set-env
+      shell: cmd
       run: |
-        echo 'COVERAGE = "100"' >> $GITHUB_ENV
-    - name: get percentage, update badge
+        echo 'COVERAGE = "100"' > $GITHUB_ENV
+        echo ${{ env.COVERAGE}}
+    - name: test env
+      shell: cmd
+        echo ${{ env.COVERAGE}}
+    - name: get percentage
       run: |
         cd .github
         python update_cov_badge.py
