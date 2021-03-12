@@ -22,16 +22,21 @@ jobs:
     - name: set-env
       uses: allenevans/set-env@v2.0.0
       with:
-          COVERAGE: '100%'
-    - name: get percentage
+          COVERAGE: 'dummy_val'
+    - name: get percentage, update badge
       run: |
         cd .github
         python update_cov_badge.py
-    - name: Use the value
-      run: |
-          $env:COVERAGE
-          $env:COV
-          printenv
+    - name: update badge
+      uses: schneegans/dynamic-badges-action@v1.0.0
+      with:
+        auth: ${{ secrets.GIST_TOKEN }}
+        gistID: 5dfef24b289a9890e7d579140ca0ae15
+        filename: test.json
+        label: COV
+        message: $env:COVERAGE
+        color: green
+
 
     
           
