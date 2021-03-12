@@ -20,9 +20,8 @@ jobs:
       with:
         python-version: 3.7
     - name: set-env
-      uses: allenevans/set-env@v2.0.0
-      with:
-          COVERAGE: 'dummy_val'
+      run: |
+        set COVERAGE = "100" >> $GITHUB_ENV
     - name: get percentage, update badge
       run: |
         cd .github
