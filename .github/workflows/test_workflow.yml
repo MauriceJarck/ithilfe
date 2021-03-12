@@ -24,9 +24,9 @@ jobs:
     - name: Create the Badge
       uses: schneegans/dynamic-badges-action@v1.0.0
       with:
-        auth: ${{ secrets.GIST_SECRET }}
-        gistID: <gist-ID>
-        filename: answer.json
+        auth: ${{ secrets.GIST_TOKEN }}
+        gistID: 5dfef24b289a9890e7d579140ca0ae15
+        filename: test.json
         label: The Answer is
         message: ${{ env.ANSWER }}
         color: green
