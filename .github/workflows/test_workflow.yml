@@ -26,7 +26,7 @@ jobs:
     - name: get percentage
       run: |
         cd .github
-        pyhton update_cov_badge.py
+        python update_cov_badge.py
     - name: Use the value
       run: |
           $env:COVERAGE
