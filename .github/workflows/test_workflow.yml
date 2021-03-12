@@ -23,9 +23,14 @@ jobs:
       uses: allenevans/set-env@v2.0.0
       with:
           COVERAGE: '100%'
+    - name: get percentage
+      run: |
+        cd .github
+        python update_cov_badge.py
     - name: Use the value
       run: |
           $env:COVERAGE
+          $env:COV
           printenv
 
     
