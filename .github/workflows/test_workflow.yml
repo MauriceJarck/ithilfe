@@ -28,7 +28,7 @@ jobs:
       shell: cmd
     - name: Use the value
       run: |
-        
+        echo on 
         echo %COVERAGE%
         
       shell: cmd
