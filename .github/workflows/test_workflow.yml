@@ -19,13 +19,14 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
-    - name: Set the value
-      run: |
-          $env:COVERAGE="100%"
-          $env:COVERAGE
+    - name: set-env
+      uses: allenevans/set-env@v2.0.0
+      with:
+          COVERAGE: '100%'
     - name: Use the value
       run: |
           $env:COVERAGE
+          printenv
 
     
           
