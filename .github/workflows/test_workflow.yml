@@ -20,12 +20,10 @@ jobs:
       with:
         python-version: 3.7
     - name: set-env
-      shell: cmd
       run: |
         echo 'COVERAGE = "100"' > $GITHUB_ENV
         echo ${{ env.COVERAGE}}
     - name: test env
-      shell: cmd
       run: 
         echo ${{ env.COVERAGE}}
     - name: get percentage
