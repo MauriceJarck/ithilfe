@@ -20,18 +20,16 @@ jobs:
       with:
         python-version: 3.7
     - name: Set the value
+      shell: cmd
       run: |
           set COVERAGE="100"
-          
-          echo %COVERAGE%  
-          
-      shell: cmd
+          echo %COVERAGE% 
     - name: Use the value
+      shell: cmd
       run: |
         echo on 
         echo %COVERAGE%
-        
-      shell: cmd
+
     
           
           
