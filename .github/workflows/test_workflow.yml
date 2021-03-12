@@ -26,6 +26,7 @@ jobs:
         echo ${{ env.COVERAGE}}
     - name: test env
       shell: cmd
+      run: 
         echo ${{ env.COVERAGE}}
     - name: get percentage
       run: |
