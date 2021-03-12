@@ -21,7 +21,7 @@ jobs:
         python-version: 3.7
     - name: set-env
       run: |
-        $env: {COVERAGE = "100"} >> $GITHUB_ENV
+        ${env: COVERAGE = "100"} >> $GITHUB_ENV
     - name: get percentage, update badge
       run: |
         cd .github
