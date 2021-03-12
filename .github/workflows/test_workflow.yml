@@ -23,7 +23,6 @@ jobs:
     - name: Get the Numbers
       run: |
         $GITHUB_ENV = "ANSWER=42"
-        echo ${{ env.ANSWER }}
         
     - name: echo ANSWER
       run: |
