@@ -20,14 +20,12 @@ jobs:
       with:
         python-version: 3.7
     - name: Set the value
-      shell: cmd
       run: |
-          set COVERAGE="100"
-          echo %COVERAGE% 
+          $env:COVERAGE="100%"
+          $env:COVERAGE
     - name: Use the value
-      shell: cmd
       run: |
-        echo %COVERAGE%
+          $env:COVERAGE
 
     
           
