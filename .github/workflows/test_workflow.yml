@@ -21,14 +21,12 @@ jobs:
         python-version: 3.7
       
     - name: Set the value
-      id: step_one
       run: |
-          $env:MESSAGE="hallo" 
-          $env:MESSAGE          
+          [System.Environment]::SetEnvironmentVariable('COV', '100', [System.EnvironmentVariableTarget]::User)
+          $env:COV          
     - name: Use the value
-      id: step_two
       run: |
-        $env:MESSAGE        
+        $env:COV        
     
           
           
