@@ -26,7 +26,7 @@ jobs:
         shell: powershell
     - name: print $NEW_VAR_NAME
       run: |
-        $env: NEW_VAR_NAME
+        echo ${{ env.YOUR_VARIABLE_NAME }}
       shell: powershell
 
 
