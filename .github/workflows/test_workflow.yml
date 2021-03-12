@@ -19,31 +19,16 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
-    - name: set-env
-      id: set_env_var
-      shell: cmd
-      run: |
-        echo 'COVERAGE = 100' > $GITHUB_ENV
-        echo ${{ env.COVERAGE }}
-        echo "hallo"
-    - name: test env
-      id: test_env
-      run: 
-        echo ${{ env.COVERAGE }}
-    - name: get percentage
-      id: get_percentage
-      run: |
-        cd .github
-        python update_cov_badge.py
-    - name: update badge
-      id: update_badge
+    - name: Get the Numbers
+      run: echo "ANSWER=42" > $GITHUB_ENV
+    - name: Create the Badge
       uses: schneegans/dynamic-badges-action@v1.0.0
       with:
-        auth: ${{ secrets.GIST_TOKEN }}
-        gistID: 5dfef24b289a9890e7d579140ca0ae15
-        filename: test.json
-        label: COV
-        message: ${{ env.COVERAGE }}
+        auth: ${{ secrets.GIST_SECRET }}
+        gistID: <gist-ID>
+        filename: answer.json
+        label: The Answer is
+        message: ${{ env.ANSWER }}
         color: green
 
 
