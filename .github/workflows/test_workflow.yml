@@ -34,7 +34,7 @@ jobs:
         gistID: 5dfef24b289a9890e7d579140ca0ae15
         filename: test.json
         label: COV
-        message: $env:COVERAGE
+        message: ${{ $env:COVERAGE }}
         color: green
 
 
