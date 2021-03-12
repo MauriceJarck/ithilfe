@@ -5,7 +5,7 @@ cov_file = md.parse("../tests/coverage.xml")
 for y in cov_file.getElementsByTagName("package"):
     percentage = round(float(y.getAttribute("line-rate")),2)*100
 
-os.system(f"SETX COV  {str(90)}")
+os.environ["COVERAGAE"] = str(percentage)
 
-print(os.system("echo %COV%"))
+print(os.environ["COVERAGAE"])
 
