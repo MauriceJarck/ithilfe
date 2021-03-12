@@ -24,6 +24,8 @@ jobs:
       id: step_one
       run: |
           set message="hallo" 
+          echo %message%
+          
     - name: Use the value
       id: step_two
       run: |
