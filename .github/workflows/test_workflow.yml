@@ -12,7 +12,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.7
@@ -21,8 +21,7 @@ jobs:
         python-version: 3.7
     - name: Get the Numbers
       run: |
-        echo "ANSWER=42" >> $GITHUB_ENV
-        echo ${{ env.ANSWER }}
+        echo "ANSWER=42" > $GITHUB_ENV
     - name: Create the Badge
       uses: schneegans/dynamic-badges-action@v1.0.0
       with:
