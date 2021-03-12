@@ -19,14 +19,18 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
-      
     - name: Set the value
       run: |
-          [System.Environment]::SetEnvironmentVariable('COV', '100', [System.EnvironmentVariableTarget]::User)
-          $env:COV          
+          set COVERAGE="100"
+          setx COV "90"
+          echo %COVERAGE%  
+          echo %COV%
+      shell: cmd
     - name: Use the value
       run: |
-        $env:COV        
+        echo %COVERAGE%
+        echo %COV%
+      shell: cmd
     
           
           
