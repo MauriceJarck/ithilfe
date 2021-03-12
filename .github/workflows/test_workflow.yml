@@ -22,14 +22,22 @@ jobs:
     - name: set-shell-env
       uses: lukka/set-shell-env@v1.1
       with:
-        NEW_VAR_NAME: new_var_value
+        TEST_COVERAGE: 100%
         shell: powershell
-    - name: print $NEW_VAR_NAME
+    - name: echo TEST_COVERAGE
       run: |
-        echo ${{ env.NEW_VAR_NAME }}
+        echo ${{ env.TEST_COVERAGE }}
       shell: powershell
 
-
+    - name: update badge
+      uses: schneegans/dynamic-badges-action@v1.0.0
+      with:
+        auth: ${{ secrets.GIST_TOKEN }}
+        gistID: 5dfef24b289a9890e7d579140ca0ae15
+        filename: test.json
+        label: COV
+        message: ${{ env.TEST_COVERAGE }}
+        color: green
     
           
           
