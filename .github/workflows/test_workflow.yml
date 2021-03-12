@@ -20,33 +20,17 @@ jobs:
       with:
         python-version: 3.7
         
-    - name: set-shell-env
-      uses: lukka/set-shell-env@v1.1
-      with:
-        TEST_COVERAGE: 100%
-        shell: powershell
-        
-    - name: echo TEST_COVERAGE
-      run: |
-        echo ${{ env.TEST_COVERAGE }}
-      shell: powershell
-    
-    - name: change env var val
-      run: |
-        [System.Environment]::SetEnvironmentVariable('TEST_COVERAGE', '90%', [System.EnvironmentVariableTarget]::User)
-        echo ${{ env.TEST_COVERAGE }}
-
-    - name: update badge
+    - name: Get the Numbers
+      run: echo "ANSWER=42" > $GITHUB_ENV
+    - name: Create the Badge
       uses: schneegans/dynamic-badges-action@v1.0.0
       with:
-        auth: ${{ secrets.GIST_TOKEN }}
-        gistID: 5dfef24b289a9890e7d579140ca0ae15
-        filename: test.json
-        label: COV
-        message: ${{ env.TEST_COVERAGE }}
+        auth: ${{ secrets.GIST_SECRET }}
+        gistID: <gist-ID>
+        filename: answer.json
+        label: The Answer is
+        message: ${{ env.ANSWER }}
         color: green
-    
-          
-          
+
           
           
