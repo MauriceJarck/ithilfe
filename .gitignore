@@ -6,6 +6,7 @@ __pycache__
 
 /junk/
 
+/.idea
 
 /tests/.coverage
 /test/testCSV.csv
