@@ -22,7 +22,7 @@ jobs:
     - name: set-shell-env
       uses: lukka/set-shell-env@v1.1
       with:
-        COVERAGE: "100"
+        NEW_VAR_NAME: new_var_value
         shell: powershell
     - name: print $NEW_VAR_NAME
       run: |
