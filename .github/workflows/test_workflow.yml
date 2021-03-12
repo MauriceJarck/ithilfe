@@ -19,15 +19,22 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
+        
     - name: set-shell-env
       uses: lukka/set-shell-env@v1.1
       with:
         TEST_COVERAGE: 100%
         shell: powershell
+        
     - name: echo TEST_COVERAGE
       run: |
         echo ${{ env.TEST_COVERAGE }}
       shell: powershell
+    
+    - name: change env var val
+      run: |
+        System.Environment]::SetEnvironmentVariable('TEST_COVERAGE', '90%', [System.EnvironmentVariableTarget]::User)
+        echo ${{ env.TEST_COVERAGE }}
 
     - name: update badge
       uses: schneegans/dynamic-badges-action@v1.0.0
