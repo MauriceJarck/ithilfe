@@ -33,7 +33,7 @@ jobs:
     
     - name: change env var val
       run: |
-        System.Environment]::SetEnvironmentVariable('TEST_COVERAGE', '90%', [System.EnvironmentVariableTarget]::User)
+        [System.Environment]::SetEnvironmentVariable('TEST_COVERAGE', '90%', [System.EnvironmentVariableTarget]::User)
         echo ${{ env.TEST_COVERAGE }}
 
     - name: update badge
