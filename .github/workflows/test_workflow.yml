@@ -22,10 +22,7 @@ jobs:
     - name: check cov report 
       run: |
         cd .github
-        #$Env:coverage = python update_cov_badge.py
-        $coverage = python .\update_cov_badge.py
-        echo $coverage
-        echo "::set-output name=COVERAGE::${coverage}"
+        echo "::set-output name=COVERAGE::$(python .\update_cov_badge.py)"
       id: Set_Test_Coverage
     
     - name: echo env var
