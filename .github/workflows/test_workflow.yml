@@ -22,7 +22,7 @@ jobs:
     - name: check cov report 
       run: |
         cd .github
-        $coverage = python .\update_cov_badge.py
+        $Env:coverage = python .\update_cov_badge.py
         echo $coverage
       
     - name: Get Coverage
