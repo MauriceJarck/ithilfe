@@ -34,7 +34,7 @@ jobs:
         filename: test.json
         label: COV
         message:  ${{ steps.Set_Test_Coverage.outputs.COVERAGE }}
-         color: ${{
+        color: ${{
           steps.Set_Test_Coverage.outputs.COVERAGE > 90 && 'green'              ||
           steps.Set_Test_Coverage.outputs.COVERAGE > 80 && 'yellow,green'       ||
           steps.Set_Test_Coverage.outputs.COVERAGE > 70 && 'yellow'             ||
