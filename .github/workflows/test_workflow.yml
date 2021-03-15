@@ -19,22 +19,28 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
-    - name: set-env
-      uses: allenevans/set-env@v2.0.0
-      with:
-          COVERAGE: '100%'
-    - name: get percentage
+    - name: check cov report 
       run: |
         cd .github
         python update_cov_badge.py
-    - name: Use the value
-      run: |
-          $env:COVERAGE
-          $env:COV
-          printenv
+        $env:TEST_COVERAGE
+        
+    - name: Set test Coverage
+      run: echo '::set-output name=COVERAGE::90%'
+      id: Set_Test_Coverage
+      
+    - name: Get Coverage
+      run: echo "The achived coverage percentage is ${{ steps.Set_Coverage.outputs.COVERAGE }}"
 
-    
-          
-          
+    - name: Create the Badge
+      uses: schneegans/dynamic-badges-action@v1.0.0
+      with:
+        auth: ${{ secrets.GIST_TOKEN }}
+        gistID: 5dfef24b289a9890e7d579140ca0ae15
+        filename: test.json
+        label: COV
+        message: ${{ steps.random-color-generator.outputs.SELECTED_COLOR }}
+        color: green
+
           
           
