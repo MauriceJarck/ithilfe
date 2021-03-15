@@ -38,7 +38,7 @@ jobs:
         gistID: 5dfef24b289a9890e7d579140ca0ae15
         filename: test.json
         label: COV
-        message: ${{ steps.random-color-generator.outputs.SELECTED_COLOR }}
+        message: ${{ steps.Set_Test_Coverage.outputs.COVERAGE }}
         color: green
 
 
