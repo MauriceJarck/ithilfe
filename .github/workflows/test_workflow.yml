@@ -20,10 +20,11 @@ jobs:
       with:
         python-version: 3.7
     - name: check cov report 
+      shell: cmd
       run: |
         cd .github
         python update_cov_badge.py
-        $env:TEST_COVERAGE
+        echo %TEST_COVERAGE%
         
     - name: Set test Coverage
       run: echo '::set-output name=COVERAGE::90%'
