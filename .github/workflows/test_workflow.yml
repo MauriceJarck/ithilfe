@@ -22,26 +22,10 @@ jobs:
     - name: check cov report 
       shell: cmd
       run: |
-        cd .github
-        python update_cov_badge.py
-        echo %TEST_COVERAGE%
-        echo '::set-output name=COVERAGE::${{ env.TEST_COVERAGE }}'
-      id: Set_Test_Coverage
-      
-    - name: Get Coverage
-      run: |
-        echo "The achived coverage percentage is ${{ steps.Set_Coverage.outputs.COVERAGE }}"
-        echo %TEST_COVERAGE%
-
-    - name: Create the Badge
-      uses: schneegans/dynamic-badges-action@v1.0.0
-      with:
-        auth: ${{ secrets.GIST_TOKEN }}
-        gistID: 5dfef24b289a9890e7d579140ca0ae15
-        filename: test.json
-        label: COV
-        message: ${{ steps.random-color-generator.outputs.SELECTED_COLOR }}
-        color: green
+        echo "value=100" > $GITHUB_ENV
+    - name: echo var
+      shell: cmd
+      run: $ {{ env.value}}
 
           
           
