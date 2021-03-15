@@ -23,11 +23,11 @@ jobs:
       run: |
         cd .github
         python update_cov_badge.py
-        $env: TEST_COVERAGE
+        $env:TEST_COVERAGE
         
     - name: Set test Coverage
       run: echo '::set-output name=COVERAGE::90%'
-      id:  Set_Test_Coverage
+      id: Set_Test_Coverage
       
     - name: Get Coverage
       run: echo "The achived coverage percentage is ${{ steps.Set_Coverage.outputs.COVERAGE }}"
