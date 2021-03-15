@@ -24,7 +24,7 @@ jobs:
         cd .github
         python update_cov_badge.py
         echo %TEST_COVERAGE%
-        echo '::set-output name=COVERAGE::100'
+        echo '::set-output name=COVERAGE::90'
       id: Set_Test_Coverage
       
     - name: Get Coverage
