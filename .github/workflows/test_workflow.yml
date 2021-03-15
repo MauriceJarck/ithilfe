@@ -24,7 +24,7 @@ jobs:
         #cd .github
         #python update_cov_badge.py
         [System.Environment]::SetEnvironmentVariable('COVERAGE','100%',[System.EnvironmentVariableTarget]::User)
-        echo ${{ env.COVERAGE }}
+        #echo ${{ env.COVERAGE }}
       id: Set_Test_Coverage
       
     - name: Get Coverage
