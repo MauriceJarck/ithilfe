@@ -22,8 +22,8 @@ jobs:
     - name: check cov report 
       run: |
         cd .github
-        #echo "::set-output name=COVERAGE::$(python .\update_cov_badge.py)"
-        echo "::set-output name=COVERAGE::70"
+        echo "::set-output name=COVERAGE::$(python .\update_cov_badge.py)"
+        #echo "::set-output name=COVERAGE::70"
       id: Set_Test_Coverage
       
     - name: Create the Badge
@@ -35,8 +35,8 @@ jobs:
         label: COV
         message:  ${{ steps.Set_Test_Coverage.outputs.COVERAGE }}
         color: ${{
-          steps.Set_Test_Coverage.outputs.COVERAGE > 90 && 'green'              ||
-          steps.Set_Test_Coverage.outputs.COVERAGE > 80 && 'yellow'             ||
+          steps.Set_Test_Coverage.outputs.COVERAGE >= 90 && 'green'              ||
+          steps.Set_Test_Coverage.outputs.COVERAGE >= 80 && 'yellow'             ||
           'red'}}
 
           
