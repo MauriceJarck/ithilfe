@@ -20,6 +20,7 @@ jobs:
       with:
         python-version: 3.7
     - name: check cov report 
+      run: |
         cd .github
         python update_cov_badge.py
         echo %TEST_COVERAGE%
