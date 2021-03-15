@@ -21,19 +21,11 @@ jobs:
         python-version: 3.7
         
     - name: Set selected color
-      run: echo '::set-output name=SELECTED_COLOR::green'
+      run: echo '::set-output name=SELECTED_COLOR::90%'
       id: random-color-generator
       
     - name: Get color
-      run: echo "The selected color is ${{ steps.random-color-generator.outputs.SELECTED_COLOR }}"
-      
-    - name: Get the Numbers
-      run: |
-        $GITHUB_ENV = "ANSWER=42"
-        
-    - name: echo ANSWER
-      run: |
-        echo ${{ env.ANSWER }}
+      run: echo "The selected color is ${{ steps.random-color-generator.outputs.SELECTED_COLOR }}
 
     - name: Create the Badge
       uses: schneegans/dynamic-badges-action@v1.0.0
@@ -42,7 +34,7 @@ jobs:
         gistID: 5dfef24b289a9890e7d579140ca0ae15
         filename: test.json
         label: COV
-        message: ${{ env.ANSWER }}
+        message: ${{ steps.random-color-generator.outputs.SELECTED_COLOR }}
         color: green
 
           
