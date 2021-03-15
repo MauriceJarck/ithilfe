@@ -25,8 +25,11 @@ jobs:
         #$Env:coverage = python update_cov_badge.py
         $coverage = python .\update_cov_badge.py
         echo $coverage
-        #echo '::set-output name=COVERAGE:: python .\update_cov_badge.py'
+        echo '::set-output name=COVERAGE:: $coverage'
       id: Set_Test_Coverage
+    
+    - name: echo env var
+      run: echo ${{ steps.Set_Test_Coverage.outputs.COVERAGE }}
       
     
           
