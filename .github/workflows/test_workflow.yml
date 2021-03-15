@@ -37,8 +37,7 @@ jobs:
         color: ${{
           steps.Set_Test_Coverage.outputs.COVERAGE > 90 && 'green'              ||
           steps.Set_Test_Coverage.outputs.COVERAGE > 80 && 'yellow'             ||
-          steps.Set_Test_Coverage.outputs.COVERAGE > 70 && 'red'                ||
-          }}
+          'red'}}
 
           
           
