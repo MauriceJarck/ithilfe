@@ -20,12 +20,10 @@ jobs:
       with:
         python-version: 3.7
     - name: check cov report 
-      shell: cmd
       run: |
-        echo "value=100" > $GITHUB_ENV
+        $env:value=100 >> $GITHUB_ENV
     - name: echo var
-      shell: cmd
-      run: ${{ env.value}}
+      run: echo ${{ env.value}}
 
           
           
