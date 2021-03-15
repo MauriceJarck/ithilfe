@@ -29,7 +29,9 @@ jobs:
       id: Set_Test_Coverage
       
     - name: Get Coverage
-      run: echo "The achived coverage percentage is ${{ steps.Set_Coverage.outputs.COVERAGE }}"
+      run: |
+        echo "The achived coverage percentage is ${{ steps.Set_Coverage.outputs.COVERAGE }}"
+        echo %TEST_COVERAGE%
 
     - name: Create the Badge
       uses: schneegans/dynamic-badges-action@v1.0.0
