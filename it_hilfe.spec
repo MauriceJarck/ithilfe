@@ -3,7 +3,7 @@
 block_cipher = None
 
 
-a = Analysis(['it_hilfe\\it_hilfe_gui2_logic.py'],
+a = Analysis(['it_hilfe\\it_hilfe_gui2.py'],
              pathex=['C:\\Users\\maurice.jarck\\Documents\\Projects\\it_hilfe'],
              binaries=[],
              datas=[],
@@ -30,4 +30,4 @@ exe = EXE(pyz,
           upx=True,
           upx_exclude=[],
           runtime_tmpdir=None,
-          console=False , icon='data\\favicon.ico')
+          console=False , icon='it_hilfe\\data\\favicon.ico')
