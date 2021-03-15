@@ -19,13 +19,18 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
+    - name: check cov report 
+      run: |
+        cd .github
+        python update_cov_badge.py
+        $env: TEST_COVERAGE
         
-    - name: Set selected color
-      run: echo '::set-output name=SELECTED_COLOR::90%'
-      id: random-color-generator
+    - name: Set test Coverage
+      run: echo '::set-output name=COVERAGE::90%'
+      id:  Set_Test_Coverage
       
-    - name: Get color
-      run: echo "The achived coverage percentage is ${{ steps.random-color-generator.outputs.SELECTED_COLOR }}"
+    - name: Get Coverage
+      run: echo "The achived coverage percentage is ${{ steps.Set_Coverage.outputs.COVERAGE }}"
 
     - name: Create the Badge
       uses: schneegans/dynamic-badges-action@v1.0.0
