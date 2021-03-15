@@ -21,16 +21,14 @@ jobs:
         python-version: 3.7
     - name: check cov report 
       run: |
-        #cd .github
-        #python update_cov_badge.py
-        [System.Environment]::SetEnvironmentVariable('COVERAGE','100%',[System.EnvironmentVariableTarget]::User)
-        #echo ${{ env.COVERAGE }}
-      id: Set_Test_Coverage
+        cd .github
+        $coverage = python .\update_cov_badge.py
+        echo $coverage
       
     - name: Get Coverage
       run: |
         #echo "The achived coverage percentage is ${{ steps.Set_Test_Coverage.outputs.COVERAGE }}"
-        echo "coverage: ${{ env.COVERAGE }}"
+        echo "coverage: $coverage"
 
     - name: Create the Badge
       uses: schneegans/dynamic-badges-action@v1.0.0
@@ -39,7 +37,7 @@ jobs:
         gistID: 5dfef24b289a9890e7d579140ca0ae15
         filename: test.json
         label: COV
-        message: ${{ env.COVERAGE }} #${{ steps.Set_Test_Coverage.outputs.COVERAGE }}
+        message: $coverage
         color: green
 
 
