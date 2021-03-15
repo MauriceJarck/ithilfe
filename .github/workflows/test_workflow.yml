@@ -22,8 +22,15 @@ jobs:
     - name: check cov report 
       run: |
         $env:value=100 >> $GITHUB_ENV
-    - name: echo var
-      run: echo ${{ env.value}}
+    - name: Create the Badge
+      uses: schneegans/dynamic-badges-action@v1.0.0
+      with:
+        auth: ${{ secrets.GIST_TOKEN }}
+        gistID: 5dfef24b289a9890e7d579140ca0ae15
+        filename: test.json
+        label: COV
+        message: ${{ env.value }}
+        color: green
 
           
           
