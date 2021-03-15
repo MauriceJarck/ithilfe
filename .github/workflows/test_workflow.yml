@@ -25,7 +25,7 @@ jobs:
         echo "value=100" > $GITHUB_ENV
     - name: echo var
       shell: cmd
-      run: $ {{ env.value}}
+      run: ${{ env.value}}
 
           
           
