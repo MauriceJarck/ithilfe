@@ -23,13 +23,13 @@ jobs:
       run: |
         cd .github
         #$Env:coverage = python update_cov_badge.py
-        echo '::set-output name=COVERAGE:: python update_cov_badge.py'
+        ::set-output name=COVERAGE:: python update_cov_badge.py
       id: Set_Test_Coverage
       
     - name: Get Coverage
       run: |
         #echo "The achived coverage percentage is ${{ steps.Set_Test_Coverage.outputs.COVERAGE }}"
-        echo ${{ steps.Set_Test_Coverage.outputs.SELECTED_COLOR }}
+        echo ${{ steps.Set_Test_Coverage.outputs.COVERAGE }}
 
     - name: Create the Badge
       uses: schneegans/dynamic-badges-action@v1.0.0
@@ -38,7 +38,7 @@ jobs:
         gistID: 5dfef24b289a9890e7d579140ca0ae15
         filename: test.json
         label: COV
-        message:  ${{ steps.Set_Test_Coverage.outputs.SELECTED_COLOR }}
+        message:  ${{ steps.Set_Test_Coverage.outputs.COVERAGE }}
         color: green
 
 
