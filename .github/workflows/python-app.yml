@@ -36,10 +36,32 @@ jobs:
         set PYTHONPATH=it_hilfe
         set DATA=data
         python -m pytest --cov=it_hilfe --cov-report xml:coverage.xml
-    - name: update coverage badge
+    - name: check cov report 
       run: |
         cd .github
-        python update_cov_badge.py
+        #echo "::set-output name=COVERAGE::$(python .\update_cov_badge.py)"
+        echo "::set-output name=COVERAGE::70"
+      id: Set_Test_Coverage
+      
+    - name: Create the Badge
+      uses: schneegans/dynamic-badges-action@v1.0.0
+      with:
+        auth: ${{ secrets.GIST_TOKEN }}
+        gistID: 5dfef24b289a9890e7d579140ca0ae15
+        filename: test.json
+        label: COV
+        message:  ${{ steps.Set_Test_Coverage.outputs.COVERAGE }}
+        color: ${{
+          steps.Set_Test_Coverage.outputs.COVERAGE > 90 && 'green'              ||
+          steps.Set_Test_Coverage.outputs.COVERAGE > 80 && 'yellow,green'       ||
+          steps.Set_Test_Coverage.outputs.COVERAGE > 70 && 'yellow'             ||
+          steps.Set_Test_Coverage.outputs.COVERAGE > 60 && 'orange,yellow'      ||
+          steps.Set_Test_Coverage.outputs.COVERAGE > 50 && 'orange'             ||
+          steps.Set_Test_Coverage.outputs.COVERAGE > 40 && 'red,orange'         ||
+          steps.Set_Test_Coverage.outputs.COVERAGE > 30 && 'red,red,orange'     ||
+          steps.Set_Test_Coverage.outputs.COVERAGE > 20 && 'red,red,red,orange' ||
+          'red' }}
+        
     - name: docbuild with sphinx
       run: |
         cd docs
