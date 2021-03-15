@@ -67,7 +67,6 @@ in your terminal:
   ithilfe/dist
   ```
   
-
 ## generate latest docmentation as html
 
   cd into ithilfe/docs
