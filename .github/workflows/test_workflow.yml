@@ -25,7 +25,7 @@ jobs:
       id: random-color-generator
       
     - name: Get color
-      run: echo "The selected color is ${{ steps.random-color-generator.outputs.SELECTED_COLOR }}
+      run: echo "The achived coverage percentage is ${{ steps.random-color-generator.outputs.SELECTED_COLOR }}"
 
     - name: Create the Badge
       uses: schneegans/dynamic-badges-action@v1.0.0
