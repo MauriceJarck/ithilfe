@@ -3,10 +3,10 @@
 block_cipher = None
 
 
-a = Analysis(['it_hilfe\\it_hilfe_gui2.py'],
-             pathex=['C:\\Users\\maurice.jarck\\Documents\\Projects\\it_hilfe'],
+a = Analysis(['./it_hilfe/it_hilfe_gui2.py'],
+             pathex=['./it_hilfe'],
              binaries=[],
-             datas=[],
+             datas=[("./it_hilfe/data", "./data")],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -15,19 +15,26 @@ a = Analysis(['it_hilfe\\it_hilfe_gui2.py'],
              win_private_assemblies=False,
              cipher=block_cipher,
              noarchive=False)
-pyz = PYZ(a.pure, a.zipped_data,
-             cipher=block_cipher)
+
+pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+
 exe = EXE(pyz,
           a.scripts,
-          a.binaries,
-          a.zipfiles,
-          a.datas,
           [],
+          exclude_binaries=True,
           name='it hilfe',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
-          upx_exclude=[],
-          runtime_tmpdir=None,
-          console=False , icon='it_hilfe\\data\\favicon.ico')
+          console=False ,
+          icon='it_hilfe\\data\\favicon.ico')
+
+coll = COLLECT(exe,
+               a.binaries,
+               a.zipfiles,
+               a.datas,
+               strip=False,
+               upx=True,
+               upx_exclude=[],
+               name='it hilfe')
