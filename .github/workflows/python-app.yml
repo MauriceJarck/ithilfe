@@ -71,4 +71,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: it_hile_latest_exe
-        path: ./dist/it_hilfe
+        path: ./dist
