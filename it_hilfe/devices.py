@@ -31,6 +31,7 @@ class Device:
     """list of attributes which can be modified by the user"""
 
 
+
 class WindowsLapTop(Device):
     """
     specifies Device class and adds exta status variables
