@@ -1,16 +1,18 @@
-import csv
 import datetime
+import json
 import sys
 
-from PySide2.QtGui import QPixmap, QIcon, QFont, QKeySequence
+from PySide2.QtCore import QSortFilterProxyModel
+from PySide2.QtGui import QPixmap, QIcon, QFont, QKeySequence, Qt, QStandardItemModel, QStandardItem
 from PySide2.QtPrintSupport import QPrinter, QPrintPreviewDialog
-from PySide2.QtWidgets import QMainWindow, QWidget, QApplication, QFileDialog
+from PySide2.QtWidgets import QMainWindow, QWidget, QApplication, QFileDialog, QHBoxLayout
 from PySide2 import QtWidgets, QtCore
 import it_hilfe.devices as devices
 import it_hilfe.it_hilfe_logic as logic
 
 registered_devices = {}
 valid_devices = [devices.WindowsLapTop, devices.WindowsWorkStation, devices.Macbook]
+
 
 class MainWindowUi(QMainWindow):
     """sets up ui properties of MainWindowUi class"""
@@ -25,237 +27,229 @@ class MainWindowUi(QMainWindow):
         super(MainWindowUi, self).__init__()
         self.resize(820, 450)
         self.setWindowIcon(QIcon("./data/favicon.ico"))
-        self.fname = None
+        self.file_path = None
         self.dir = None
 
         # setup statusbar
         self.statusbar = self.statusBar()
         # setup stackedwidget
-        self.stackedWidget = QtWidgets.QStackedWidget()
-        self.setCentralWidget(self.stackedWidget)
+        self.stacked_widget = QtWidgets.QStackedWidget()
+        self.setCentralWidget(self.stacked_widget)
         # setup rest
         self.setup_menubar()
-        self.setup_pView()
-        self.setup_pRegister()
-        self.setup_pSearch()
-        self.setup_pChange()
-        self.setup_pCreate()
+        self.setup_p_view()
+        self.setup_p_register()
+        # self.setup_pChange()
+        self.setup_p_create()
         self.setup_signals()
 
         self.show()
-        self.stackedWidget.setCurrentWidget(self.pView)
-        self.update_table(self.pViewTable, registered_devices.values())
+        self.stacked_widget.setCurrentWidget(self.p_view)
 
     def setup_menubar(self):
-        self.menuBar = self.menuBar()
+        self.menu_Bar = self.menuBar()
 
-        self.menuFile = self.menuBar.addMenu("file")
-        self.actionOpen = QtWidgets.QAction("open")
-        self.actionSave = QtWidgets.QAction("save")
-        self.actionNew = QtWidgets.QAction("new")
-        self.actionPrint = QtWidgets.QAction("print")
-        self.actionPrint.setShortcut(QKeySequence("Ctrl+p"))
-        self.actionOpen.setShortcut(QKeySequence("Ctrl+o"))
-        self.actionSave.setShortcut(QKeySequence("Ctrl+s"))
-        self.actionPrint.setIcon(QIcon("./data/print.ico"))
-        self.actionOpen.setIcon(QIcon("./data/open.ico"))
-        self.actionSave.setIcon(QIcon("./data/save.ico"))
-        self.actionNew.setIcon(QIcon("./data/newfile.ico"))
+        menu_file = self.menu_Bar.addMenu("file")
+        self.action_open = QtWidgets.QAction("open")
+        self.action_save = QtWidgets.QAction("save")
+        self.action_new = QtWidgets.QAction("new")
+        self.action_print = QtWidgets.QAction("print")
+        self.action_print.setShortcut(QKeySequence("Ctrl+p"))
+        self.action_open.setShortcut(QKeySequence("Ctrl+o"))
+        self.action_save.setShortcut(QKeySequence("Ctrl+s"))
+        self.action_print.setIcon(QIcon("./data/print.ico"))
+        self.action_open.setIcon(QIcon("./data/open.ico"))
+        self.action_save.setIcon(QIcon("./data/save.ico"))
+        self.action_new.setIcon(QIcon("./data/newfile.ico"))
 
-        self.menuFile.addAction(self.actionOpen)
-        self.menuFile.addAction(self.actionSave)
-        self.menuFile.addAction(self.actionNew)
-        self.menuFile.addAction(self.actionPrint)
+        menu_file.addAction(self.action_open)
+        menu_file.addAction(self.action_save)
+        menu_file.addAction(self.action_new)
+        menu_file.addAction(self.action_print)
 
-        self.menuEdit = self.menuBar.addMenu("edit")
-        self.actionRegister = QtWidgets.QAction("register")
-        self.actionSearch = QtWidgets.QAction("search")
-        self.actionChange = QtWidgets.QAction("change")
-        self.actionRegister.setShortcut(QKeySequence("Ctrl+n"))
-        self.actionSearch.setShortcut(QKeySequence("Ctrl+f"))
-        self.actionChange.setShortcut(QKeySequence("Ctrl+d"))
-        self.actionSearch.setIcon(QIcon("./data/search.ico"))
-        self.actionChange.setIcon(QIcon("./data/change.ico"))
-        self.actionRegister.setIcon(QIcon("./data/register.ico"))
+        menu_edit = self.menu_Bar.addMenu("edit")
+        self.action_register = QtWidgets.QAction("register")
+        self.action_search = QtWidgets.QAction("search")
+        self.action_change = QtWidgets.QAction("change")
+        self.action_register.setShortcut(QKeySequence("Ctrl+n"))
+        self.action_search.setShortcut(QKeySequence("Ctrl+f"))
+        self.action_change.setShortcut(QKeySequence("Ctrl+d"))
+        self.action_search.setIcon(QIcon("./data/search.ico"))
+        self.action_change.setIcon(QIcon("./data/change.ico"))
+        self.action_register.setIcon(QIcon("./data/register.ico"))
 
-        self.menuEdit.addAction(self.actionRegister)
-        self.menuEdit.addAction(self.actionSearch)
-        self.menuEdit.addAction(self.actionChange)
+        menu_edit.addAction(self.action_register)
+        menu_edit.addAction(self.action_search)
+        menu_edit.addAction(self.action_change)
 
-    def setup_pView(self):
-        self.pView = QtWidgets.QWidget()
-        self.stackedWidget.addWidget(self.pView)
+    def setup_p_view(self):
+        self.p_view = QtWidgets.QWidget()
+        self.stacked_widget.addWidget(self.p_view)
 
-        self.pViewTable = QtWidgets.QTableWidget(self.pView)
-        self.pViewTable.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.pViewTable.setWordWrap(True)
-        self.pViewTable.setColumnCount(7)
-        self.pViewTable.setHorizontalHeaderLabels(
-            ['username', 'devname', 'devtype', 'os', "comment", "extras", "datetime"])
-        self.pViewTable.horizontalHeader().setStretchLastSection(True)
+        # TODO header labels:
+        self.model = QStandardItemModel(self.p_view)
+        self.model.setHorizontalHeaderLabels(["0", "1", "2"])
 
-        self.btRegisterNew = QtWidgets.QPushButton("register new", self.pView)
+        self.filter = QSortFilterProxyModel()
+        self.filter.setSourceModel(self.model)
+        self.filter.setFilterKeyColumn(0)
+        self.filter.setFilterCaseSensitivity(Qt.CaseInsensitive)
 
-        pViewLayout = QtWidgets.QVBoxLayout(self.pView)
-        pViewLayout.addWidget(self.pViewTable)
-        pViewLayout.addWidget(self.btRegisterNew)
+        self.table = QtWidgets.QTableView(self.p_view)
+        self.table.setModel(self.filter)
+        self.table.horizontalHeader().setStretchLastSection(True)
+        self.table.setSortingEnabled(True)
+        
+        # TODO search labels
+        self.p_view_search_line_edit = QtWidgets.QLineEdit(self.p_view)
+        self.p_view_combo_search_key = QtWidgets.QComboBox(self.p_view)
+        self.p_view_combo_search_key.addItems(["column 0", "column 1", "column 2"])
+        self.bt_register_new = QtWidgets.QPushButton("register new", self.p_view)
 
-    def setup_pRegister(self):
-        self.pRegister = QtWidgets.QWidget()
-        self.stackedWidget.addWidget(self.pRegister)
+        p_view_layout = QtWidgets.QVBoxLayout(self.p_view)
+        h_layout = QHBoxLayout(self.p_view)
+        h_layout.addWidget(self.p_view_search_line_edit)
+        h_layout.addWidget(self.p_view_combo_search_key)
 
-        self.lUser = QtWidgets.QLabel("Username", self.pRegister)
-        self.inUsername = QtWidgets.QLineEdit(self.pRegister)
-        self.lDeviceName = QtWidgets.QLabel("Devicename", self.pRegister)
-        self.inDevicename = QtWidgets.QLineEdit(self.pRegister)
-        self.lDeviceType = QtWidgets.QLabel("DeviceType", self.pRegister)
-        self.inComboboxDevicetype = QtWidgets.QComboBox(self.pRegister)
-        self.lOs = QtWidgets.QLabel("OS", self.pRegister)
-        self.inComboboxOs = QtWidgets.QComboBox(self.pRegister)
-        self.lComment = QtWidgets.QLabel("Comment", self.pRegister)
-        self.textEditComment = QtWidgets.QTextEdit(self.pRegister)
-        self.btRegister = QtWidgets.QPushButton("register", self.pRegister)
-        self.btCancelRegister = QtWidgets.QPushButton("cancel", self.pRegister)
+        p_view_layout.addWidget(self.table)
+        # p_view_layout.addWidget(self.p_view_search_line_edit)
+        # p_view_layout.addWidget(self.p_view_combo_search_key)
+        p_view_layout.addLayout(h_layout)
+        p_view_layout.addWidget(self.bt_register_new)
+        self.p_view.setLayout(p_view_layout)
 
-        pRegisterLayout = QtWidgets.QVBoxLayout(self.pRegister)
-        pRegisterLayout.addWidget(self.lUser)
-        pRegisterLayout.addWidget(self.inUsername)
-        pRegisterLayout.addWidget(self.lDeviceName)
-        pRegisterLayout.addWidget(self.inDevicename)
-        pRegisterLayout.addWidget(self.lDeviceType)
-        pRegisterLayout.addWidget(self.inComboboxDevicetype)
-        pRegisterLayout.addWidget(self.lOs)
-        pRegisterLayout.addWidget(self.inComboboxOs)
-        pRegisterLayout.addWidget(self.lComment)
-        pRegisterLayout.addWidget(self.textEditComment)
-        pRegisterLayout.addWidget(self.btRegister)
-        pRegisterLayout.addWidget(self.btCancelRegister)
 
-    def setup_pSearch(self):
-        self.pSearch = QtWidgets.QWidget()
-        self.stackedWidget.addWidget(self.pSearch)
+    def setup_p_register(self):
+        self.p_register = QtWidgets.QWidget()
+        self.stacked_widget.addWidget(self.p_register)
 
-        self.lUserSearch = QtWidgets.QLabel("Enter username to search for", self.pSearch)
-        self.inUserSearch = QtWidgets.QLineEdit(self.pSearch)
-        self.lOutputsearch = QtWidgets.QLabel("Output", self.pSearch)
-        self.btSearch = QtWidgets.QPushButton("search", self.pSearch)
-        self.btCancelSearch = QtWidgets.QPushButton("cancel", self.pSearch)
-        self.pSearchTable = QtWidgets.QTableWidget(self.pSearch)
-        self.pSearchTable.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.pSearchTable.setWordWrap(True)
-        self.pSearchTable.setColumnCount(7)
-        self.pSearchTable.setHorizontalHeaderLabels(['username', 'devname', 'devtype', 'os', "comment", "extras", "datetime"])
-        self.pSearchTable.horizontalHeader().setStretchLastSection(True)
+        l_user = QtWidgets.QLabel("Username", self.p_register)
+        self.in_username = QtWidgets.QLineEdit(self.p_register)
+        l_devicename = QtWidgets.QLabel("Devicename", self.p_register)
+        self.in_devicename = QtWidgets.QLineEdit(self.p_register)
+        l_devicetype = QtWidgets.QLabel("DeviceType", self.p_register)
+        self.in_combobox_devicetype = QtWidgets.QComboBox(self.p_register)
+        l_os = QtWidgets.QLabel("OS", self.p_register)
+        self.in_combobox_os = QtWidgets.QComboBox(self.p_register)
+        l_comment = QtWidgets.QLabel("Comment", self.p_register)
+        self.text_edit_comment = QtWidgets.QTextEdit(self.p_register)
+        self.bt_register = QtWidgets.QPushButton("register", self.p_register)
+        self.bt_cancel_register = QtWidgets.QPushButton("cancel", self.p_register)
 
-        pSearchLayout = QtWidgets.QVBoxLayout(self.pSearch)
-        pSearchLayout.addWidget(self.lUserSearch)
-        pSearchLayout.addWidget(self.inUserSearch)
-        pSearchLayout.addWidget(self.lOutputsearch)
-        pSearchLayout.addWidget(self.pSearchTable)
-        pSearchLayout.addWidget(self.btSearch)
-        pSearchLayout.addWidget(self.btCancelSearch)
+        p_register_layout = QtWidgets.QVBoxLayout(self.p_register)
+        p_register_layout.addWidget(l_user)
+        p_register_layout.addWidget(self.in_username)
+        p_register_layout.addWidget(l_devicename)
+        p_register_layout.addWidget(self.in_devicename)
+        p_register_layout.addWidget(l_devicetype)
+        p_register_layout.addWidget(self.in_combobox_devicetype)
+        p_register_layout.addWidget(l_os)
+        p_register_layout.addWidget(self.in_combobox_os)
+        p_register_layout.addWidget(l_comment)
+        p_register_layout.addWidget(self.text_edit_comment)
+        p_register_layout.addWidget(self.bt_register)
+        p_register_layout.addWidget(self.bt_cancel_register)
+    
+    # TODO: still necessary?
+    def setup_p_change(self):
+        self.p_change = QtWidgets.QWidget()
+        self.stacked_widget.addWidget(self.p_change)
 
-    def setup_pChange(self):
-        self.pChange = QtWidgets.QWidget()
-        self.stackedWidget.addWidget(self.pChange)
+        self.p_line_edit = QtWidgets.QWidget()
+        self.p_combo_box = QtWidgets.QWidget()
+        self.change_stacked_widget = QtWidgets.QStackedWidget(self.p_change)
+        self.change_stacked_widget.addWidget(self.p_line_edit)
+        self.change_stacked_widget.addWidget(self.p_combo_box)
 
-        self.pLineEdit = QtWidgets.QWidget()
-        self.pComboBox = QtWidgets.QWidget()
-        self.changeStackedWidget = QtWidgets.QStackedWidget(self.pChange)
-        self.changeStackedWidget.addWidget(self.pLineEdit)
-        self.changeStackedWidget.addWidget(self.pComboBox)
+        self.l_change_device = QtWidgets.QLabel("devicename", self.p_change)
+        self.inComboBoxDevicename = QtWidgets.QComboBox(self.p_change)
+        self.lChangeParamtype = QtWidgets.QLabel("Paramtype", self.p_change)
+        self.inComboBoxChangeParamtype = QtWidgets.QComboBox(self.p_change)
+        self.lChangeNewVal = QtWidgets.QLabel("new value", self.p_change)
+        self.inComboBoxChangeNewval = QtWidgets.QComboBox(self.p_combo_box)
+        self.inChangeNewval = QtWidgets.QLineEdit(self.p_line_edit)
+        self.btChange = QtWidgets.QPushButton("change", self.p_change)
+        self.btCancelChange = QtWidgets.QPushButton("cancel", self.p_change)
 
-        self.lChangeDevice = QtWidgets.QLabel("devicename", self.pChange)
-        self.inComboBoxDevicename = QtWidgets.QComboBox(self.pChange)
-        self.lChangeParamtype = QtWidgets.QLabel("Paramtype", self.pChange)
-        self.inComboBoxChangeParamtype = QtWidgets.QComboBox(self.pChange)
-        self.lChangeNewVal = QtWidgets.QLabel("new value", self.pChange)
-        self.inComboBoxChangeNewval = QtWidgets.QComboBox(self.pComboBox)
-        self.inChangeNewval = QtWidgets.QLineEdit(self.pLineEdit)
-        self.btChange = QtWidgets.QPushButton("change", self.pChange)
-        self.btCancelChange = QtWidgets.QPushButton("cancel", self.pChange)
-
-        pChangeLayout = QtWidgets.QVBoxLayout(self.pChange)
-        pChangeLayout.addWidget(self.lChangeDevice)
+        pChangeLayout = QtWidgets.QVBoxLayout(self.p_change)
+        pChangeLayout.addWidget(self.l_change_device)
         pChangeLayout.addWidget(self.inComboBoxDevicename)
         pChangeLayout.addWidget(self.lChangeParamtype)
         pChangeLayout.addWidget(self.inComboBoxChangeParamtype)
         pChangeLayout.addWidget(self.lChangeNewVal)
-        pChangeLayout.addWidget(self.changeStackedWidget)
+        pChangeLayout.addWidget(self.change_stacked_widget)
         pChangeLayout.addStretch(100)
         pChangeLayout.addWidget(self.btChange)
         pChangeLayout.addWidget(self.btCancelChange)
 
-        changeStackedWidgetlayout = QtWidgets.QVBoxLayout(self.pComboBox)
-        changeStackedWidgetlayout2 = QtWidgets.QVBoxLayout(self.pLineEdit)
+        changeStackedWidgetlayout = QtWidgets.QVBoxLayout(self.p_combo_box)
+        changeStackedWidgetlayout2 = QtWidgets.QVBoxLayout(self.p_line_edit)
         changeStackedWidgetlayout.addWidget(self.inComboBoxChangeNewval)
         changeStackedWidgetlayout2.addWidget(self.inChangeNewval)
 
-    def setup_pCreate(self):
-        self.pCreate = QtWidgets.QWidget()
-        self.stackedWidget.addWidget(self.pCreate)
+    def setup_p_create(self):
+        self.p_create = QtWidgets.QWidget()
+        self.stacked_widget.addWidget(self.p_create)
 
-        self.lNewFilepath = QtWidgets.QLabel("new filepath", self.pCreate)
-        self.btModNewPath = QtWidgets.QPushButton("mod filepath", self.pCreate)
-        self.inNewFilepath = QtWidgets.QLineEdit(self.pCreate)
-        self.lNewFilename = QtWidgets.QLabel("new filename", self.pCreate)
-        self.inNewFilename = QtWidgets.QLineEdit(self.pCreate)
-        self.btCreate = QtWidgets.QPushButton("create", self.pCreate)
-        self.btCancelCreate = QtWidgets.QPushButton("cancel", self.pCreate)
+        l_new_filepath = QtWidgets.QLabel("new filepath", self.p_create)
+        self.bt_mod_new_path = QtWidgets.QPushButton("mod filepath", self.p_create)
+        self.in_new_filepath = QtWidgets.QLineEdit(self.p_create)
+        l_new_filename = QtWidgets.QLabel("new filename", self.p_create)
+        self.in_new_filename = QtWidgets.QLineEdit(self.p_create)
+        self.bt_create = QtWidgets.QPushButton("create", self.p_create)
+        self.bt_cancel_create = QtWidgets.QPushButton("cancel", self.p_create)
 
-        pCreateLayout = QtWidgets.QVBoxLayout(self.pCreate)
-        pCreateLayout.addWidget(self.lNewFilepath)
-        pCreateLayout.addWidget(self.inNewFilepath)
-        pCreateLayout.addWidget(self.lNewFilename)
-        pCreateLayout.addWidget(self.inNewFilename)
-        pCreateLayout.addStretch(100)
-        pCreateLayout.addWidget(self.btModNewPath)
-        pCreateLayout.addWidget(self.btCreate)
-        pCreateLayout.addWidget(self.btCancelCreate)
+        p_create_layout = QtWidgets.QVBoxLayout(self.p_create)
+        p_create_layout.addWidget(l_new_filepath)
+        p_create_layout.addWidget(self.in_new_filepath)
+        p_create_layout.addWidget(l_new_filename)
+        p_create_layout.addWidget(self.in_new_filename)
+        p_create_layout.addStretch(100)
+        p_create_layout.addWidget(self.bt_mod_new_path)
+        p_create_layout.addWidget(self.bt_create)
+        p_create_layout.addWidget(self.bt_cancel_create)
 
     def setup_signals(self):
         # return pressed
-        self.inUserSearch.returnPressed.connect(
-            lambda: self.validate(self.search, [self.inUserSearch], checkregistered=True))
-        self.inChangeNewval.returnPressed.connect(lambda: self.validate(self.change, data=2, checkregistered=True))
-        self.inNewFilename.returnPressed.connect(
-            lambda: self.validate(self.new, [self.inNewFilepath, self.inNewFilename], data=False))
-        # doubleclick
-        self.pViewTable.cellDoubleClicked.connect(
-            lambda: self.d_click_table_devicename(self.pViewTable.currentItem().text()))
-        self.pSearchTable.cellDoubleClicked.connect(
-            lambda: self.d_click_table_devicename(self.pSearchTable.currentItem().text()))
+        
+        # line edit
+        self.p_view_search_line_edit.textChanged.connect(self.filter.setFilterRegExp)
+
+        # self.inChangeNewval.returnPressed.connect(lambda: self.validate(self.change, data=2, checkregistered=True))
+        self.in_new_filename.returnPressed.connect(
+            lambda: self.validate(self.new, [self.in_new_filepath, self.in_new_filename], data=False))
+
         # comboboxes
-        self.inComboboxDevicetype.addItems(["choose here"] + [x.__name__ for x in valid_devices])
-        self.inComboboxDevicetype.currentIndexChanged.connect(lambda: self.update_combobox(self.inComboboxOs,
+        self.in_combobox_devicetype.addItems(["choose here"] + [x.__name__ for x in valid_devices])
+        self.in_combobox_devicetype.currentIndexChanged.connect(lambda: self.update_combobox(self.in_combobox_os,
                                                                                                valid_devices[
-                                                                                                   self.inComboboxDevicetype.currentIndex() - 1].expected_OS))
+                                                                                                   self.in_combobox_devicetype.currentIndex() - 1].expected_OS))
+        self.p_view_combo_search_key.currentIndexChanged.connect(lambda: self.filter.setFilterKeyColumn
+                                                                        (self.p_view_combo_search_key.currentIndex()))
+
         # btns
-        self.btSearch.clicked.connect(
-            lambda: self.validate(self.search, [self.inUserSearch], checkregistered=True))
-        self.btRegisterNew.clicked.connect(lambda: self.stackedWidget.setCurrentWidget(self.pRegister))
-        self.btRegister.clicked.connect(
-            lambda: self.validate(self.register, line_edit_list=[self.inUsername, self.inDevicename],
-                                  combo_box_list=[self.inComboboxDevicetype, self.inComboboxOs],
+        self.bt_register_new.clicked.connect(lambda: self.stacked_widget.setCurrentWidget(self.p_register))
+        self.bt_register.clicked.connect(
+            lambda: self.validate(self.register, line_edit_list=[self.in_username, self.in_devicename],
+                                  combo_box_list=[self.in_combobox_devicetype, self.in_combobox_os],
                                   forbidden=list(registered_devices.keys()), checkfname=True))
-        self.btChange.clicked.connect(lambda: self.validate(self.change, data=2, checkregistered=True))
-        self.btCreate.clicked.connect(
-            lambda: self.validate(self.new, [self.inNewFilepath, self.inNewFilename], data=False))
-        self.btModNewPath.clicked.connect(lambda: self.new(True))
+        # self.btChange.clicked.connect(lambda: self.validate(self.change, data=2, checkregistered=True))
+        self.bt_create.clicked.connect(
+            lambda: self.validate(self.new, [self.in_new_filepath, self.in_new_filename], data=False))
+        self.bt_mod_new_path.clicked.connect(lambda: self.new(True))
         # menu bar
-        self.actionSearch.triggered.connect(lambda: self.stackedWidget.setCurrentWidget(self.pSearch))
-        self.actionRegister.triggered.connect(lambda: self.stackedWidget.setCurrentWidget(self.pRegister))
-        self.actionChange.triggered.connect(lambda: self.change(0))
-        self.actionOpen.triggered.connect(lambda: self.open(False))
-        self.actionSave.triggered.connect(self.save)
-        self.actionNew.triggered.connect(lambda: self.new(True))
-        self.actionPrint.triggered.connect(lambda: self.validate(self.print, data=False, checkfname=True))
+        self.action_search.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.pSearch))
+        self.action_register.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.p_register))
+        self.action_change.triggered.connect(lambda: self.change(0))
+        self.action_open.triggered.connect(lambda: self.open(False))
+        self.action_save.triggered.connect(self.save)
+        self.action_new.triggered.connect(lambda: self.new(True))
+        self.action_print.triggered.connect(lambda: self.validate(self.print, data=False, checkfname=True))
         # # cancel
-        self.btCancelRegister.clicked.connect(lambda: self.cancel(
-            [self.inUsername, self.inDevicename, self.inComboboxOs, self.textEditComment]))
-        self.btCancelSearch.clicked.connect(lambda: self.cancel([self.inUserSearch]))
-        self.btCancelChange.clicked.connect(lambda: self.cancel(
-            [self.inComboBoxChangeParamtype, self.inComboBoxChangeNewval, self.inChangeNewval]))
+        self.bt_cancel_register.clicked.connect(lambda: self.cancel(
+            [self.in_username, self.in_devicename, self.in_combobox_os, self.text_edit_comment]))
+        # self.btCancelChange.clicked.connect(lambda: self.cancel(
+        #     [self.inComboBoxChangeParamtype, self.inComboBoxChangeNewval, self.inChangeNewval]))
 
     def cancel(self, widgets: list) -> None:
         """click event for all cancel buttons
@@ -270,7 +264,7 @@ class MainWindowUi(QMainWindow):
             """
         for widget in widgets:
             widget.clear()
-        self.stackedWidget.setCurrentWidget(self.pView)
+        self.stacked_widget.setCurrentWidget(self.p_view)
 
     def update_combobox(self, box, data: list) -> None:
         """ clears combo box
@@ -286,43 +280,7 @@ class MainWindowUi(QMainWindow):
         box.clear()
         box.addItems(["choose here"] + data)
 
-    def update_table(self, table, content) -> None:
-        """updates any table with data of registered_devices
-
-        first clears table, then fills up with new values
-
-        Args:
-            table: instance of pyqt5.QtWidgets.qTable
-            content: instances of any device of which its attributes will be content of table
-
-        Returns:
-            None"""
-        row = 0
-        table.clearContents()
-        table.setRowCount(len(content))
-        table.setHorizontalHeaderLabels(['username', 'devname', 'devtype', 'os', "comment", "extras", "datetime"])
-        for x in content:
-            table.setItem(row, 0, QtWidgets.QTableWidgetItem(x.user))
-            table.setItem(row, 1, QtWidgets.QTableWidgetItem(x.name))
-            table.setItem(row, 2, QtWidgets.QTableWidgetItem(x.__class__.__name__))
-            table.setItem(row, 3, QtWidgets.QTableWidgetItem(x.OS))
-            table.setItem(row, 4, QtWidgets.QTableWidgetItem(x.comment))
-            table.setItem(row, 5, QtWidgets.QTableWidgetItem(",".join([str(a) for a in x.visible_attr[2:]])))
-            table.setItem(row, 6, QtWidgets.QTableWidgetItem(x.datetime))
-            row += 1
-
-    def d_click_table_devicename(self, referenz: str) -> None:
-        """handels double click event on devicename in table widget
-
-        Args:
-            referenz: current selceted text of cell
-        Returns:
-            None
-            """
-        if referenz in registered_devices.keys():
-            self.inComboBoxDevicename.addItems(["choose here", referenz])
-            self.change(0)
-
+    # TODO: json file validation
     def validate(self, command, line_edit_list: list = None, combo_box_list: list = None, data = None, allowed: list = None, forbidden: list = None, checkfname: bool = None, checkregistered: bool = None) -> None:
         """validates user input
 
@@ -356,7 +314,7 @@ class MainWindowUi(QMainWindow):
                 if combobox.currentText() == "":
                     self.statusbar.showMessage("all comboboxes must be specified")
                     fails += 1
-        if checkfname is True and self.fname is None:
+        if checkfname is True and self.file_path is None:
             self.statusbar.showMessage("no file path specified, visit Ctrl+o or menuebar/edit/open to fix")
             fails += 1
         if checkregistered is True and len(registered_devices) == 0:
@@ -371,26 +329,21 @@ class MainWindowUi(QMainWindow):
             print("problem")
 
     def register(self) -> None:
-        """registers a new device and saves it int csv"""
-        logic.register(self.inDevicename.text(), valid_devices[self.inComboboxOs.currentIndex()],
-                       self.inUsername.text(), self.inComboboxOs.currentText(), self.textEditComment.toPlainText(),
+        """registers a new device and saves it in csv"""
+        logic.register(self.in_devicename.text(), valid_devices[self.in_combobox_os.currentIndex()],
+                       self.in_username.text(), self.in_combobox_os.currentText(), self.text_edit_comment.toPlainText(),
                        str(datetime.datetime.now()), registered_devices)
-        self.stackedWidget.setCurrentWidget(self.pView)
-        self.inDevicename.clear()
-        self.inUsername.clear()
-        self.inComboboxOs.clear()
-        self.textEditComment.clear()
-        self.update_table(self.pViewTable, registered_devices.values())
+        self.model._data.append([self.in_devicename.text(),self.in_username.text(),  str(valid_devices[self.in_combobox_os.currentIndex()].__name__),
+                       self.in_combobox_os.currentText(), self.text_edit_comment.toPlainText(),
+                       str(datetime.datetime.now())])
+        print(valid_devices[self.in_combobox_os.currentIndex()].__name__)
+        self.model.layoutChanged.emit()
+        self.stacked_widget.setCurrentWidget(self.p_view)
+        self.in_devicename.clear()
+        self.in_username.clear()
+        self.in_combobox_os.clear()
+        self.text_edit_comment.clear()
         self.save()
-
-    def search(self) -> None:
-        """searches for a given username in registered devices and outputs on statusbar"""
-        results = logic.search(self.inUserSearch.text(), registered_devices)
-        if len(results) >= 1:
-            self.update_table(self.pSearchTable, results)
-            self.statusbar.showMessage(f"found {len(results)} match/es")
-        else:
-            self.statusbar.showMessage("nothing found")
 
     def change(self, x: int) -> None:
         """changes existing device parameters
@@ -401,17 +354,17 @@ class MainWindowUi(QMainWindow):
         Args:
             x: determines a which state to execute this function """
         if x == 0:
-            self.stackedWidget.setCurrentWidget(self.pChange)
+            self.stacked_widget.setCurrentWidget(self.p_change)
             if self.inComboBoxDevicename.count() == 0:
                 self.inComboBoxDevicename.addItems(["choose here"] + list(registered_devices.keys()))
             self.inComboBoxDevicename.currentIndexChanged.connect(lambda: self.update_combobox(self.inComboBoxChangeParamtype, registered_devices.get(self.inComboBoxDevicename.currentText()).visible_attr))
             self.inComboBoxChangeParamtype.currentIndexChanged.connect(lambda: self.change(1))
         elif x == 1:
             if self.inComboBoxChangeParamtype.currentText() != "OS":
-                self.changeStackedWidget.setCurrentWidget(self.pLineEdit)
+                self.change_stacked_widget.setCurrentWidget(self.p_line_edit)
                 self.statusbar.showMessage(f"current username: {registered_devices.get(self.inComboBoxDevicename.currentText()).user}")
             else:
-                self.changeStackedWidget.setCurrentWidget(self.pComboBox)
+                self.change_stacked_widget.setCurrentWidget(self.p_combo_box)
                 self.inComboBoxChangeNewval.addItems(["choose here"] + registered_devices.get(self.inComboBoxDevicename.currentText()).expected_OS)
                 self.statusbar.showMessage(f"current os: {registered_devices.get(self.inComboBoxDevicename.currentText()).OS}")
         elif x == 2:
@@ -425,8 +378,7 @@ class MainWindowUi(QMainWindow):
             # self.inComboBoxDevicename.clear()
             self.inComboBoxChangeParamtype.clear()
             self.inComboBoxChangeNewval.clear()
-            self.update_table(self.pViewTable, registered_devices.values())
-            self.stackedWidget.setCurrentWidget(self.pView)
+            self.stacked_widget.setCurrentWidget(self.p_view)
             self.save()
 
     def open(self, test: bool) -> None:
@@ -436,37 +388,29 @@ class MainWindowUi(QMainWindow):
 
         registered_devices.clear()
         if not test:
-            self.fname = QFileDialog.getOpenFileName(self, "open file", "c://", "text files (*csv)")[0]
-        with open(self.fname, "r") as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                new = [x for x in valid_devices if x.__name__ == row["device_type"]].pop(0)(row["name"], row["username"], row["comment"], row["datetime"])
-                new.OS = row["OS"]
-                registered_devices[row["name"]] = new
+            self.file_path = QFileDialog.getOpenFileName(self, "open file", "c://", "json files (*json)")[0]
+        with open(self.file_path, "r") as file:
+
+            data = dict(json.load(file)).values()
+            for value in data:
+                row = []
+                for item in value:
+                    cell = QStandardItem(str(item))
+                    row.append(cell)
+                self.model.appendRow(row)
 
         self.statusbar.showMessage("")
-        self.update_table(self.pViewTable, registered_devices.values())
 
     def save(self) -> None:
         """saves content fo registered_devices into specified csv file"""
 
-        if not self.fname:
+        if not self.file_path:
             self.statusbar.showMessage("no file path set all changes get lost if closed")
         else:
-            with open(self.fname, 'w',) as csvfile:
-                fieldnames = ["name", "username", "OS", "device_type", "comment", "extras", "datetime"]
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-                writer.writeheader()
-                for x in registered_devices.values():
-                    writer.writerow(
-                        {"name": x.name,
-                         "username": getattr(x, x.visible_attr[0]),
-                         "OS": getattr(x, x.visible_attr[1]),
-                         "device_type": x.__class__.__name__,
-                         "extras": [(a, getattr(x, a)) for a in x.visible_attr[2:-1]],
-                         "comment": x.comment,
-                         "datetime": x.datetime
-                         })
+            with open(self.file_path, 'w',) as file:
+                data = {k: v for (k, v) in enumerate(self.model._data)}
+                json.dump(data, file)
+
 
     def new(self, stage: bool, test: bool=False) -> None:
         """creates new csv file to save into
@@ -478,19 +422,18 @@ class MainWindowUi(QMainWindow):
         if stage is True:
             if not test:
                 self.dir = QFileDialog.getExistingDirectory(self, "select a folder", "c://")
-            self.stackedWidget.setCurrentWidget(self.pCreate)
-            self.inNewFilepath.setText(self.dir)
+            self.stacked_widget.setCurrentWidget(self.p_create)
+            self.in_new_filepath.setText(self.dir)
             registered_devices.clear()
 
         else:
-            self.fname = self.dir + f"/{self.inNewFilename.text()}.csv"
+            self.file_path = self.dir + f"/{self.in_new_filename.text()}.json"
             self.save()
-            self.pViewTable.clearContents()
-            self.stackedWidget.setCurrentWidget(self.pView)
+            self.stacked_widget.setCurrentWidget(self.p_view)
 
     def print(self, test) -> None:
         """setup and preview pViewTable for paper printing"""
-        with open(self.fname) as f:
+        with open(self.file_path) as f:
             text = " ".join(f.readlines())
         self.document = QtWidgets.QTextEdit()
         self.document.setText(text)
@@ -500,6 +443,8 @@ class MainWindowUi(QMainWindow):
             previewDialog = QPrintPreviewDialog(printer, self)
             previewDialog.paintRequested.connect(lambda: self.document.print_(printer))
             previewDialog.exec_()
+
+
 class StartScreenUi(QWidget):
     """sets up ui properties of startscreen"""
 
