@@ -2,16 +2,156 @@ import datetime
 import json
 import sys
 
-from PySide2.QtCore import QSortFilterProxyModel
+from PySide2.QtCore import QSortFilterProxyModel, Slot, SIGNAL, SLOT
 from PySide2.QtGui import QPixmap, QIcon, QFont, QKeySequence, Qt, QStandardItemModel, QStandardItem
 from PySide2.QtPrintSupport import QPrinter, QPrintPreviewDialog
-from PySide2.QtWidgets import QMainWindow, QWidget, QApplication, QFileDialog, QHBoxLayout
+from PySide2.QtWidgets import QMainWindow, QWidget, QApplication, QFileDialog, QItemDelegate, QComboBox, QLineEdit, QHeaderView
 from PySide2 import QtWidgets, QtCore
+
 import it_hilfe.devices as devices
 import it_hilfe.it_hilfe_logic as logic
 
 registered_devices = {}
 valid_devices = [devices.WindowsLapTop, devices.WindowsWorkStation, devices.Macbook]
+labels = ['devname', 'username', 'os', 'devtype', "comment", "datetime", "extras"]
+
+
+class FilterHeader(QHeaderView):
+    """handels line edits for filtering in tableview self.header
+
+    Returns:
+            None"""
+    filterActivated = QtCore.Signal(int)
+    """custom signal carrying index of last combobox"""
+
+    def __init__(self, parent):
+        """inits FilterHeader class"""
+        super().__init__(QtCore.Qt.Horizontal, parent)
+        self._editors = []
+        self.setStretchLastSection(True)
+        self.setDefaultAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.setSortIndicatorShown(False)
+        self.sectionResized.connect(self.adjust_in_filter_positions)
+
+    def set_filter_boxes(self, count: int) -> None:
+        """sets up line edit boxes for live filtering tableView
+
+        Returns:
+            None"""
+        while self._editors:
+            editor = self._editors.pop()
+            editor.deleteLater()
+
+        editor0 = QLineEdit(self.parent())
+        editor0.setPlaceholderText('Filter')
+        editor0.textChanged.connect(lambda: self.filterActivated.emit(0))
+
+        editor1 = QLineEdit(self.parent())
+        editor1.setPlaceholderText('Filter')
+        editor1.textChanged.connect(lambda: self.filterActivated.emit(1))
+
+        editor2 = QLineEdit(self.parent())
+        editor2.setPlaceholderText('Filter')
+        editor2.textChanged.connect(lambda: self.filterActivated.emit(2))
+
+        editor3 = QLineEdit(self.parent())
+        editor3.setPlaceholderText('Filter')
+        editor3.textChanged.connect(lambda: self.filterActivated.emit(3))
+
+        editor4 = QLineEdit(self.parent())
+        editor4.setPlaceholderText('Filter')
+        editor4.textChanged.connect(lambda: self.filterActivated.emit(4))
+
+        editor5 = QLineEdit(self.parent())
+        editor5.setPlaceholderText('Filter')
+        editor5.textChanged.connect(lambda: self.filterActivated.emit(5))
+
+        editor6 = QLineEdit(self.parent())
+        editor6.setPlaceholderText('Filter')
+        editor6.textChanged.connect(lambda: self.filterActivated.emit(6))
+
+        self._editors.append(editor0)
+        self._editors.append(editor1)
+        self._editors.append(editor2)
+        self._editors.append(editor3)
+        self._editors.append(editor4)
+        self._editors.append(editor5)
+        self._editors.append(editor6)
+
+
+
+    def sizeHint(self) -> int:
+        """returns height of headerView
+
+        Returns:
+            size: describes the height of headerView"""
+        size = super().sizeHint()
+        if self._editors:
+            height = self._editors[0].sizeHint().height()
+            size.setHeight(size.height() + height)
+        return size
+
+    def updateGeometries(self) -> None:
+        """sets viewport of geometries
+
+        Returns:
+            None"""
+
+        if self._editors:
+            height = self._editors[0].sizeHint().height()
+            self.setViewportMargins(0, 0, 0, height)
+        else:
+            self.setViewportMargins(0, 0, 0, 0)
+        super().updateGeometries()
+        self.adjust_in_filter_positions()
+
+    def adjust_in_filter_positions(self) -> None:
+        """keeps positions of filtering line edits right if columns get resized
+
+        Returns:
+            None"""
+
+        for index, editor in enumerate(self._editors):
+            height = editor.sizeHint().height()
+            editor.move(self.sectionPosition(index) - self.offset() + 16, height+3)
+            editor.resize(self.sectionSize(index), height)
+
+    def filter_text(self, index: int) -> str:
+        """returns currentText of filter line edit at a given index
+
+        Returns:
+            
+            """
+        if 0 <= index < len(self._editors):
+            return self._editors[index].text()
+        return ''
+
+    def hide_show(self):
+        for editor in self._editors:
+            if editor.isVisible():
+                editor.hide()
+            else:
+                editor.show()
+
+
+class ComboDelegate(QItemDelegate):
+    """handels os change in form of a combobox directly in tableView"""
+    
+    def createEditor(self, parent, option, proxyModelIndex):
+        neighbour_data = startscreen.main.filters[-1][1].data(startscreen.main.filters[-1][1].index(proxyModelIndex.row(), proxyModelIndex.column()+1))
+        self.combo_OS = [x for x in valid_devices if x.__name__ == neighbour_data].pop().expected_OS
+        combo = QComboBox(parent)
+        combo.addItems(self.combo_OS)
+        self.connect(combo, SIGNAL("currentIndexChanged(int)"), self, SLOT("currentIndexChanged()"))
+        return combo
+
+    def setModelData(self, combo, model, index):
+        comboIndex = combo.currentIndex()
+        text = self.combo_OS[comboIndex]
+        model.setData(index, text)
+
+    def flags(self, index):
+        return Qt.ItemIsEditable | Qt.ItemIsEnabled
 
 
 class MainWindowUi(QMainWindow):
@@ -29,17 +169,16 @@ class MainWindowUi(QMainWindow):
         self.setWindowIcon(QIcon("./data/favicon.ico"))
         self.file_path = None
         self.dir = None
+        self.last_open_file_path = None
 
         # setup statusbar
         self.statusbar = self.statusBar()
         # setup stackedwidget
         self.stacked_widget = QtWidgets.QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
-        # setup rest
         self.setup_menubar()
         self.setup_p_view()
         self.setup_p_register()
-        # self.setup_pChange()
         self.setup_p_create()
         self.setup_signals()
 
@@ -86,37 +225,38 @@ class MainWindowUi(QMainWindow):
         self.p_view = QtWidgets.QWidget()
         self.stacked_widget.addWidget(self.p_view)
 
-        # TODO header labels:
         self.model = QStandardItemModel(self.p_view)
-        self.model.setHorizontalHeaderLabels(["0", "1", "2"])
+        self.model.setHorizontalHeaderLabels(labels)
 
-        self.filter = QSortFilterProxyModel()
-        self.filter.setSourceModel(self.model)
-        self.filter.setFilterKeyColumn(0)
-        self.filter.setFilterCaseSensitivity(Qt.CaseInsensitive)
+        delegate = ComboDelegate()
 
         self.table = QtWidgets.QTableView(self.p_view)
-        self.table.setModel(self.filter)
+        self.table.setModel(self.model)
+        self.table.setItemDelegateForColumn(2, delegate)
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.setSortingEnabled(True)
-        
-        # TODO search labels
-        self.p_view_search_line_edit = QtWidgets.QLineEdit(self.p_view)
-        self.p_view_combo_search_key = QtWidgets.QComboBox(self.p_view)
-        self.p_view_combo_search_key.addItems(["column 0", "column 1", "column 2"])
+
         self.bt_register_new = QtWidgets.QPushButton("register new", self.p_view)
+        self.bt_hide_show_filter = QtWidgets.QPushButton("hide/show filter inputs", self.p_view)
 
         p_view_layout = QtWidgets.QVBoxLayout(self.p_view)
-        h_layout = QHBoxLayout(self.p_view)
-        h_layout.addWidget(self.p_view_search_line_edit)
-        h_layout.addWidget(self.p_view_combo_search_key)
 
         p_view_layout.addWidget(self.table)
-        # p_view_layout.addWidget(self.p_view_search_line_edit)
-        # p_view_layout.addWidget(self.p_view_combo_search_key)
-        p_view_layout.addLayout(h_layout)
         p_view_layout.addWidget(self.bt_register_new)
+        p_view_layout.addWidget(self.bt_hide_show_filter)
         self.p_view.setLayout(p_view_layout)
+
+        self.header = FilterHeader(self.table)
+        self.header.set_filter_boxes(self.model.columnCount())
+
+        self.filters = []
+        # if len(self.filters) == 0:
+        #     filter = QSortFilterProxyModel()
+        #     filter.setSourceModel(self.model)
+        #     filter.setFilterRegExp("")
+        #     self.filters.append((0, filter))
+
+        self.table.setHorizontalHeader(self.header)
 
 
     def setup_p_register(self):
@@ -150,43 +290,6 @@ class MainWindowUi(QMainWindow):
         p_register_layout.addWidget(self.bt_register)
         p_register_layout.addWidget(self.bt_cancel_register)
     
-    # TODO: still necessary?
-    def setup_p_change(self):
-        self.p_change = QtWidgets.QWidget()
-        self.stacked_widget.addWidget(self.p_change)
-
-        self.p_line_edit = QtWidgets.QWidget()
-        self.p_combo_box = QtWidgets.QWidget()
-        self.change_stacked_widget = QtWidgets.QStackedWidget(self.p_change)
-        self.change_stacked_widget.addWidget(self.p_line_edit)
-        self.change_stacked_widget.addWidget(self.p_combo_box)
-
-        self.l_change_device = QtWidgets.QLabel("devicename", self.p_change)
-        self.inComboBoxDevicename = QtWidgets.QComboBox(self.p_change)
-        self.lChangeParamtype = QtWidgets.QLabel("Paramtype", self.p_change)
-        self.inComboBoxChangeParamtype = QtWidgets.QComboBox(self.p_change)
-        self.lChangeNewVal = QtWidgets.QLabel("new value", self.p_change)
-        self.inComboBoxChangeNewval = QtWidgets.QComboBox(self.p_combo_box)
-        self.inChangeNewval = QtWidgets.QLineEdit(self.p_line_edit)
-        self.btChange = QtWidgets.QPushButton("change", self.p_change)
-        self.btCancelChange = QtWidgets.QPushButton("cancel", self.p_change)
-
-        pChangeLayout = QtWidgets.QVBoxLayout(self.p_change)
-        pChangeLayout.addWidget(self.l_change_device)
-        pChangeLayout.addWidget(self.inComboBoxDevicename)
-        pChangeLayout.addWidget(self.lChangeParamtype)
-        pChangeLayout.addWidget(self.inComboBoxChangeParamtype)
-        pChangeLayout.addWidget(self.lChangeNewVal)
-        pChangeLayout.addWidget(self.change_stacked_widget)
-        pChangeLayout.addStretch(100)
-        pChangeLayout.addWidget(self.btChange)
-        pChangeLayout.addWidget(self.btCancelChange)
-
-        changeStackedWidgetlayout = QtWidgets.QVBoxLayout(self.p_combo_box)
-        changeStackedWidgetlayout2 = QtWidgets.QVBoxLayout(self.p_line_edit)
-        changeStackedWidgetlayout.addWidget(self.inComboBoxChangeNewval)
-        changeStackedWidgetlayout2.addWidget(self.inChangeNewval)
-
     def setup_p_create(self):
         self.p_create = QtWidgets.QWidget()
         self.stacked_widget.addWidget(self.p_create)
@@ -211,11 +314,12 @@ class MainWindowUi(QMainWindow):
 
     def setup_signals(self):
         # return pressed
-        
-        # line edit
-        self.p_view_search_line_edit.textChanged.connect(self.filter.setFilterRegExp)
 
-        # self.inChangeNewval.returnPressed.connect(lambda: self.validate(self.change, data=2, checkregistered=True))
+        # header
+        self.header.filterActivated.connect(self.handleFilterActivated)
+
+        # line edit
+
         self.in_new_filename.returnPressed.connect(
             lambda: self.validate(self.new, [self.in_new_filepath, self.in_new_filename], data=False))
 
@@ -224,16 +328,13 @@ class MainWindowUi(QMainWindow):
         self.in_combobox_devicetype.currentIndexChanged.connect(lambda: self.update_combobox(self.in_combobox_os,
                                                                                                valid_devices[
                                                                                                    self.in_combobox_devicetype.currentIndex() - 1].expected_OS))
-        self.p_view_combo_search_key.currentIndexChanged.connect(lambda: self.filter.setFilterKeyColumn
-                                                                        (self.p_view_combo_search_key.currentIndex()))
-
         # btns
+        self.bt_hide_show_filter.clicked.connect(lambda: self.header.hide_show())
         self.bt_register_new.clicked.connect(lambda: self.stacked_widget.setCurrentWidget(self.p_register))
         self.bt_register.clicked.connect(
             lambda: self.validate(self.register, line_edit_list=[self.in_username, self.in_devicename],
                                   combo_box_list=[self.in_combobox_devicetype, self.in_combobox_os],
                                   forbidden=list(registered_devices.keys()), checkfname=True))
-        # self.btChange.clicked.connect(lambda: self.validate(self.change, data=2, checkregistered=True))
         self.bt_create.clicked.connect(
             lambda: self.validate(self.new, [self.in_new_filepath, self.in_new_filename], data=False))
         self.bt_mod_new_path.clicked.connect(lambda: self.new(True))
@@ -241,7 +342,7 @@ class MainWindowUi(QMainWindow):
         self.action_search.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.pSearch))
         self.action_register.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.p_register))
         self.action_change.triggered.connect(lambda: self.change(0))
-        self.action_open.triggered.connect(lambda: self.open(False))
+        self.action_open.triggered.connect(self.get_open_file_path)
         self.action_save.triggered.connect(self.save)
         self.action_new.triggered.connect(lambda: self.new(True))
         self.action_print.triggered.connect(lambda: self.validate(self.print, data=False, checkfname=True))
@@ -281,7 +382,7 @@ class MainWindowUi(QMainWindow):
         box.addItems(["choose here"] + data)
 
     # TODO: json file validation
-    def validate(self, command, line_edit_list: list = None, combo_box_list: list = None, data = None, allowed: list = None, forbidden: list = None, checkfname: bool = None, checkregistered: bool = None) -> None:
+    def validate(self, command, file_path: str = None, line_edit_list: list = None, combo_box_list: list = None, data=None, allowed: list = None, forbidden: list = None, checkfname: bool = None, checkregistered: bool = None) -> None:
         """validates user input
 
         Args:
@@ -320,24 +421,55 @@ class MainWindowUi(QMainWindow):
         if checkregistered is True and len(registered_devices) == 0:
             self.statusbar.showMessage("nothing registered yet")
             fails += 1
+        if file_path is not None:
+            with open(file_path) as file:
+                loaded = dict(json.load(file))
+                for key in loaded.keys():
+                    if key not in allowed:
+                        self.statusbar.showMessage("invalid json file")
+                        fails += 1
         if fails == 0:
             if data is None:
                 command()
             else:
                 command(data)
         else:
-            print("problem")
+            print(f"problem\ncommand: {command.__name__}\nfails: {fails}")
+
+    @Slot(int)
+    def handleFilterActivated(self, in_filter_index: int) -> None:
+        text = self.table.horizontalHeader().filter_text(in_filter_index)
+        check = [x for x in self.filters if x[0] == in_filter_index]
+
+        if len(check) == 0:
+            filter = QSortFilterProxyModel()
+            if len(self.filters) == 0:
+                filter.setSourceModel(self.model)
+            else:
+                filter.setSourceModel(self.filters[-1][1])
+            filter.setFilterKeyColumn(in_filter_index)
+            filter.setFilterCaseSensitivity(Qt.CaseInsensitive)
+            self.table.setModel(filter)
+            filter.setFilterRegExp(str(text))
+            self.filters.append((in_filter_index, filter))
+
+        elif len(check) == 1:
+            self.filters[-1][1].setFilterRegExp(str(text))
+        else:
+            print(check)
 
     def register(self) -> None:
         """registers a new device and saves it in csv"""
         logic.register(self.in_devicename.text(), valid_devices[self.in_combobox_os.currentIndex()],
                        self.in_username.text(), self.in_combobox_os.currentText(), self.text_edit_comment.toPlainText(),
                        str(datetime.datetime.now()), registered_devices)
-        self.model._data.append([self.in_devicename.text(),self.in_username.text(),  str(valid_devices[self.in_combobox_os.currentIndex()].__name__),
-                       self.in_combobox_os.currentText(), self.text_edit_comment.toPlainText(),
-                       str(datetime.datetime.now())])
-        print(valid_devices[self.in_combobox_os.currentIndex()].__name__)
-        self.model.layoutChanged.emit()
+
+        new_values = [self.in_devicename.text(), self.in_username.text(), str(valid_devices[self.in_combobox_os.currentIndex()].__name__),
+         self.in_combobox_os.currentText(), self.text_edit_comment.toPlainText(),
+         str(datetime.datetime.now())]
+        row = [QStandardItem(str(item)) for item in new_values]
+        self.model.appendRow(row)
+
         self.stacked_widget.setCurrentWidget(self.p_view)
         self.in_devicename.clear()
         self.in_username.clear()
@@ -345,72 +477,48 @@ class MainWindowUi(QMainWindow):
         self.text_edit_comment.clear()
         self.save()
 
-    def change(self, x: int) -> None:
-        """changes existing device parameters
-        x == 0: fill combobox,
-        x == 1: paramtypeIndex has changed, based on that the new valtype is determined
-        x == 2: retrieve data, change parameter, clear, and save
+    def get_open_file_path(self):
 
-        Args:
-            x: determines a which state to execute this function """
-        if x == 0:
-            self.stacked_widget.setCurrentWidget(self.p_change)
-            if self.inComboBoxDevicename.count() == 0:
-                self.inComboBoxDevicename.addItems(["choose here"] + list(registered_devices.keys()))
-            self.inComboBoxDevicename.currentIndexChanged.connect(lambda: self.update_combobox(self.inComboBoxChangeParamtype, registered_devices.get(self.inComboBoxDevicename.currentText()).visible_attr))
-            self.inComboBoxChangeParamtype.currentIndexChanged.connect(lambda: self.change(1))
-        elif x == 1:
-            if self.inComboBoxChangeParamtype.currentText() != "OS":
-                self.change_stacked_widget.setCurrentWidget(self.p_line_edit)
-                self.statusbar.showMessage(f"current username: {registered_devices.get(self.inComboBoxDevicename.currentText()).user}")
-            else:
-                self.change_stacked_widget.setCurrentWidget(self.p_combo_box)
-                self.inComboBoxChangeNewval.addItems(["choose here"] + registered_devices.get(self.inComboBoxDevicename.currentText()).expected_OS)
-                self.statusbar.showMessage(f"current os: {registered_devices.get(self.inComboBoxDevicename.currentText()).OS}")
-        elif x == 2:
-            _class = registered_devices.get(self.inComboBoxDevicename.currentText())
-            paramtype = self.inComboBoxChangeParamtype.currentText()
-            if paramtype == "OS":
-                newval = self.inComboBoxChangeNewval.currentText()
-            else:
-                newval = self.inChangeNewval.text()
-            logic.change_param(self.inComboBoxDevicename.currentText(), paramtype, newval, registered_devices)
-            # self.inComboBoxDevicename.clear()
-            self.inComboBoxChangeParamtype.clear()
-            self.inComboBoxChangeNewval.clear()
-            self.stacked_widget.setCurrentWidget(self.p_view)
-            self.save()
+        self.file_path = \
+        QFileDialog.getOpenFileName(self, "open file", f"{self.last_open_file_path or 'c://'}", "json files (*json)")[0]
+        self.validate(command=self.load, file_path=self.file_path, allowed=["devices", "last_open_file_path"])
 
-    def open(self, test: bool) -> None:
-        """opens csv file and loads its content into registered devices
-        Args:
-            test: skip filedialog if unittested aka test == True, fname has to be set in test script"""
+    def load(self) -> None:
+        """opens json file and loads its content into registered devices"""
 
+        self.model.clear()
         registered_devices.clear()
-        if not test:
-            self.file_path = QFileDialog.getOpenFileName(self, "open file", "c://", "json files (*json)")[0]
         with open(self.file_path, "r") as file:
-
-            data = dict(json.load(file)).values()
-            for value in data:
+            data = dict(json.load(file))
+            devices = data["devices"].values()
+            self.last_open_file_path = data["last_open_file_path"]
+            for value in devices:
                 row = []
-                for item in value:
+                for i, item in enumerate(value):
                     cell = QStandardItem(str(item))
                     row.append(cell)
+                    if i == 0 or i == 3 or i == 5:
+                        cell.setEditable(False)
                 self.model.appendRow(row)
 
+                new = [x for x in valid_devices if x.__name__ == value[3]].pop(0)(value[0], value[1], value[4], value[5])
+                new.OS = value[2]
+                registered_devices[value[0]] = new
+
+        self.model.setHorizontalHeaderLabels(labels)
         self.statusbar.showMessage("")
 
     def save(self) -> None:
-        """saves content fo registered_devices into specified csv file"""
-
+        """saves content fo registered_devices into specified json file"""
         if not self.file_path:
             self.statusbar.showMessage("no file path set all changes get lost if closed")
         else:
             with open(self.file_path, 'w',) as file:
-                data = {k: v for (k, v) in enumerate(self.model._data)}
-                json.dump(data, file)
-
+                devices = {k: [v.name, v.user, v.OS, v.__class__.__name__, v.comment, v.datetime] for (k, v) in enumerate(registered_devices.values())}
+                last_open_file_path = "/".join(self.file_path.split("/")[:-1])
+                resulting_dict = {"devices": devices, "last_open_file_path": last_open_file_path}
+                json.dump(resulting_dict, file)
+                self.statusbar.showMessage("saved file")
 
     def new(self, stage: bool, test: bool=False) -> None:
         """creates new csv file to save into
@@ -431,12 +539,12 @@ class MainWindowUi(QMainWindow):
             self.save()
             self.stacked_widget.setCurrentWidget(self.p_view)
 
-    def print(self, test) -> None:
+    def print(self, test:bool) -> None:
         """setup and preview pViewTable for paper printing"""
         with open(self.file_path) as f:
-            text = " ".join(f.readlines())
+            data = json.dumps(dict(json.load(f)), sort_keys=True, indent=6, separators= (".", "="))
         self.document = QtWidgets.QTextEdit()
-        self.document.setText(text)
+        self.document.setText(data)
 
         if not test:
             printer = QPrinter()
