@@ -1,0 +1,29 @@
+{
+  "devices": {
+    "0": [
+      "1",
+      "maurice",
+      "win7",
+      "WindowsLapTop",
+      "toller pc",
+      "heute"
+    ],
+    "1": [
+      "7897",
+      "peter",
+      "Win7",
+      "Macbook",
+      "",
+      "2021-03-24 11:46:00.903913"
+    ],
+    "2": [
+      "999",
+      "gunter",
+      "MacOS",
+      "WindowsWorkStation",
+      "",
+      "2021-03-24 11:56:34.200947"
+    ]
+  },
+  "last_open_file_path": "C:/Users/maurice.jarck/Documents/Projects/it_hilfe/it_hilfe/data"
+}
