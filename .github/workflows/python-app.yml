@@ -35,7 +35,7 @@ jobs:
       run: |
         set PYTHONPATH=it_hilfe
         set DATA=data
-        python -m pytest --cov=it_hilfe --cov-report xml:coverage.xml
+        python -m pytest --cov=it_hilfe --cov-report xml:../tests/coverage.xml
     - name: check cov report 
       run: |
         cd .github
