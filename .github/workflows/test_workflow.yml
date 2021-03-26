@@ -24,6 +24,7 @@ jobs:
         cd .github
         echo "::set-output name=COVERAGE::$(python .\update_cov_badge.py)"
         #echo "::set-output name=COVERAGE::70"
+        Get-ChildItem
       id: Set_Test_Coverage
       
     - name: Create the Badge
@@ -34,10 +35,7 @@ jobs:
         filename: test.json
         label: COV
         message:  ${{ steps.Set_Test_Coverage.outputs.COVERAGE }}
-        color: ${{
-          steps.Set_Test_Coverage.outputs.COVERAGE >= 90 && 'green'              ||
-          steps.Set_Test_Coverage.outputs.COVERAGE >= 80 && 'yellow'             ||
-          'red'}}
+        color: 'green'
 
           
           
