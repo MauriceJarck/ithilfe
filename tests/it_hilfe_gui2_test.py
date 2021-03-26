@@ -137,23 +137,23 @@ def test_p_register_validate_open(main_window, qtbot, create_valid_json):
 
     # test delegate aka change values in p_view
 
-# def test_print(qtbot, main_window, create_valid_json):
-#     qtbot.keyClick(main_window, "p", modifier=QtCore.Qt.ControlModifier)
-#     assert main_window.statusbar.currentMessage() == "no file path specified, visit Ctrl+o or menuebar/edit/open to fix"
-#
-#     main_window.file_path = "jsonTest.json"
-#     main_window.load()
-#     assert main_window.statusbar.currentMessage() == ""
-#     main_window.print(True)
-#     # assert main_window.document.toPlainText() == '{"devices": {"0": [ "007", "peter", "Win7", "Macbook", "this is a comment", "2021-03-19 13:56:40.509002" ] }, "last_open_file_path": "C:/Users/maurice.jarck/Documents/Projects/it_hilfe/it_hilfe/data"}'
-#
+def test_print(qtbot, main_window, create_valid_json):
+    qtbot.keyClick(main_window, "p", modifier=QtCore.Qt.ControlModifier)
+    assert main_window.statusbar.currentMessage() == "no file path specified, visit Ctrl+o or menuebar/edit/open to fix"
 
-# def test_new(main_window, qtbot):
-#     main_window.dir = ".."
-#     main_window.new(True, test=True)
-#     assert main_window.stacked_widget.currentWidget() == main_window.p_create
-#     main_window.in_new_filename.setText("newJson")
-#
-#     qtbot.mouseClick(main_window.bt_create, QtCore.Qt.LeftButton)
-#     assert main_window.stacked_widget.currentWidget() == main_window.p_view
-#     # os.remove("newCSV.csv")
+    main_window.file_path = "jsonTest.json"
+    main_window.load()
+    assert main_window.statusbar.currentMessage() == ""
+    main_window.print(True)
+    # assert main_window.document.toPlainText() == '{"devices": {"0": [ "007", "peter", "Win7", "Macbook", "this is a comment", "2021-03-19 13:56:40.509002" ] }, "last_open_file_path": "C:/Users/maurice.jarck/Documents/Projects/it_hilfe/it_hilfe/data"}'
+
+
+def test_new(main_window, qtbot):
+    main_window.dir = ".."
+    main_window.new(True, test=True)
+    assert main_window.stacked_widget.currentWidget() == main_window.p_create
+    main_window.in_new_filename.setText("newJson")
+
+    qtbot.mouseClick(main_window.bt_create, QtCore.Qt.LeftButton)
+    assert main_window.stacked_widget.currentWidget() == main_window.p_view
+    # os.remove("newCSV.csv")
