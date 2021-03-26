@@ -6,7 +6,7 @@
 		<source></source>
 	</sources>
 	<packages>
-		<package name="C:.Users.maurice.jarck.Documents.Projects.it_hilfe.it_hilfe" line-rate="0.9162" branch-rate="0" complexity="0">
+		<package name="C:.Users.maurice.jarck.Documents.Projects.it_hilfe.it_hilfe" line-rate="1" branch-rate="0" complexity="0">
 			<classes>
 				<class name="__init__.py" filename="C:/Users/maurice.jarck/Documents/Projects/it_hilfe/it_hilfe/__init__.py" complexity="0" line-rate="1" branch-rate="0">
 					<methods/>
