@@ -36,8 +36,10 @@ jobs:
         set PYTHONPATH=it_hilfe
         set DATA=data
         python -m pytest --cov=it_hilfe --cov-report xml:coverage.xml
+        Get-ChildItem
     - name: check cov report 
       run: |
+        Get-ChildItem
         cd .github
         echo "::set-output name=COVERAGE::$(python .\update_cov_badge.py)"
       id: Set_Test_Coverage
