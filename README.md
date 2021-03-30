@@ -58,7 +58,7 @@ in your terminal:
   cd into ithilfe/
   
   ```
-  pyinstaller --name "it hilfe" --onefile --noconsole --icon ./data/favicon.ico ./it_hilfe/it_hilfe_gui2.py
+  pyinstaller it_hilfe.spec
   ```
   
   after process beeing finished, the exe file is located in 
@@ -66,6 +66,12 @@ in your terminal:
   ```
   ithilfe/dist
   ```
+  
+  the latest exe ci built can be found: 
+  ```
+  actions/Ci/<last workfolwrun> 
+  ```
+  scroll down to find artifacts
   
 ## generate latest docmentation as html
 
@@ -84,4 +90,10 @@ in your terminal:
   Avilable builders can be found at https://www.sphinx-doc.org/en/master/man/sphinx-build.html
   
   Most common is html
+  
+  the latest exe ci built docs can be found: 
+  ```
+  actions/Ci/<last workfolwrun> 
+  ```
+  scroll down to find artifacts
   
