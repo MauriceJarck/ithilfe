@@ -161,8 +161,8 @@ class MainWindowUi(QMainWindow):
         self.file_path = None
         self.dir = None
         self.last_open_file_path = None
-        self.setStyleSheet(qdarkstyle.load_stylesheet_pyside2())
-        self.current_theme = "dark"
+        # self.setStyleSheet(qdarkstyle.load_stylesheet_pyside2())
+        self.current_theme = "standart"
 
         # setup statusbar
         self.statusbar = self.statusBar()
@@ -175,7 +175,6 @@ class MainWindowUi(QMainWindow):
         self.setup_p_create()
         self.setup_signals()
 
-        # self.show()
         self.stacked_widget.setCurrentWidget(self.p_view)
 
     def setup_menubar(self):
@@ -251,10 +250,10 @@ class MainWindowUi(QMainWindow):
         self.bt_register_new = QtWidgets.QPushButton("register new", self.p_view)
         self.bt_hide_show_filter = QtWidgets.QPushButton("hide/show filter inputs", self.p_view)
 
-        p_view_layout = QtWidgets.QHBoxLayout(self.p_view)
+        p_view_layout = QtWidgets.QVBoxLayout(self.p_view)
+        p_view_layout.addWidget(self.table)
         p_view_layout.addWidget(self.bt_register_new)
         p_view_layout.addWidget(self.bt_hide_show_filter)
-        p_view_layout.addWidget(self.table)
         self.p_view.setLayout(p_view_layout)
 
     def setup_p_register(self):
@@ -331,7 +330,6 @@ class MainWindowUi(QMainWindow):
             editor.textChanged.connect(filter.setFilterRegExp)
 
         # line edit
-
         self.in_new_filename.returnPressed.connect(
             lambda: self.validate(self.new, line_edit_list=[self.in_new_filepath, self.in_new_filename], data=False))
 

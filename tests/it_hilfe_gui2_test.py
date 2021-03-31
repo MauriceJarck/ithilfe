@@ -7,6 +7,7 @@ from it_hilfe.it_hilfe_gui2 import MainWindowUi, StartScreenUi
 @pytest.fixture
 def main_window(qtbot):
     var = MainWindowUi()
+    var.show()
     qtbot.addWidget(var)
     return var
 
@@ -15,6 +16,7 @@ def main_window(qtbot):
 def start_screen(qtbot):
     var = StartScreenUi()
     qtbot.addWidget(var)
+    var.show()
     return var
 
 
@@ -46,6 +48,7 @@ def test_p_register_validate_open(main_window, qtbot, create_valid_json):
     assert main_window.stacked_widget.currentIndex() == 1
 
     # no filepath specified
+    qtbot.mouseClick(main_window.bt_register_new, QtCore.Qt.LeftButton)
     main_window.in_username.setText("maurice")
     main_window.in_username.setText("2")
     qtbot.mouseClick(main_window.bt_register, QtCore.Qt.LeftButton)
@@ -80,7 +83,6 @@ def test_p_register_validate_open(main_window, qtbot, create_valid_json):
     main_window.in_username.setText("maurice")
     main_window.in_devicename.setText("007")
     qtbot.mouseClick(main_window.bt_register, QtCore.Qt.LeftButton)
-    # qtbot.stop()
     assert main_window.stacked_widget.currentWidget() == main_window.p_register
     assert main_window.in_devicename.text() == "in forbidden!!"
 
@@ -93,7 +95,7 @@ def test_p_register_validate_open(main_window, qtbot, create_valid_json):
     assert main_window.stacked_widget.currentIndex() == 0
     main_window.load()
     count = main_window.model.rowCount()
-    # register new
+    # register new.
     qtbot.keyClick(main_window, "n", modifier=QtCore.Qt.ControlModifier)
     assert main_window.stacked_widget.currentIndex() == 1
     main_window.in_username.setText("maurice")
@@ -112,7 +114,7 @@ def test_p_register_validate_open(main_window, qtbot, create_valid_json):
     main_window.in_combobox_devicetype.setCurrentIndex(1)
     main_window.in_combobox_os.setCurrentIndex(2)
     qtbot.mouseClick(main_window.bt_register, QtCore.Qt.LeftButton)
-    assert main_window.stacked_widget.currentIndex() == 0
+    assert main_window.stacked_widget.currentWidget() == main_window.p_view
     # get len(already displayed registrations) after new reg
     assert main_window.model.rowCount() == count + 1
 
@@ -137,9 +139,9 @@ def test_p_register_validate_open(main_window, qtbot, create_valid_json):
 
     # test delegate aka change values in p_view
 
+
 def test_print(qtbot, main_window, create_valid_json):
     qtbot.keyClick(main_window, "p", modifier=QtCore.Qt.ControlModifier)
-    # qtbot.stop()
     assert main_window.statusbar.currentMessage() == "no file path specified, visit Ctrl+o or menuebar/edit/open to fix"
 
     main_window.file_path = "jsonTest.json"
