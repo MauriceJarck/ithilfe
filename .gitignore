@@ -12,8 +12,8 @@ __pycache__
 /test/testCSV.csv
 /tests/jsonTest.json
 /tests/coverage.xml
+/tests/newJson.json
 
 /bin
 /dist
 /build
-/newJson.json
