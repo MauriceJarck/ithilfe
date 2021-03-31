@@ -61,7 +61,7 @@ def test_p_register_validate_open(main_window, qtbot, create_valid_json):
     main_window.in_username.setText("2")
     qtbot.mouseClick(main_window.bt_register, QtCore.Qt.LeftButton)
     assert main_window.stacked_widget.currentIndex() == 1
-    assert main_window.statusbar.currentMessage() == "all comboboxes must be specified"
+    assert main_window.statusbar.currentMessage() == "all comboboxes must be filled"
 
     main_window.in_username.clear()
     main_window.in_devicename.clear()
@@ -139,6 +139,7 @@ def test_p_register_validate_open(main_window, qtbot, create_valid_json):
 
 def test_print(qtbot, main_window, create_valid_json):
     qtbot.keyClick(main_window, "p", modifier=QtCore.Qt.ControlModifier)
+    # qtbot.stop()
     assert main_window.statusbar.currentMessage() == "no file path specified, visit Ctrl+o or menuebar/edit/open to fix"
 
     main_window.file_path = "jsonTest.json"
@@ -149,7 +150,7 @@ def test_print(qtbot, main_window, create_valid_json):
 
 
 def test_new(main_window, qtbot):
-    main_window.dir = ".."
+    main_window.dir = "."
     main_window.new(True, test=True)
     assert main_window.stacked_widget.currentWidget() == main_window.p_create
     main_window.in_new_filename.setText("newJson")
@@ -157,3 +158,4 @@ def test_new(main_window, qtbot):
     qtbot.mouseClick(main_window.bt_create, QtCore.Qt.LeftButton)
     assert main_window.stacked_widget.currentWidget() == main_window.p_view
     # os.remove("newCSV.csv")
+

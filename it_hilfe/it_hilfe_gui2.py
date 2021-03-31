@@ -1,8 +1,9 @@
 import datetime
 import json
 import sys
+import qdarkstyle
 
-from PySide2.QtCore import QSortFilterProxyModel, Slot, SIGNAL, SLOT
+from PySide2.QtCore import QSortFilterProxyModel
 from PySide2.QtGui import QPixmap, QIcon, QFont, QKeySequence, Qt, QStandardItemModel, QStandardItem
 from PySide2.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PySide2.QtWidgets import QMainWindow, QWidget, QApplication, QFileDialog, QItemDelegate, QComboBox, QLineEdit, QHeaderView
@@ -10,11 +11,12 @@ from PySide2 import QtWidgets, QtCore
 
 import it_hilfe.devices as devices
 import it_hilfe.it_hilfe_logic as logic
+from it_hilfe import validate_json
 
 registered_devices = {}
 valid_devices = [devices.WindowsLapTop, devices.WindowsWorkStation, devices.Macbook]
 labels = ['devname', 'username', 'os', 'devtype', "comment", "datetime", "extras"]
-
+file_path = None
 
 class FilterHeader(QHeaderView):
     """handels line edits for filtering in tableview self.header
@@ -69,8 +71,6 @@ class FilterHeader(QHeaderView):
         self._editors.append(editor5)
         self._editors.append(editor6)
 
-
-
     def sizeHint(self) -> int:
         """returns height of headerView
 
@@ -104,7 +104,14 @@ class FilterHeader(QHeaderView):
 
         for index, editor in enumerate(self._editors):
             height = editor.sizeHint().height()
-            editor.move(self.sectionPosition(index) - self.offset() + 16, height+3)
+            try:
+                if main_window.model.rowCount() == 0 or main_window.filters[-1].rowCount() == 0:
+                    editor.move(self.sectionPosition(index) - self.offset() + 4, height+3)
+                else:
+                    editor.move(self.sectionPosition(index) - self.offset() + 26, height+3)
+            except NameError:
+                pass
+
             editor.resize(self.sectionSize(index), height)
 
     def hide_show(self):
@@ -119,7 +126,7 @@ class ComboDelegate(QItemDelegate):
     """handels os change in form of a combobox directly in tableView"""
     
     def createEditor(self, parent, option, proxyModelIndex):
-        neighbour_data = startscreen.main.filters[-1][1].data(startscreen.main.filters[-1][1].index(proxyModelIndex.row(), proxyModelIndex.column()+1))
+        neighbour_data = main_window.filters[-1].data(main_window.filters[-1].index(proxyModelIndex.row(), proxyModelIndex.column()+1))
         self.combo_OS = [x for x in valid_devices if x.__name__ == neighbour_data].pop().expected_OS
         combo = QComboBox(parent)
         combo.addItems(self.combo_OS)
@@ -147,11 +154,15 @@ class MainWindowUi(QMainWindow):
         Returns:
             None"""
         super(MainWindowUi, self).__init__()
+        self.setWindowTitle("It_Hilfe")
         self.resize(820, 450)
-        self.setWindowIcon(QIcon("./data/favicon.ico"))
+        self.setWindowIcon(QIcon("./data/favicon2.png"))
+        self.setMinimumSize(700, 250)
         self.file_path = None
         self.dir = None
         self.last_open_file_path = None
+        self.setStyleSheet(qdarkstyle.load_stylesheet_pyside2())
+        self.current_theme = "dark"
 
         # setup statusbar
         self.statusbar = self.statusBar()
@@ -164,7 +175,7 @@ class MainWindowUi(QMainWindow):
         self.setup_p_create()
         self.setup_signals()
 
-        self.show()
+        # self.show()
         self.stacked_widget.setCurrentWidget(self.p_view)
 
     def setup_menubar(self):
@@ -199,6 +210,13 @@ class MainWindowUi(QMainWindow):
 
         menu_edit.addAction(self.action_register)
 
+        menu_view = self.menu_Bar.addMenu("view")
+        self.action_toggle_theme = QtWidgets.QAction("toggle theme")
+        self.action_toggle_theme.setIcon(QIcon("./data/theme.ico"))
+
+        menu_view.addAction(self.action_toggle_theme)
+
+
     def setup_p_view(self):
         """inits stacked widget page widget
 
@@ -225,23 +243,19 @@ class MainWindowUi(QMainWindow):
         self.table.setModel(self.filters[-1])
         self.table.setItemDelegateForColumn(2, delegate)
         self.table.horizontalHeader().setStretchLastSection(True)
-        self.table.setSortingEnabled(True)
+
+        self.header = FilterHeader(self.table)
+        self.header.set_filter_boxes()
+        self.table.setHorizontalHeader(self.header)
 
         self.bt_register_new = QtWidgets.QPushButton("register new", self.p_view)
         self.bt_hide_show_filter = QtWidgets.QPushButton("hide/show filter inputs", self.p_view)
 
-        p_view_layout = QtWidgets.QVBoxLayout(self.p_view)
-
-        p_view_layout.addWidget(self.table)
+        p_view_layout = QtWidgets.QHBoxLayout(self.p_view)
         p_view_layout.addWidget(self.bt_register_new)
         p_view_layout.addWidget(self.bt_hide_show_filter)
+        p_view_layout.addWidget(self.table)
         self.p_view.setLayout(p_view_layout)
-
-        self.header = FilterHeader(self.table)
-        self.header.set_filter_boxes()
-
-        self.table.setHorizontalHeader(self.header)
-
 
     def setup_p_register(self):
         """inits stacked widget page widgets
@@ -319,7 +333,7 @@ class MainWindowUi(QMainWindow):
         # line edit
 
         self.in_new_filename.returnPressed.connect(
-            lambda: self.validate(self.new, [self.in_new_filepath, self.in_new_filename], data=False))
+            lambda: self.validate(self.new, line_edit_list=[self.in_new_filepath, self.in_new_filename], data=False))
 
         # comboboxes
         self.in_combobox_devicetype.addItems(["choose here"] + [x.__name__ for x in valid_devices])
@@ -342,9 +356,21 @@ class MainWindowUi(QMainWindow):
         self.action_save.triggered.connect(self.save)
         self.action_new.triggered.connect(lambda: self.new(True))
         self.action_print.triggered.connect(lambda: self.validate(self.print, data=False, checkfname=True))
+        self.action_toggle_theme.triggered.connect(self.toggle_theme)
         # # cancel
         self.bt_cancel_register.clicked.connect(lambda: self.cancel(
             [self.in_username, self.in_devicename, self.in_combobox_os, self.text_edit_comment]))
+
+    def toggle_theme(self):
+        if self.current_theme == "dark":
+            self.setStyleSheet("")
+            self.current_theme = "standard"
+            self.setWindowIcon(QIcon("./data/favicon.ico"))
+
+        else:
+            self.setStyleSheet(qdarkstyle.load_stylesheet_pyside2())
+            self.current_theme = "dark"
+            self.setWindowIcon(QIcon("./data/favicon2.png"))
 
     def cancel(self, widgets: list) -> None:
         """click event for all cancel buttons
@@ -375,7 +401,6 @@ class MainWindowUi(QMainWindow):
         box.clear()
         box.addItems(["choose here"] + data)
 
-    # TODO: json file validation
     def validate(self, command, file_path: str = None, line_edit_list: list = None, combo_box_list: list = None, data=None, allowed: list = None, forbidden: list = None, checkfname: bool = None) -> None:
         """validates user input
 
@@ -406,18 +431,21 @@ class MainWindowUi(QMainWindow):
         if combo_box_list is not None:
             for combobox in combo_box_list:
                 if combobox.currentText() == "":
-                    self.statusbar.showMessage("all comboboxes must be specified")
+                    self.statusbar.showMessage("all comboboxes must be filled")
                     fails += 1
         if checkfname is True and self.file_path is None:
+            print("here")
             self.statusbar.showMessage("no file path specified, visit Ctrl+o or menuebar/edit/open to fix")
             fails += 1
         if file_path is not None:
-            with open(file_path) as file:
-                loaded = dict(json.load(file))
-                for key in loaded.keys():
-                    if key not in allowed:
-                        self.statusbar.showMessage("invalid json file")
-                        fails += 1
+            if file_path in forbidden:
+                fails += 1
+                self.statusbar.showMessage("select a file to continue")
+            else:
+                val = validate_json.validate(file_path)
+                if val is not True:
+                    QtWidgets.QMessageBox.critical(self, "validation failed.", f"Invalid Json file, problem in: {val}")
+                    fails += 1
         if fails == 0:
             if data is None:
                 command()
@@ -431,6 +459,7 @@ class MainWindowUi(QMainWindow):
 
         Returns:
             None"""
+
         logic.register(self.in_devicename.text(), valid_devices[self.in_combobox_os.currentIndex()],
                        self.in_username.text(), self.in_combobox_os.currentText(), self.text_edit_comment.toPlainText(),
                        str(datetime.datetime.now()), registered_devices)
@@ -456,7 +485,7 @@ class MainWindowUi(QMainWindow):
 
         self.file_path = \
         QFileDialog.getOpenFileName(self, "open file", f"{self.last_open_file_path or 'c://'}", "json files (*json)")[0]
-        self.validate(command=self.load, file_path=self.file_path, allowed=["devices", "last_open_file_path"])
+        self.validate(command=self.load, file_path=self.file_path, allowed=["devices", "last_open_file_path"], forbidden=[""])
 
     def load(self) -> None:
         """opens json file and loads its content into registered devices
@@ -524,7 +553,7 @@ class MainWindowUi(QMainWindow):
             self.save()
             self.stacked_widget.setCurrentWidget(self.p_view)
 
-    def print(self, test:bool) -> None:
+    def print(self, test: bool) -> None:
         """setup and preview pViewTable for paper printing
 
         Returns:
@@ -552,6 +581,7 @@ class StartScreenUi(QWidget):
             None"""
 
         super(StartScreenUi, self).__init__()
+        self.setWindowTitle("It_Hilfe")
         self.setup_startscreen()
         self.show()
 
@@ -563,16 +593,17 @@ class StartScreenUi(QWidget):
 
         Returns:
             None"""
+        main_window.show()
         self.close()
-        self.main = MainWindowUi()
 
     def setup_startscreen(self):
-        """sets up startr screen ui
+        """sets up startscreen ui
 
         Returns:
             None"""
         self.pic_label = QtWidgets.QLabel(self)
-        self.pic_label.setPixmap(QPixmap("./data/startscreenPic.png"))
+        self.pic_label.setPixmap(QPixmap("./data/startscreenPic2.png"))
+        self.setStyleSheet(qdarkstyle.load_stylesheet_pyside2())
 
         self.txt_label = QtWidgets.QLabel(self)
         self.txt_label.setText("Welcome")
@@ -587,10 +618,11 @@ class StartScreenUi(QWidget):
         self.verticalLayout = QtWidgets.QVBoxLayout(self)
         self.verticalLayout.addWidget(self.pic_label)
         self.verticalLayout.addWidget(self.txt_label)
-        self.setWindowIcon(QIcon("./data/favicon.ico"))
+        self.setWindowIcon(QIcon("./data/favicon2.png"))
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    main_window = MainWindowUi()
     startscreen = StartScreenUi()
     sys.exit(app.exec_())

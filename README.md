@@ -2,12 +2,12 @@
 ![action](https://github.com/JackWolf24/ithilfe/actions/workflows/python-app.yml/badge.svg) ![badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/JackWolf24/5dfef24b289a9890e7d579140ca0ae15/raw/test.json)
 
 
-Ithilfe is a simple programm to help a It Department keeping track of devices in house. 
+Ithilfe is a simple program to help a It Department keeping track of devices in house. 
 
 Available as console or gui app (check out corresponding branches). 
 
 ## disclaimer
-The content of this readme focues on Windows(win 10 teseted only). 
+The content of this readme focuses on Windows(win 10 tested only). 
 
 Latest docs and exe can be found in artifacts of last ci run.
 
@@ -18,7 +18,7 @@ Latest docs and exe can be found in artifacts of last ci run.
 - content of requirements.txt
 
 ## installation 
-on https://github.com/JackWolf24/ithilfe choose version (different branches)
+on https://github.com/JackWolf24/ithilfe choose a version (different branches)
 
 `git clone --single-branch --branch <branchname> https://github.com/JackWolf24/ithilfe.git`
 
@@ -37,7 +37,7 @@ in your terminal:
   
 ## usage
 in your terminal:
-  cd into directory where it_hilfe is located
+  cd into a directory where it_hilfe is located
   
   if cloned main branch:
   
@@ -51,7 +51,7 @@ in your terminal:
   python <a file that starts with it_hilfe>.py
   ```
   
-  The programs itselfs are self-explanatory. 
+  The programs itself are self-explanatory. 
   
 ## build exe
 
@@ -73,7 +73,7 @@ in your terminal:
   ```
   scroll down to find artifacts
   
-## generate latest docmentation as html
+## generate latest documentation as html
 
   cd into ithilfe/docs
   
@@ -87,11 +87,12 @@ in your terminal:
   it_hilfe/docs/_build/<Builder>
   ```
   
-  Avilable builders can be found at https://www.sphinx-doc.org/en/master/man/sphinx-build.html
+  Available builders can be found at https://www.sphinx-doc.org/en/master/man/sphinx-build.html
   
   Most common is html
+
   
-  the latest exe ci built docs can be found: 
+  the latest ci built docs can be found: 
   ```
   actions/Ci/<last workfolwrun> 
   ```
