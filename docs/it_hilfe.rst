@@ -12,18 +12,18 @@ it\_hilfe.devices module
    :undoc-members:
    :show-inheritance:
 
-it\_hilfe.it\_hilfe\_gui2\_layout module
+it\_hilfe.it\validate\_json module
 ----------------------------------------
 
-.. automodule:: it_hilfe.it_hilfe_gui2_layout
+.. automodule:: it_hilfe.validate_json
    :members:
    :undoc-members:
    :show-inheritance:
 
-it\_hilfe.it\_hilfe\_gui2\_logic module
+it\_hilfe.it\_hilfe\_gui2 module
 ---------------------------------------
 
-.. automodule:: it_hilfe.it_hilfe_gui2_logic
+.. automodule:: it_hilfe.it_hilfe_gui2
    :members:
    :undoc-members:
    :show-inheritance:
