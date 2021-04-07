@@ -541,8 +541,8 @@ class MainWindowUi(QMainWindow):
         Arg:
             widget: widget which is aimed to be hidden or shown
         Returs:
-            None
-        """
+            None"""
+
         if widget.isVisible():
             widget.hide()
         else:
@@ -557,8 +557,7 @@ class MainWindowUi(QMainWindow):
                widgets: defines list containing widgets to clear, only widgets with method .clear() are possible
 
         Returns:
-            None
-            """
+            None"""
         for widget in widgets:
             widget.clear()
         self.stacked_widget.setCurrentWidget(self.p_view)

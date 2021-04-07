@@ -87,8 +87,8 @@
 <li><a class="reference internal" href="#">it_hilfe package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
 <li><a class="reference internal" href="#module-it_hilfe.devices">it_hilfe.devices module</a></li>
-<li><a class="reference internal" href="#module-it_hilfe.it_hilfe_gui2_layout">it_hilfe.it_hilfe_gui2_layout module</a></li>
-<li><a class="reference internal" href="#module-it_hilfe.it_hilfe_gui2_logic">it_hilfe.it_hilfe_gui2_logic module</a></li>
+<li><a class="reference internal" href="#module-it_hilfe.validate_json">it_hilfe.itvalidate_json module</a></li>
+<li><a class="reference internal" href="#module-it_hilfe.it_hilfe_gui2">it_hilfe.it_hilfe_gui2 module</a></li>
 <li><a class="reference internal" href="#module-it_hilfe">Module contents</a></li>
 </ul>
 </li>
@@ -279,43 +279,147 @@ base of all more specified device classes</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-it_hilfe.it_hilfe_gui2_layout">
-<span id="it-hilfe-it-hilfe-gui2-layout-module"></span><h2>it_hilfe.it_hilfe_gui2_layout module<a class="headerlink" href="#module-it_hilfe.it_hilfe_gui2_layout" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-it_hilfe.validate_json">
+<span id="it-hilfe-itvalidate-json-module"></span><h2>it_hilfe.itvalidate_json module<a class="headerlink" href="#module-it_hilfe.validate_json" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="it_hilfe.it_hilfe_gui2_layout.MainWindowUi">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">it_hilfe.it_hilfe_gui2_layout.</span></code><code class="sig-name descname"><span class="pre">MainWindowUi</span></code><a class="headerlink" href="#it_hilfe.it_hilfe_gui2_layout.MainWindowUi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QMainWindow</span></code></p>
-<p>sets up ui properties of MainWindowUi class</p>
+<dt id="it_hilfe.validate_json.ItHilfeSchema">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">it_hilfe.validate_json.</span></code><code class="sig-name descname"><span class="pre">ItHilfeSchema</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">many</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Dict</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_only</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dump_only</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partial</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unknown</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#it_hilfe.validate_json.ItHilfeSchema" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">marshmallow.schema.Schema</span></code></p>
 <dl class="py attribute">
-<dt id="it_hilfe.it_hilfe_gui2_layout.MainWindowUi.staticMetaObject">
-<code class="sig-name descname"><span class="pre">staticMetaObject</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;PySide2.QtCore.QMetaObject</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#it_hilfe.it_hilfe_gui2_layout.MainWindowUi.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dt id="it_hilfe.validate_json.ItHilfeSchema.opts">
+<code class="sig-name descname"><span class="pre">opts</span></code><em class="property"><span class="pre">:</span> <span class="pre">SchemaOpts</span></em><em class="property"> <span class="pre">=</span> <span class="pre">&lt;marshmallow.schema.SchemaOpts</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#it_hilfe.validate_json.ItHilfeSchema.opts" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-<dl class="py class">
-<dt id="it_hilfe.it_hilfe_gui2_layout.StartScreenUi">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">it_hilfe.it_hilfe_gui2_layout.</span></code><code class="sig-name descname"><span class="pre">StartScreenUi</span></code><a class="headerlink" href="#it_hilfe.it_hilfe_gui2_layout.StartScreenUi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QWidget</span></code></p>
-<p>sets up ui properties of startscreen</p>
-<dl class="py attribute">
-<dt id="it_hilfe.it_hilfe_gui2_layout.StartScreenUi.staticMetaObject">
-<code class="sig-name descname"><span class="pre">staticMetaObject</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;PySide2.QtCore.QMetaObject</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#it_hilfe.it_hilfe_gui2_layout.StartScreenUi.staticMetaObject" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<dl class="py function">
+<dt id="it_hilfe.validate_json.validate">
+<code class="sig-prename descclassname"><span class="pre">it_hilfe.validate_json.</span></code><code class="sig-name descname"><span class="pre">validate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#it_hilfe.validate_json.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>vaildates a json file for it_hilfe_gui</p>
+<dl class="simple">
+<dt>Arg:</dt><dd><p>file_path: file path to json file aimed to be validated</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
-<div class="section" id="module-it_hilfe.it_hilfe_gui2_logic">
-<span id="it-hilfe-it-hilfe-gui2-logic-module"></span><h2>it_hilfe.it_hilfe_gui2_logic module<a class="headerlink" href="#module-it_hilfe.it_hilfe_gui2_logic" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-it_hilfe.it_hilfe_gui2">
+<span id="it-hilfe-it-hilfe-gui2-module"></span><h2>it_hilfe.it_hilfe_gui2 module<a class="headerlink" href="#module-it_hilfe.it_hilfe_gui2" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="it_hilfe.it_hilfe_gui2_logic.MainWindowLogic">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">it_hilfe.it_hilfe_gui2_logic.</span></code><code class="sig-name descname"><span class="pre">MainWindowLogic</span></code><a class="headerlink" href="#it_hilfe.it_hilfe_gui2_logic.MainWindowLogic" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QWidget</span></code></p>
-<p>handles all action on MainWin</p>
+<dt id="it_hilfe.it_hilfe_gui2.ComboDelegate">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">it_hilfe.it_hilfe_gui2.</span></code><code class="sig-name descname"><span class="pre">ComboDelegate</span></code><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.ComboDelegate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QItemDelegate</span></code></p>
+<p>handels os change in form of a combobox directly in tableView</p>
 <dl class="py method">
-<dt id="it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.cancel">
-<code class="sig-name descname"><span class="pre">cancel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widgets</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.cancel" title="Permalink to this definition">¶</a></dt>
+<dt id="it_hilfe.it_hilfe_gui2.ComboDelegate.createEditor">
+<code class="sig-name descname"><span class="pre">createEditor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">PySide2.QtWidgets.QWidget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">option</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">PySide2.QtWidgets.QStyleOptionViewItem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">PySide2.QtCore.QModelIndex</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">PySide2.QtWidgets.QWidget</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.ComboDelegate.createEditor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="it_hilfe.it_hilfe_gui2.ComboDelegate.flags">
+<code class="sig-name descname"><span class="pre">flags</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.ComboDelegate.flags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="it_hilfe.it_hilfe_gui2.ComboDelegate.setModelData">
+<code class="sig-name descname"><span class="pre">setModelData</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">editor</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">PySide2.QtWidgets.QWidget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">PySide2.QtCore.QAbstractItemModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">PySide2.QtCore.QModelIndex</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.ComboDelegate.setModelData" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="it_hilfe.it_hilfe_gui2.ComboDelegate.staticMetaObject">
+<code class="sig-name descname"><span class="pre">staticMetaObject</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;PySide2.QtCore.QMetaObject</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.ComboDelegate.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="it_hilfe.it_hilfe_gui2.FilterHeader">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">it_hilfe.it_hilfe_gui2.</span></code><code class="sig-name descname"><span class="pre">FilterHeader</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.FilterHeader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QHeaderView</span></code></p>
+<p>handels line edits for filtering in tableview self.header</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="it_hilfe.it_hilfe_gui2.FilterHeader.adjust_in_filter_positions">
+<code class="sig-name descname"><span class="pre">adjust_in_filter_positions</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.FilterHeader.adjust_in_filter_positions" title="Permalink to this definition">¶</a></dt>
+<dd><p>keeps positions of filtering line edits right if columns get resized</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="it_hilfe.it_hilfe_gui2.FilterHeader.hide_show">
+<code class="sig-name descname"><span class="pre">hide_show</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.FilterHeader.hide_show" title="Permalink to this definition">¶</a></dt>
+<dd><p>hides and shows filter line_edits in table Header</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="it_hilfe.it_hilfe_gui2.FilterHeader.set_filter_boxes">
+<code class="sig-name descname"><span class="pre">set_filter_boxes</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.FilterHeader.set_filter_boxes" title="Permalink to this definition">¶</a></dt>
+<dd><p>sets up line edit boxes for live filtering tableView</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="it_hilfe.it_hilfe_gui2.FilterHeader.sizeHint">
+<code class="sig-name descname"><span class="pre">sizeHint</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.FilterHeader.sizeHint" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns height of headerView</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>describes the height of headerView</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>size</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="it_hilfe.it_hilfe_gui2.FilterHeader.staticMetaObject">
+<code class="sig-name descname"><span class="pre">staticMetaObject</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;PySide2.QtCore.QMetaObject</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.FilterHeader.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="it_hilfe.it_hilfe_gui2.FilterHeader.updateGeometries">
+<code class="sig-name descname"><span class="pre">updateGeometries</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.FilterHeader.updateGeometries" title="Permalink to this definition">¶</a></dt>
+<dd><p>sets viewport of geometries</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="it_hilfe.it_hilfe_gui2.MainWindowUi">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">it_hilfe.it_hilfe_gui2.</span></code><code class="sig-name descname"><span class="pre">MainWindowUi</span></code><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.MainWindowUi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QMainWindow</span></code></p>
+<p>sets up ui properties of MainWindowUi class</p>
+<dl class="py method">
+<dt id="it_hilfe.it_hilfe_gui2.MainWindowUi.cancel">
+<code class="sig-name descname"><span class="pre">cancel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widgets</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.MainWindowUi.cancel" title="Permalink to this definition">¶</a></dt>
 <dd><p>click event for all cancel buttons</p>
 <p>shows fist page in stacked widget and clears all widgets in widgets</p>
 <dl class="field-list simple">
@@ -329,71 +433,174 @@ base of all more specified device classes</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.change">
-<code class="sig-name descname"><span class="pre">change</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.change" title="Permalink to this definition">¶</a></dt>
-<dd><p>changes existing device parameters
-x == 0: fill combobox,
-x == 1: paramtypeIndex has changed, based on that the new valtype is determined
-x == 2: retrieve data, change parameter, clear, and save
-:param x: determines a which state to execute this function</p>
+<dt id="it_hilfe.it_hilfe_gui2.MainWindowUi.delete">
+<code class="sig-name descname"><span class="pre">delete</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.MainWindowUi.delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>deletes all rows associated with min 1 slected cell
+:returns: None</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.d_click_table_devicename">
-<code class="sig-name descname"><span class="pre">d_click_table_devicename</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">referenz</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.d_click_table_devicename" title="Permalink to this definition">¶</a></dt>
-<dd><p>handels double click event on devicename in table widget</p>
+<dt id="it_hilfe.it_hilfe_gui2.MainWindowUi.get_open_file_path">
+<code class="sig-name descname"><span class="pre">get_open_file_path</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.MainWindowUi.get_open_file_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets file-path and set it to self.file_path, extra step for json validation</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>referenz</strong> – current selceted text of cell</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.new">
-<code class="sig-name descname"><span class="pre">new</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.new" title="Permalink to this definition">¶</a></dt>
+<dt id="it_hilfe.it_hilfe_gui2.MainWindowUi.load">
+<code class="sig-name descname"><span class="pre">load</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.MainWindowUi.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>opens json file and loads its content into registered devices</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="it_hilfe.it_hilfe_gui2.MainWindowUi.new">
+<code class="sig-name descname"><span class="pre">new</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.MainWindowUi.new" title="Permalink to this definition">¶</a></dt>
 <dd><p>creates new csv file to save into</p>
 <p>stage is True: set filepath
 stage is False: set new name, save
 :param stage: determines a which stage to execute this function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.open">
-<code class="sig-name descname"><span class="pre">open</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.open" title="Permalink to this definition">¶</a></dt>
-<dd><p>opens csv file and loads its content into registered devices
-:param test: skip filedialog if unittested aka test == True, fname has to be set in test script</p>
+<dt id="it_hilfe.it_hilfe_gui2.MainWindowUi.print">
+<code class="sig-name descname"><span class="pre">print</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">test</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.MainWindowUi.print" title="Permalink to this definition">¶</a></dt>
+<dd><p>setup and preview pViewTable for paper printing</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.register">
-<code class="sig-name descname"><span class="pre">register</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.register" title="Permalink to this definition">¶</a></dt>
-<dd><p>registers a new device and saves it int csv</p>
+<dt id="it_hilfe.it_hilfe_gui2.MainWindowUi.register">
+<code class="sig-name descname"><span class="pre">register</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.MainWindowUi.register" title="Permalink to this definition">¶</a></dt>
+<dd><p>registers a new device and saves</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.save">
-<code class="sig-name descname"><span class="pre">save</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>saves content fo registered_devices into specified csv file</p>
+<dt id="it_hilfe.it_hilfe_gui2.MainWindowUi.save">
+<code class="sig-name descname"><span class="pre">save</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.MainWindowUi.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>saves content fo registered_devices into specified json file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.search">
-<code class="sig-name descname"><span class="pre">search</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.search" title="Permalink to this definition">¶</a></dt>
-<dd><p>searches for a given username in registered devices and outputs on statusbar</p>
+<dt id="it_hilfe.it_hilfe_gui2.MainWindowUi.setup_menubar">
+<code class="sig-name descname"><span class="pre">setup_menubar</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.MainWindowUi.setup_menubar" title="Permalink to this definition">¶</a></dt>
+<dd><p>inits menubar</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="it_hilfe.it_hilfe_gui2.MainWindowUi.setup_p_create">
+<code class="sig-name descname"><span class="pre">setup_p_create</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.MainWindowUi.setup_p_create" title="Permalink to this definition">¶</a></dt>
+<dd><p>inits stacked widget page widget</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="it_hilfe.it_hilfe_gui2.MainWindowUi.setup_p_register">
+<code class="sig-name descname"><span class="pre">setup_p_register</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.MainWindowUi.setup_p_register" title="Permalink to this definition">¶</a></dt>
+<dd><p>inits stacked widget page widgets</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="it_hilfe.it_hilfe_gui2.MainWindowUi.setup_p_view">
+<code class="sig-name descname"><span class="pre">setup_p_view</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.MainWindowUi.setup_p_view" title="Permalink to this definition">¶</a></dt>
+<dd><p>inits stacked widget page widget</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="it_hilfe.it_hilfe_gui2.MainWindowUi.setup_signals">
+<code class="sig-name descname"><span class="pre">setup_signals</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.MainWindowUi.setup_signals" title="Permalink to this definition">¶</a></dt>
+<dd><p>connects signals</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.staticMetaObject">
-<code class="sig-name descname"><span class="pre">staticMetaObject</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;PySide2.QtCore.QMetaObject</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dt id="it_hilfe.it_hilfe_gui2.MainWindowUi.staticMetaObject">
+<code class="sig-name descname"><span class="pre">staticMetaObject</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;PySide2.QtCore.QMetaObject</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.MainWindowUi.staticMetaObject" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.update_combobox">
-<code class="sig-name descname"><span class="pre">update_combobox</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.update_combobox" title="Permalink to this definition">¶</a></dt>
+<dt id="it_hilfe.it_hilfe_gui2.MainWindowUi.toggle_hide_show">
+<code class="sig-name descname"><span class="pre">toggle_hide_show</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">PySide2.QtWidgets.QWidget</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.MainWindowUi.toggle_hide_show" title="Permalink to this definition">¶</a></dt>
+<dd><p>toggles visibiliy of a given widget
+Arg:</p>
+<blockquote>
+<div><p>widget: widget which is aimed to be hidden or shown</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Returs:</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="it_hilfe.it_hilfe_gui2.MainWindowUi.toggle_hide_show_ani">
+<code class="sig-name descname"><span class="pre">toggle_hide_show_ani</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collapsed_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expanded_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_animate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.MainWindowUi.toggle_hide_show_ani" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="it_hilfe.it_hilfe_gui2.MainWindowUi.toggle_theme">
+<code class="sig-name descname"><span class="pre">toggle_theme</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.MainWindowUi.toggle_theme" title="Permalink to this definition">¶</a></dt>
+<dd><p>toggles between standard and dark theme</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="it_hilfe.it_hilfe_gui2.MainWindowUi.update_combobox">
+<code class="sig-name descname"><span class="pre">update_combobox</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">box</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.MainWindowUi.update_combobox" title="Permalink to this definition">¶</a></dt>
 <dd><p>clears combo box</p>
 <p>updates combobox so that old content not needed any more isnt displayed and adds ‘choose here’ dummy
 to ensure an index change will be made (updating next box depends on index change)
@@ -407,26 +614,8 @@ to ensure an index change will be made (updating next box depends on index chang
 </dd></dl>
 
 <dl class="py method">
-<dt id="it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.update_table">
-<code class="sig-name descname"><span class="pre">update_table</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.update_table" title="Permalink to this definition">¶</a></dt>
-<dd><p>updates any table with data of registered_devices</p>
-<p>first clears table, then fills up with new values</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>table</strong> – instance of pyqt5.QtWidgets.qTable</p></li>
-<li><p><strong>content</strong> – instances of any device of which its attributes will be content of table</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.validate">
-<code class="sig-name descname"><span class="pre">validate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_edit_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">combo_box_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allowed</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forbidden</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkfname</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkregistered</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2_logic.MainWindowLogic.validate" title="Permalink to this definition">¶</a></dt>
+<dt id="it_hilfe.it_hilfe_gui2.MainWindowUi.validate">
+<code class="sig-name descname"><span class="pre">validate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">command</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_edit_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">combo_box_list</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allowed</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forbidden</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkfname</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.MainWindowUi.validate" title="Permalink to this definition">¶</a></dt>
 <dd><p>validates user input</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -438,7 +627,6 @@ to ensure an index change will be made (updating next box depends on index chang
 <li><p><strong>allowed</strong> – houses key wihich are allowed to be entered</p></li>
 <li><p><strong>forbidden</strong> – houses keys which are not allowed to be entered</p></li>
 <li><p><strong>checkfname</strong> – check weather an file path exists or not</p></li>
-<li><p><strong>checkregistered</strong> – check weather something is already registered or not</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -450,19 +638,35 @@ to ensure an index change will be made (updating next box depends on index chang
 </dd></dl>
 
 <dl class="py class">
-<dt id="it_hilfe.it_hilfe_gui2_logic.StartScreen_logic">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">it_hilfe.it_hilfe_gui2_logic.</span></code><code class="sig-name descname"><span class="pre">StartScreen_logic</span></code><a class="headerlink" href="#it_hilfe.it_hilfe_gui2_logic.StartScreen_logic" title="Permalink to this definition">¶</a></dt>
+<dt id="it_hilfe.it_hilfe_gui2.StartScreenUi">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">it_hilfe.it_hilfe_gui2.</span></code><code class="sig-name descname"><span class="pre">StartScreenUi</span></code><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.StartScreenUi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PySide2.QtWidgets.QWidget</span></code></p>
-<p>contains startscreen logic to be displayed at begining</p>
+<p>sets up ui properties of startscreen</p>
 <dl class="py method">
-<dt id="it_hilfe.it_hilfe_gui2_logic.StartScreen_logic.on_elapsed">
-<code class="sig-name descname"><span class="pre">on_elapsed</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2_logic.StartScreen_logic.on_elapsed" title="Permalink to this definition">¶</a></dt>
+<dt id="it_hilfe.it_hilfe_gui2.StartScreenUi.on_elapsed">
+<code class="sig-name descname"><span class="pre">on_elapsed</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.StartScreenUi.on_elapsed" title="Permalink to this definition">¶</a></dt>
 <dd><p>closes StartStartsceen Window and creates instance of MainWindow</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="it_hilfe.it_hilfe_gui2.StartScreenUi.setup_startscreen">
+<code class="sig-name descname"><span class="pre">setup_startscreen</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.StartScreenUi.setup_startscreen" title="Permalink to this definition">¶</a></dt>
+<dd><p>sets up startscreen ui</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="it_hilfe.it_hilfe_gui2_logic.StartScreen_logic.staticMetaObject">
-<code class="sig-name descname"><span class="pre">staticMetaObject</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;PySide2.QtCore.QMetaObject</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#it_hilfe.it_hilfe_gui2_logic.StartScreen_logic.staticMetaObject" title="Permalink to this definition">¶</a></dt>
+<dt id="it_hilfe.it_hilfe_gui2.StartScreenUi.staticMetaObject">
+<code class="sig-name descname"><span class="pre">staticMetaObject</span></code><em class="property"> <span class="pre">=</span> <span class="pre">&lt;PySide2.QtCore.QMetaObject</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#it_hilfe.it_hilfe_gui2.StartScreenUi.staticMetaObject" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

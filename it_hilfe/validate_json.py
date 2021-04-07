@@ -1,6 +1,4 @@
-import sys
 import json
-from pprint import pprint
 
 from marshmallow import Schema, fields, ValidationError
 
@@ -13,6 +11,13 @@ class ItHilfeSchema(Schema):
 
 
 def validate(file_path):
+    """vaildates a json file for it_hilfe_gui
+
+    Arg:
+        file_path: file path to json file aimed to be validated
+
+    Returns:
+        None"""
     try:
         with open(file_path, "r") as file:
             pkg = json.load(file)
