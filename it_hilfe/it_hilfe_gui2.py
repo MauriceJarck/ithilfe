@@ -3,10 +3,11 @@ import json
 import sys
 import qdarkstyle
 
-from PySide2.QtCore import QSortFilterProxyModel
+from PySide2.QtCore import QSortFilterProxyModel, QPropertyAnimation, QSize, QEasingCurve
 from PySide2.QtGui import QPixmap, QIcon, QFont, QKeySequence, Qt, QStandardItemModel, QStandardItem
 from PySide2.QtPrintSupport import QPrinter, QPrintPreviewDialog
-from PySide2.QtWidgets import QMainWindow, QWidget, QApplication, QFileDialog, QItemDelegate, QComboBox, QLineEdit, QHeaderView
+from PySide2.QtWidgets import QMainWindow, QWidget, QApplication, QFileDialog, QItemDelegate, QComboBox, QLineEdit, \
+    QHeaderView, QFrame, QPushButton, QSizePolicy, QLabel, QHBoxLayout, QMessageBox
 from PySide2 import QtWidgets, QtCore
 
 import it_hilfe.devices as devices
@@ -17,6 +18,7 @@ registered_devices = {}
 valid_devices = [devices.WindowsLapTop, devices.WindowsWorkStation, devices.Macbook]
 labels = ['devname', 'username', 'os', 'devtype', "comment", "datetime", "extras"]
 file_path = None
+
 
 class FilterHeader(QHeaderView):
     """handels line edits for filtering in tableview self.header
@@ -101,32 +103,98 @@ class FilterHeader(QHeaderView):
 
         Returns:
             None"""
-
         for index, editor in enumerate(self._editors):
             height = editor.sizeHint().height()
             try:
                 if main_window.model.rowCount() == 0 or main_window.filters[-1].rowCount() == 0:
-                    editor.move(self.sectionPosition(index) - self.offset() + 4, height+3)
+                    editor.move(self.sectionPosition(index) - self.offset() + 4, height + 3)
+                    # print(self.sectionPosition(index))
                 else:
-                    editor.move(self.sectionPosition(index) - self.offset() + 26, height+3)
+                    editor.move(self.sectionPosition(index) - self.offset() + 26, height + 3)
             except NameError:
                 pass
 
             editor.resize(self.sectionSize(index), height)
 
     def hide_show(self):
+        """hides and shows filter line_edits in table Header
+
+        Returns:
+            None"""
         for editor in self._editors:
+            print(self._editors[0].height())
             if editor.isVisible():
                 editor.hide()
             else:
                 editor.show()
 
+        # if self._editors[0].height() == 0:
+        #     end = 22
+        # else:
+        #     end = 0
+        # print(end, self._editors[0].height())
+        #
+        # self.ani = QPropertyAnimation(self._editors[0], b"maximumHeight")
+        # self.ani.setDuration(300)
+        # self.ani.setStartValue(self._editors[0].height())
+        # self.ani.setEndValue(end)
+        # self.ani.setEasingCurve(QEasingCurve.Linear)
+        # self.ani.start()
+        #
+        # self.ani2 = QPropertyAnimation(self._editors[1], b"maximumHeight")
+        # self.ani2.setDuration(300)
+        # self.ani2.setStartValue(self._editors[1].height())
+        # self.ani2.setEndValue(end)
+        # self.ani2.setEasingCurve(QEasingCurve.Linear)
+        # self.ani2.start()
+        #
+        #
+        # self.ani3 = QPropertyAnimation(self._editors[2], b"maximumHeight")
+        # self.ani3.setDuration(300)
+        # self.ani3.setStartValue(self._editors[2].height())
+        # self.ani3.setEndValue(end)
+        # self.ani3.setEasingCurve(QEasingCurve.Linear)
+        # self.ani3.start()
+        #
+        #
+        # self.ani4 = QPropertyAnimation(self._editors[3], b"maximumHeight")
+        # self.ani4.setDuration(300)
+        # self.ani4.setStartValue(self._editors[3].height())
+        # self.ani4.setEndValue(end)
+        # self.ani4.setEasingCurve(QEasingCurve.Linear)
+        # self.ani4.start()
+        #
+        #
+        # self.ani5 = QPropertyAnimation(self._editors[4], b"maximumHeight")
+        # self.ani5.setDuration(300)
+        # self.ani5.setStartValue(self._editors[4].height())
+        # self.ani5.setEndValue(end)
+        # self.ani5.setEasingCurve(QEasingCurve.Linear)
+        # self.ani5.start()
+        #
+        #
+        # self.ani6 = QPropertyAnimation(self._editors[5], b"maximumHeight")
+        # self.ani6.setDuration(300)
+        # self.ani6.setStartValue(self._editors[5].height())
+        # self.ani6.setEndValue(end)
+        # self.ani6.setEasingCurve(QEasingCurve.Linear)
+        # self.ani6.start()
+        #
+        #
+        # self.ani7 = QPropertyAnimation(self._editors[6], b"maximumHeight")
+        # self.ani7.setDuration(300)
+        # self.ani7.setStartValue(self._editors[6].height())
+        # self.ani7.setEndValue(end)
+        # self.ani7.setEasingCurve(QEasingCurve.Linear)
+        # self.ani7.start()
+
 
 class ComboDelegate(QItemDelegate):
     """handels os change in form of a combobox directly in tableView"""
-    
+
     def createEditor(self, parent, option, proxyModelIndex):
-        neighbour_data = main_window.filters[-1].data(main_window.filters[-1].index(proxyModelIndex.row(), proxyModelIndex.column()+1))
+        neighbour_data = main_window.filters[-1].data(
+            main_window.filters[-1].index(proxyModelIndex.row(), proxyModelIndex.column() + 1))
         self.combo_OS = [x for x in valid_devices if x.__name__ == neighbour_data].pop().expected_OS
         combo = QComboBox(parent)
         combo.addItems(self.combo_OS)
@@ -144,7 +212,8 @@ class ComboDelegate(QItemDelegate):
 
 class MainWindowUi(QMainWindow):
     """sets up ui properties of MainWindowUi class"""
-    def __init__(self):
+
+    def __init__(self) -> None:
         """inits MainWindow class
 
         configuring parameters of MainWindow class and inherits from QtWidget.QMainWindow
@@ -161,11 +230,15 @@ class MainWindowUi(QMainWindow):
         self.file_path = None
         self.dir = None
         self.last_open_file_path = None
-        # self.setStyleSheet(qdarkstyle.load_stylesheet_pyside2())
-        self.current_theme = "standart"
+
+        # inital theme
+        self.setStyleSheet(qdarkstyle.load_stylesheet_pyside2())
+        self.current_theme = "dark"
+        self.setWindowIcon(QIcon("./data/favicon2.png"))
 
         # setup statusbar
         self.statusbar = self.statusBar()
+
         # setup stackedwidget
         self.stacked_widget = QtWidgets.QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
@@ -177,7 +250,7 @@ class MainWindowUi(QMainWindow):
 
         self.stacked_widget.setCurrentWidget(self.p_view)
 
-    def setup_menubar(self):
+    def setup_menubar(self)-> None:
         """inits menubar
 
         Returns:
@@ -189,9 +262,12 @@ class MainWindowUi(QMainWindow):
         self.action_save = QtWidgets.QAction("save")
         self.action_new = QtWidgets.QAction("new")
         self.action_print = QtWidgets.QAction("print")
+        self.action_hide_menu_bar = QtWidgets.QAction("hide menubar")
         self.action_print.setShortcut(QKeySequence("Ctrl+p"))
         self.action_open.setShortcut(QKeySequence("Ctrl+o"))
         self.action_save.setShortcut(QKeySequence("Ctrl+s"))
+        self.action_hide_menu_bar.setShortcut(QKeySequence("Ctrl+h"))
+        self.action_hide_menu_bar.setIcon(QIcon("./data/show_hide.ico"))
         self.action_print.setIcon(QIcon("./data/print.ico"))
         self.action_open.setIcon(QIcon("./data/open.ico"))
         self.action_save.setIcon(QIcon("./data/save.ico"))
@@ -214,9 +290,11 @@ class MainWindowUi(QMainWindow):
         self.action_toggle_theme.setIcon(QIcon("./data/theme.ico"))
 
         menu_view.addAction(self.action_toggle_theme)
+        menu_view.addAction(self.action_hide_menu_bar)
 
 
-    def setup_p_view(self):
+
+    def setup_p_view(self)-> None:
         """inits stacked widget page widget
 
         Returns:
@@ -237,26 +315,85 @@ class MainWindowUi(QMainWindow):
             self.filters.append(filter)
 
         delegate = ComboDelegate()
-
         self.table = QtWidgets.QTableView(self.p_view)
         self.table.setModel(self.filters[-1])
         self.table.setItemDelegateForColumn(2, delegate)
         self.table.horizontalHeader().setStretchLastSection(True)
+        self.table.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.header = FilterHeader(self.table)
         self.header.set_filter_boxes()
+        self.header.setMaximumHeight(50)
         self.table.setHorizontalHeader(self.header)
 
-        self.bt_register_new = QtWidgets.QPushButton("register new", self.p_view)
-        self.bt_hide_show_filter = QtWidgets.QPushButton("hide/show filter inputs", self.p_view)
+        self.bt_burger = QPushButton(self.p_view)
+        self.bt_burger.setIcon(QIcon("./data/menu2.svg"))
+        self.bt_burger.setIconSize(QSize(30, 30))
+        l_burger = QLabel("menu", self.p_view)
 
-        p_view_layout = QtWidgets.QVBoxLayout(self.p_view)
+        self.bt_register_new = QPushButton(self.p_view)
+        self.bt_register_new.setIcon(QIcon("./data/add.ico"))
+        self.bt_register_new.setIconSize(QSize(30, 30))
+        l_register_new = QLabel("register new", self.p_view)
+
+        self.bt_delete_column = QPushButton(self.p_view)
+        self.bt_delete_column.setIcon(QIcon("./data/remove.ico"))
+        self.bt_delete_column.setIconSize(QSize(30, 30))
+        l_delete = QLabel("delete column", self.p_view)
+
+        self.bt_hide_show_filter = QPushButton(self.p_view)
+        self.bt_hide_show_filter.setIcon(QIcon("./data/theme.ico"))
+        self.bt_hide_show_filter.setIconSize(QSize(30, 30))
+        l_hide_show = QLabel("hide/show", self.p_view)
+
+
+        self.left_btn_frame = QFrame(self.p_view)
+        self.left_btn_frame.setMaximumWidth(40)
+        self.left_btn_frame.setContentsMargins(0, 0, 0, 0)
+
+        self.left_menu_frame = QFrame(self.p_view)
+        self.left_menu_frame.setMaximumWidth(0)
+        self.left_menu_frame.setContentsMargins(0, 0, 0, 0)
+        self.left_menu_frame.setStyleSheet(u"")
+        self.left_menu_frame.setStyleSheet(u" border: 0px solid;")
+
+        p_view_layout2 = QtWidgets.QVBoxLayout(self.left_btn_frame)
+        p_view_layout2.addWidget(self.bt_burger)
+        p_view_layout2.addWidget(self.bt_register_new)
+        p_view_layout2.addWidget(self.bt_delete_column)
+        p_view_layout2.addWidget(self.bt_hide_show_filter)
+        p_view_layout2.setAlignment(Qt.AlignTop)
+        p_view_layout2.setContentsMargins(0, 0, 0, 0)
+
+        self.p_view_layout3 = QtWidgets.QVBoxLayout(self.left_menu_frame)
+        self.p_view_layout3.addWidget(l_burger)
+        self.p_view_layout3.addWidget(l_register_new)
+        self.p_view_layout3.addWidget(l_delete)
+        self.p_view_layout3.addWidget(l_hide_show)
+        self.p_view_layout3.setAlignment(Qt.AlignTop|Qt.AlignCenter)
+        self.p_view_layout3.setContentsMargins(0, 0, 0, 0)
+        self.p_view_layout3.setSpacing(25)
+
+        p_view_layout = QHBoxLayout(self.p_view)
+        p_view_layout.setContentsMargins(0, 0, 0, 0)
+        p_view_layout.addWidget(self.left_btn_frame)
+        p_view_layout.addWidget(self.left_menu_frame)
         p_view_layout.addWidget(self.table)
-        p_view_layout.addWidget(self.bt_register_new)
-        p_view_layout.addWidget(self.bt_hide_show_filter)
         self.p_view.setLayout(p_view_layout)
 
-    def setup_p_register(self):
+        self.p_view.addAction(self.action_open)
+        self.p_view.addAction(self.action_save)
+        self.p_view.addAction(self.action_new)
+        self.p_view.addAction(self.action_print)
+        self.p_view.addAction(self.action_register)
+        self.p_view.addAction(self.action_toggle_theme)
+        self.p_view.addAction(self.action_hide_menu_bar)
+
+        self.left_menu_frame.setStyleSheet(u"background: rgb(55,65,79); border: 0px solid;")
+        self.left_btn_frame.setStyleSheet(u"background: rgb(55,65,79); border: 0px solid;")
+
+
+    def setup_p_register(self) -> None:
         """inits stacked widget page widgets
 
         Returns:
@@ -275,8 +412,8 @@ class MainWindowUi(QMainWindow):
         self.in_combobox_os = QtWidgets.QComboBox(self.p_register)
         l_comment = QtWidgets.QLabel("Comment", self.p_register)
         self.text_edit_comment = QtWidgets.QTextEdit(self.p_register)
-        self.bt_register = QtWidgets.QPushButton("register", self.p_register)
-        self.bt_cancel_register = QtWidgets.QPushButton("cancel", self.p_register)
+        self.bt_register = QPushButton("register", self.p_register)
+        self.bt_cancel_register = QPushButton("cancel", self.p_register)
 
         p_register_layout = QtWidgets.QVBoxLayout(self.p_register)
         p_register_layout.addWidget(l_user)
@@ -291,8 +428,8 @@ class MainWindowUi(QMainWindow):
         p_register_layout.addWidget(self.text_edit_comment)
         p_register_layout.addWidget(self.bt_register)
         p_register_layout.addWidget(self.bt_cancel_register)
-    
-    def setup_p_create(self):
+
+    def setup_p_create(self) -> None:
         """inits stacked widget page widget
 
         Returns:
@@ -302,12 +439,12 @@ class MainWindowUi(QMainWindow):
         self.stacked_widget.addWidget(self.p_create)
 
         l_new_filepath = QtWidgets.QLabel("new filepath", self.p_create)
-        self.bt_mod_new_path = QtWidgets.QPushButton("mod filepath", self.p_create)
+        self.bt_mod_new_path = QPushButton("mod filepath", self.p_create)
         self.in_new_filepath = QtWidgets.QLineEdit(self.p_create)
         l_new_filename = QtWidgets.QLabel("new filename", self.p_create)
         self.in_new_filename = QtWidgets.QLineEdit(self.p_create)
-        self.bt_create = QtWidgets.QPushButton("create", self.p_create)
-        self.bt_cancel_create = QtWidgets.QPushButton("cancel", self.p_create)
+        self.bt_create = QPushButton("create", self.p_create)
+        self.bt_cancel_create = QPushButton("cancel", self.p_create)
 
         p_create_layout = QtWidgets.QVBoxLayout(self.p_create)
         p_create_layout.addWidget(l_new_filepath)
@@ -319,7 +456,7 @@ class MainWindowUi(QMainWindow):
         p_create_layout.addWidget(self.bt_create)
         p_create_layout.addWidget(self.bt_cancel_create)
 
-    def setup_signals(self):
+    def setup_signals(self) -> None:
         """connects signals
 
         Returns:
@@ -336,10 +473,12 @@ class MainWindowUi(QMainWindow):
         # comboboxes
         self.in_combobox_devicetype.addItems(["choose here"] + [x.__name__ for x in valid_devices])
         self.in_combobox_devicetype.currentIndexChanged.connect(lambda: self.update_combobox(self.in_combobox_os,
-                                                                                               valid_devices[
-                                                                                                   self.in_combobox_devicetype.currentIndex() - 1].expected_OS))
+                                                                                             valid_devices[
+                                                                                                 self.in_combobox_devicetype.currentIndex() - 1].expected_OS))
         # btns
-        self.bt_hide_show_filter.clicked.connect(lambda: self.header.hide_show())
+        self.bt_delete_column.clicked.connect(self.delete)
+        self.bt_hide_show_filter.clicked.connect(self.header.hide_show)
+        # self.bt_hide_show_filter.clicked.connect(lambda: self.toggle_hide_show_ani(30, 44, "height", self.header, b"maximumHeight"))
         self.bt_register_new.clicked.connect(lambda: self.stacked_widget.setCurrentWidget(self.p_register))
         self.bt_register.clicked.connect(
             lambda: self.validate(self.register, line_edit_list=[self.in_username, self.in_devicename],
@@ -348,6 +487,8 @@ class MainWindowUi(QMainWindow):
         self.bt_create.clicked.connect(
             lambda: self.validate(self.new, line_edit_list=[self.in_new_filepath, self.in_new_filename], data=False))
         self.bt_mod_new_path.clicked.connect(lambda: self.new(True))
+        self.bt_burger.clicked.connect(lambda: self.toggle_hide_show_ani(0, 66, "width", self.left_menu_frame,
+                                                                         b"maximumWidth", ))
         # menu bar
         self.action_register.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.p_register))
         self.action_open.triggered.connect(self.get_open_file_path)
@@ -355,20 +496,57 @@ class MainWindowUi(QMainWindow):
         self.action_new.triggered.connect(lambda: self.new(True))
         self.action_print.triggered.connect(lambda: self.validate(self.print, data=False, checkfname=True))
         self.action_toggle_theme.triggered.connect(self.toggle_theme)
+        self.action_hide_menu_bar.triggered.connect(lambda: self.toggle_hide_show(self.menu_Bar))
         # # cancel
         self.bt_cancel_register.clicked.connect(lambda: self.cancel(
             [self.in_username, self.in_devicename, self.in_combobox_os, self.text_edit_comment]))
 
-    def toggle_theme(self):
+    def toggle_theme(self) -> None:
+        """toggles between standard and dark theme
+
+        Returns:
+            None"""
         if self.current_theme == "dark":
-            self.setStyleSheet("")
             self.current_theme = "standard"
             self.setWindowIcon(QIcon("./data/favicon.ico"))
+            self.setStyleSheet("")
+            self.left_menu_frame.setStyleSheet("")
+            self.left_btn_frame.setStyleSheet("")
+            self.p_view_layout3.setSpacing(35)
 
         else:
             self.setStyleSheet(qdarkstyle.load_stylesheet_pyside2())
             self.current_theme = "dark"
+            self.p_view_layout3.setSpacing(25)
             self.setWindowIcon(QIcon("./data/favicon2.png"))
+            self.left_btn_frame.setStyleSheet(u"background: rgb(55,65,79); border: 0px solid;")
+            self.left_menu_frame.setStyleSheet(u" border: 0px solid;")
+
+    def toggle_hide_show_ani(self, collapsed_val, expanded_val, actual, to_animate, property):
+        if getattr(to_animate, actual)() == expanded_val:
+            destination = collapsed_val
+        else:
+            destination = expanded_val
+        print(getattr(to_animate, actual)(), destination)
+        self.ani = QPropertyAnimation(to_animate, property)
+        self.ani.setDuration(300)
+        self.ani.setStartValue(getattr(to_animate, actual)())
+        self.ani.setEndValue(destination)
+        self.ani.setEasingCurve(QEasingCurve.Linear)
+        self.ani.start()
+        print(getattr(to_animate, actual)(), destination)
+
+    def toggle_hide_show(self, widget: QWidget) -> None:
+        """toggles visibiliy of a given widget
+        Arg:
+            widget: widget which is aimed to be hidden or shown
+        Returs:
+            None
+        """
+        if widget.isVisible():
+            widget.hide()
+        else:
+            widget.show()
 
     def cancel(self, widgets: list) -> None:
         """click event for all cancel buttons
@@ -399,7 +577,8 @@ class MainWindowUi(QMainWindow):
         box.clear()
         box.addItems(["choose here"] + data)
 
-    def validate(self, command, file_path: str = None, line_edit_list: list = None, combo_box_list: list = None, data=None, allowed: list = None, forbidden: list = None, checkfname: bool = None) -> None:
+    def validate(self, command, file_path: str = None, line_edit_list: list = None, combo_box_list: list = None,
+                 data=None, allowed: list = None, forbidden: list = None, checkfname: bool = None) -> None:
         """validates user input
 
         Args:
@@ -442,7 +621,7 @@ class MainWindowUi(QMainWindow):
             else:
                 val = validate_json.validate(file_path)
                 if val is not True:
-                    QtWidgets.QMessageBox.critical(self, "validation failed.", f"Invalid Json file, problem in: {val}")
+                    QtWidgets.QMessageBox.critical(self, "validation failed", f"Invalid Json file, problem in: {val}")
                     fails += 1
         if fails == 0:
             if data is None:
@@ -462,9 +641,10 @@ class MainWindowUi(QMainWindow):
                        self.in_username.text(), self.in_combobox_os.currentText(), self.text_edit_comment.toPlainText(),
                        str(datetime.datetime.now()), registered_devices)
 
-        new_values = [self.in_devicename.text(), self.in_username.text(), str(valid_devices[self.in_combobox_os.currentIndex()].__name__),
-         self.in_combobox_os.currentText(), self.text_edit_comment.toPlainText(),
-         str(datetime.datetime.now())]
+        new_values = [self.in_devicename.text(), self.in_username.text(),
+                      str(valid_devices[self.in_combobox_os.currentIndex()].__name__),
+                      self.in_combobox_os.currentText(), self.text_edit_comment.toPlainText(),
+                      str(datetime.datetime.now())]
         row = [QStandardItem(str(item)) for item in new_values]
         self.model.appendRow(row)
 
@@ -475,6 +655,25 @@ class MainWindowUi(QMainWindow):
         self.text_edit_comment.clear()
         self.save()
 
+    def delete(self) -> None:
+        """deletes all rows associated with min 1 slected cell
+        Returns:
+            None"""
+        rows = sorted(set(index.row() for index in self.table.selectedIndexes()), reverse=True)
+        qb = QMessageBox()
+        answ = qb.question(self, 'delete rows', f"Are you sure to delete {rows} rows?", qb.Yes | qb.No)
+
+        if answ == qb.Yes:
+            for row in rows:
+                print(self.model.index(row, 0).data())
+                registered_devices.pop(str(self.model.index(row, 0).data()))
+                self.model.removeRow(row)
+            qb.information(self, 'notification', f"deleted {rows} row")
+            print(registered_devices)
+        else:
+            qb.information(self, 'notification', "Nothing Changed")
+        self.save()
+
     def get_open_file_path(self) -> None:
         """gets file-path and set it to self.file_path, extra step for json validation
 
@@ -482,8 +681,10 @@ class MainWindowUi(QMainWindow):
             None"""
 
         self.file_path = \
-        QFileDialog.getOpenFileName(self, "open file", f"{self.last_open_file_path or 'c://'}", "json files (*json)")[0]
-        self.validate(command=self.load, file_path=self.file_path, allowed=["devices", "last_open_file_path"], forbidden=[""])
+            QFileDialog.getOpenFileName(self, "open file", f"{self.last_open_file_path or 'c://'}",
+                                        "json files (*json)")[0]
+        self.validate(command=self.load, file_path=self.file_path, allowed=["devices", "last_open_file_path"],
+                      forbidden=[""])
 
     def load(self) -> None:
         """opens json file and loads its content into registered devices
@@ -506,7 +707,8 @@ class MainWindowUi(QMainWindow):
                         cell.setEditable(False)
                 self.model.appendRow(row)
 
-                new = [x for x in valid_devices if x.__name__ == value[3]].pop(0)(value[0], value[1], value[4], value[5])
+                new = [x for x in valid_devices if x.__name__ == value[3]].pop(0)(value[0], value[1], value[4],
+                                                                                  value[5])
                 new.OS = value[2]
                 registered_devices[value[0]] = new
 
@@ -521,14 +723,15 @@ class MainWindowUi(QMainWindow):
         if not self.file_path:
             self.statusbar.showMessage("no file path set all changes get lost if closed")
         else:
-            with open(self.file_path, 'w',) as file:
-                devices = {k: [v.name, v.user, v.OS, v.__class__.__name__, v.comment, v.datetime] for (k, v) in enumerate(registered_devices.values())}
+            with open(self.file_path, 'w', ) as file:
+                devices = {k: [v.name, v.user, v.OS, v.__class__.__name__, v.comment, v.datetime] for (k, v) in
+                           enumerate(registered_devices.values())}
                 last_open_file_path = "/".join(self.file_path.split("/")[:-1])
                 resulting_dict = {"devices": devices, "last_open_file_path": last_open_file_path}
                 json.dump(resulting_dict, file)
                 self.statusbar.showMessage("saved file")
 
-    def new(self, stage: bool, test: bool=False) -> None:
+    def new(self, stage: bool, test: bool = False) -> None:
         """creates new csv file to save into
 
         stage is True: set filepath
@@ -558,7 +761,7 @@ class MainWindowUi(QMainWindow):
             None"""
 
         with open(self.file_path) as f:
-            data = json.dumps(dict(json.load(f)), sort_keys=True, indent=6, separators= (".", "="))
+            data = json.dumps(dict(json.load(f)), sort_keys=True, indent=6, separators=(".", "="))
         self.document = QtWidgets.QTextEdit()
         self.document.setText(data)
 
