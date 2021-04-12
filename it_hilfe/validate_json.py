@@ -21,9 +21,7 @@ def validate(file_path):
     try:
         with open(file_path, "r") as file:
             pkg = json.load(file)
-            for need in needed:
-                if need not in dict(pkg).keys():
-                    raise ValidationError(need, 'not in needed')
+            ItHilfeSchema().load(pkg)
         return True
 
     except ValidationError as error:

@@ -13,6 +13,7 @@ __pycache__
 /tests/jsonTest.json
 /tests/coverage.xml
 /tests/newJson.json
+/tests/invalid_json_test.json
 
 /bin
 /dist
