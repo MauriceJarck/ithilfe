@@ -1,6 +1,7 @@
 import json
 import pytest
 from PySide2 import QtCore
+from PySide2.QtWidgets import QMessageBox
 
 from it_hilfe.it_hilfe_gui2 import MainWindowUi, StartScreenUi, ComboDelegate
 
@@ -29,7 +30,7 @@ def combo_delegate(qtbot):
 
 
 @pytest.fixture(scope="function")
-def create_valid_json():
+def create_valid_json(main_window):
     with open("jsonTest.json", "w") as f:
         f.truncate()
 
@@ -38,7 +39,6 @@ def create_valid_json():
             "devices": {"0": ["007", "peter", "Win7", "Macbook", "this is a comment", "2021-03-19 13:56:40.509002"]},
             "last_open_file_path": "C:/Users/maurice.jarck/Documents/Projects/it_hilfe/it_hilfe/data"}
         json.dump(data, f)
-
 
 def test_startscreen(start_screen):
     assert start_screen.txt_label.text() == "Welcome"
@@ -150,6 +150,21 @@ def test_p_register_validate_open(main_window, qtbot, create_valid_json):
     # test delegate aka change values in p_view
 
 
+def test_delete(main_window, mocker, create_valid_json):
+    main_window.file_path = "jsonTest.json"
+    main_window.load()
+    assert main_window.model.rowCount() == 1
+    assert len(main_window.registered_devices) == 1
+
+    mocker.patch.object(main_window.table, "selectedIndexes", return_value=[main_window.filters[-1].createIndex(0, 0)])
+    mocker.patch.object(QMessageBox, "question", return_value=QMessageBox.Yes)
+    mocker.patch.object(QMessageBox, "information", return_value=QMessageBox.Ok)
+    main_window.delete()
+
+    assert main_window.filters[-1].rowCount() == 0
+    assert len(main_window.registered_devices) == 0
+
+
 def test_toggle_theme(main_window):
     assert main_window.current_theme == "dark"
     main_window.toggle_theme()
@@ -172,22 +187,25 @@ def test_hide_show(main_window):
     assert main_window.bt_register_new.isVisible() is True
     main_window.toggle_hide_show(main_window.bt_register_new)
     assert main_window.bt_register_new.isVisible() is False
+    main_window.toggle_hide_show(main_window.bt_register_new)
+    assert main_window.bt_register_new.isVisible() is True
 
 
-def test_json_validatation(qtbot, main_window):
+def test_json_validatation(qtbot, main_window, mocker):
     validate = main_window.validate(command=main_window.register, file_path="", forbidden=[""])
     assert validate == 'problem\ncommand: register\nfails: 1'
     assert main_window.statusbar.currentMessage() == "select a file to continue"
 
     main_window.validate(command=main_window.stacked_widget.setCurrentWidget, data=main_window.p_register,
-                         file_path="./jsonTest.json", allowed=["devices", "last_open_file_path"],
-                         forbidden=[""])
+                             file_path="./jsonTest.json",
+                             forbidden=[""])
+
     assert main_window.stacked_widget.currentWidget() == main_window.p_register
 
-    # validate = main_window.validate(command=main_window.register, file_path="./invalid_json_test.json", forbidden=[""])
-    # ok_button = main_window.msg_box.button(QMessageBox.Ok)
-    # qtbot.mouseClick(ok_button, QtCore.Qt.LeftButton)
-    # assert validate == 'problem\ncommand: register\nfails: 1'
+
+    mocker.patch.object(QMessageBox, "critical", return_value = QMessageBox.Ok)
+    main_window.validate(command=main_window.register, file_path="./invalid_json_test.json", forbidden=[""])
+    assert main_window.msg_box == QMessageBox.Ok
 
 
 def test_print(qtbot, main_window, create_valid_json):

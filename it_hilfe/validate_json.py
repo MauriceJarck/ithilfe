@@ -1,8 +1,5 @@
 import json
-
-from marshmallow import Schema, fields, ValidationError
-
-needed = ["devices", "last_open_file_path"]
+from marshmallow import Schema, fields
 
 
 class ItHilfeSchema(Schema):
@@ -18,11 +15,9 @@ def validate(file_path):
 
     Returns:
         None"""
-    try:
-        with open(file_path, "r") as file:
-            pkg = json.load(file)
-            ItHilfeSchema().load(pkg)
-        return True
 
-    except ValidationError as error:
-        return error.messages
+    with open(file_path, "r") as file:
+        pkg = json.load(file)
+
+    ItHilfeSchema().load(pkg)
+

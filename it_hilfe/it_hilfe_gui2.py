@@ -2,8 +2,9 @@ import datetime
 import json
 import sys
 import qdarkstyle
+from marshmallow import ValidationError
 
-from PySide2.QtCore import QSortFilterProxyModel, QPropertyAnimation, QSize, QEasingCurve
+from PySide2.QtCore import QSortFilterProxyModel, QPropertyAnimation, QSize, QEasingCurve, QAbstractItemModel
 from PySide2.QtGui import QPixmap, QIcon, QFont, QKeySequence, Qt, QStandardItemModel, QStandardItem
 from PySide2.QtPrintSupport import QPrinter, QPrintPreviewDialog
 from PySide2.QtWidgets import QMainWindow, QWidget, QApplication, QFileDialog, QItemDelegate, QComboBox, QLineEdit, \
@@ -14,7 +15,6 @@ import it_hilfe.devices as devices
 import it_hilfe.it_hilfe_logic as logic
 from it_hilfe import validate_json
 
-registered_devices = {}
 valid_devices = [devices.WindowsLapTop, devices.WindowsWorkStation, devices.Macbook]
 labels = ['devname', 'username', 'os', 'devtype', "comment", "datetime", "extras"]
 file_path = None
@@ -40,10 +40,6 @@ class FilterHeader(QHeaderView):
 
         Returns:
             None"""
-        while self.editors:
-            editor = self.editors.pop()
-            editor.deleteLater()
-
         editor0 = QLineEdit(self.parent())
         editor0.setPlaceholderText('Filter')
 
@@ -127,66 +123,6 @@ class FilterHeader(QHeaderView):
             else:
                 editor.show()
 
-        # if self.editors[0].height() == 0:
-        #     end = 22
-        # else:
-        #     end = 0
-        # print(end, self.editors[0].height())
-        #
-        # self.ani = QPropertyAnimation(self.editors[0], b"maximumHeight")
-        # self.ani.setDuration(300)
-        # self.ani.setStartValue(self.editors[0].height())
-        # self.ani.setEndValue(end)
-        # self.ani.setEasingCurve(QEasingCurve.Linear)
-        # self.ani.start()
-        #
-        # self.ani2 = QPropertyAnimation(self.editors[1], b"maximumHeight")
-        # self.ani2.setDuration(300)
-        # self.ani2.setStartValue(self.editors[1].height())
-        # self.ani2.setEndValue(end)
-        # self.ani2.setEasingCurve(QEasingCurve.Linear)
-        # self.ani2.start()
-        #
-        #
-        # self.ani3 = QPropertyAnimation(self.editors[2], b"maximumHeight")
-        # self.ani3.setDuration(300)
-        # self.ani3.setStartValue(self.editors[2].height())
-        # self.ani3.setEndValue(end)
-        # self.ani3.setEasingCurve(QEasingCurve.Linear)
-        # self.ani3.start()
-        #
-        #
-        # self.ani4 = QPropertyAnimation(self.editors[3], b"maximumHeight")
-        # self.ani4.setDuration(300)
-        # self.ani4.setStartValue(self.editors[3].height())
-        # self.ani4.setEndValue(end)
-        # self.ani4.setEasingCurve(QEasingCurve.Linear)
-        # self.ani4.start()
-        #
-        #
-        # self.ani5 = QPropertyAnimation(self.editors[4], b"maximumHeight")
-        # self.ani5.setDuration(300)
-        # self.ani5.setStartValue(self.editors[4].height())
-        # self.ani5.setEndValue(end)
-        # self.ani5.setEasingCurve(QEasingCurve.Linear)
-        # self.ani5.start()
-        #
-        #
-        # self.ani6 = QPropertyAnimation(self.editors[5], b"maximumHeight")
-        # self.ani6.setDuration(300)
-        # self.ani6.setStartValue(self.editors[5].height())
-        # self.ani6.setEndValue(end)
-        # self.ani6.setEasingCurve(QEasingCurve.Linear)
-        # self.ani6.start()
-        #
-        #
-        # self.ani7 = QPropertyAnimation(self.editors[6], b"maximumHeight")
-        # self.ani7.setDuration(300)
-        # self.ani7.setStartValue(self.editors[6].height())
-        # self.ani7.setEndValue(end)
-        # self.ani7.setEasingCurve(QEasingCurve.Linear)
-        # self.ani7.start()
-
 
 class ComboDelegate(QItemDelegate):
     """handels os change in form of a combobox directly in tableView"""
@@ -201,8 +137,8 @@ class ComboDelegate(QItemDelegate):
         return combo
 
     def setModelData(self, combo, model, index):
-        comboIndex = combo.currentIndex()
-        text = self.combo_OS[comboIndex]
+        combo_index = combo.currentIndex()
+        text = self.combo_OS[combo_index]
         model.setData(index, text)
 
     def flags(self, index):
@@ -229,6 +165,7 @@ class MainWindowUi(QMainWindow):
         self.file_path = None
         self.dir = None
         self.last_open_file_path = None
+        self.registered_devices = {}
 
         # inital theme
         self.setStyleSheet(qdarkstyle.load_stylesheet_pyside2())
@@ -477,7 +414,7 @@ class MainWindowUi(QMainWindow):
         self.bt_enter_register.clicked.connect(
             lambda: self.validate(self.register, line_edit_list=[self.in_username, self.in_devicename],
                                   combo_box_list=[self.in_combobox_devicetype, self.in_combobox_os],
-                                  forbidden=list(registered_devices.keys()), checkfname=True))
+                                  forbidden=list(self.registered_devices.keys()), checkfname=True))
         self.bt_create.clicked.connect(
             lambda: self.validate(self.new, line_edit_list=[self.in_new_filepath, self.in_new_filename], data=False))
         self.bt_mod_new_path.clicked.connect(lambda: self.new(True))
@@ -511,7 +448,7 @@ class MainWindowUi(QMainWindow):
             self.left_menu_frame.setStyleSheet("")
             self.left_btn_frame.setStyleSheet("")
             self.p_view_layout3.setSpacing(30)
-            # self.setStyleSheet("QPushButton {border: 0px solid;}")
+
 
         else:
             self.setStyleSheet(qdarkstyle.load_stylesheet_pyside2())
@@ -574,7 +511,7 @@ class MainWindowUi(QMainWindow):
         box.addItems(["choose here"] + data)
 
     def validate(self, command, file_path: str = None, line_edit_list: list = None, combo_box_list: list = None,
-                 data=None, allowed: list = None, forbidden: list = None, checkfname: bool = None) -> None:
+                 data=None, forbidden: list = None, checkfname: bool = None) -> None:
         """validates user input
 
         Args:
@@ -582,7 +519,6 @@ class MainWindowUi(QMainWindow):
             line_edit_list: contents pyqt5.QtWidgets.QlineEdit instances to be checked if empty or current text in forbidden or not in allowed
             combo_box_list: contents pyqt5.QtWidgets.qComboBox instances to be checked if nothing selected
             data: data to be passed into command function if needed
-            allowed: houses key wihich are allowed to be entered
             forbidden: houses keys which are not allowed to be entered
             checkfname: check weather an file path exists or not
 
@@ -594,9 +530,6 @@ class MainWindowUi(QMainWindow):
             for x in line_edit_list:
                 if x.text() == "":
                     x.setText("fill all fields")
-                    fails += 1
-                if allowed is not None and x.text() not in allowed:
-                    x.setText("not in allowed!!")
                     fails += 1
                 if forbidden is not None and x.text() in forbidden:
                     x.setText("in forbidden!!")
@@ -610,21 +543,21 @@ class MainWindowUi(QMainWindow):
             self.statusbar.showMessage("no file path specified, visit Ctrl+o or menuebar/edit/open to fix")
             fails += 1
 
-        # todo test json validation invalid case
         if file_path is not None:
             if file_path in forbidden:
                 fails += 1
                 self.statusbar.showMessage("select a file to continue")
             else:
-                val = validate_json.validate(file_path)
-                if val is not True:
-                    self.msg_box = QtWidgets.QMessageBox.critical(self, "validation failed", f"Invalid Json file, problem in: {val}")
+                try:
+                    validate_json.validate(file_path)
+                except ValidationError as e:
+                    self.msg_box = QtWidgets.QMessageBox.critical(self, "validation failed", f"Invalid Json file, problem in: {e.messages}")
                     fails += 1
         if fails == 0:
             if data is None:
-                return command()
+                command()
             else:
-                return command(data)
+                command(data)
         else:
             message = f"problem\ncommand: {command.__name__}\nfails: {fails}"
             print(message)
@@ -642,7 +575,7 @@ class MainWindowUi(QMainWindow):
                        os=self.in_combobox_os.currentText(),
                        comment=self.in_comment.toPlainText(),
                        datetime=str(datetime.datetime.now()),
-                       registered_devices=registered_devices)
+                       registered_devices=self.registered_devices)
 
         new_values = [self.in_devicename.text(), self.in_username.text(),
                       self.in_combobox_os.currentText(),
@@ -660,18 +593,18 @@ class MainWindowUi(QMainWindow):
         self.in_comment.clear()
         self.save()
 
-    # todo test delete
     def delete(self) -> None:
         """deletes all rows associated with min 1 slected cell
         Returns:
             None"""
+        # print(self.table.selectedIndexes())
         rows = sorted(set(index.row() for index in self.table.selectedIndexes()), reverse=True)
         qb = QMessageBox()
         answ = qb.question(self, 'delete rows', f"Are you sure to delete {rows} rows?", qb.Yes | qb.No)
 
         if answ == qb.Yes:
             for row in rows:
-                registered_devices.pop(str(self.model.index(row, 0).data()))
+                self.registered_devices.pop(str(self.model.index(row, 0).data()))
                 self.model.removeRow(row)
             qb.information(self, 'notification', f"deleted {rows} row")
         else:
@@ -687,8 +620,7 @@ class MainWindowUi(QMainWindow):
         self.file_path = \
             QFileDialog.getOpenFileName(self, "open file", f"{self.last_open_file_path or 'c://'}",
                                         "json files (*json)")[0]
-        self.validate(command=self.load, file_path=self.file_path, allowed=["devices", "last_open_file_path"],
-                      forbidden=[""])
+        self.validate(command=self.load, file_path=self.file_path, forbidden=[""])
 
     def load(self) -> None:
         """opens json file and loads its content into registered devices
@@ -697,7 +629,7 @@ class MainWindowUi(QMainWindow):
             None"""
 
         self.model.clear()
-        registered_devices.clear()
+        self.registered_devices.clear()
         with open(self.file_path, "r") as file:
             data = dict(json.load(file))
             devices = data["devices"].values()
@@ -714,7 +646,7 @@ class MainWindowUi(QMainWindow):
                 new = [x for x in valid_devices if x.__name__ == value[3]].pop(0)(value[0], value[1], value[4],
                                                                                   value[5])
                 new.OS = value[2]
-                registered_devices[value[0]] = new
+                self.registered_devices[value[0]] = new
 
         self.model.setHorizontalHeaderLabels(labels)
         self.statusbar.showMessage("")
@@ -727,7 +659,7 @@ class MainWindowUi(QMainWindow):
             self.header.editors[a].setCompleter(completer)
 
     def save(self) -> None:
-        """saves content fo registered_devices into specified json file
+        """saves content fo self.registered_devices into specified json file
 
         Returns:
             None"""
@@ -736,7 +668,7 @@ class MainWindowUi(QMainWindow):
         else:
             with open(self.file_path, 'w', ) as file:
                 devices = {k: [v.name, v.user, v.OS, v.__class__.__name__, v.comment, v.datetime] for (k, v) in
-                           enumerate(registered_devices.values())}
+                           enumerate(self.registered_devices.values())}
                 last_open_file_path = "/".join(self.file_path.split("/")[:-1])
                 resulting_dict = {"devices": devices, "last_open_file_path": last_open_file_path}
                 json.dump(resulting_dict, file)
@@ -758,7 +690,7 @@ class MainWindowUi(QMainWindow):
                 self.dir = QFileDialog.getExistingDirectory(self, "select a folder", "c://")
             self.stacked_widget.setCurrentWidget(self.p_create)
             self.in_new_filepath.setText(self.dir)
-            registered_devices.clear()
+            self.registered_devices.clear()
 
         else:
             self.file_path = self.dir + f"/{self.in_new_filename.text()}.json"
@@ -802,7 +734,7 @@ class StartScreenUi(QWidget):
         self.timer.singleShot(1500, self.on_elapsed)
 
     def on_elapsed(self) -> None:
-        """closes StartStartsceen Window and creates instance of MainWindow
+        """closes startsceen window and shows previously created instance of MainWindow
 
         Returns:
             None"""
