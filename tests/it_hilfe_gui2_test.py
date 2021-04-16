@@ -203,9 +203,9 @@ def test_json_validatation(qtbot, main_window, mocker):
     assert main_window.stacked_widget.currentWidget() == main_window.p_register
 
 
-    mocker.patch.object(QMessageBox, "critical", return_value = QMessageBox.Ok)
-    main_window.validate(command=main_window.register, file_path="./invalid_json_test.json", forbidden=[""])
-    assert main_window.msg_box == QMessageBox.Ok
+    # mocker.patch.object(QMessageBox, "critical", return_value = QMessageBox.Ok)
+    # main_window.validate(command=main_window.register, file_path="./invalid_json_test.json", forbidden=[""])
+    # assert main_window.msg_box == QMessageBox.Ok
 
 
 def test_print(qtbot, main_window, create_valid_json):
