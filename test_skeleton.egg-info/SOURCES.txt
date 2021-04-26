@@ -1,5 +1,0 @@
-README.md
-test_skeleton.egg-info/PKG-INFO
-test_skeleton.egg-info/SOURCES.txt
-test_skeleton.egg-info/dependency_links.txt
-test_skeleton.egg-info/top_level.txt
