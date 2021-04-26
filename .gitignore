@@ -10,10 +10,10 @@ __pycache__
 
 /tests/.coverage
 /test/testCSV.csv
-/tests/jsonTest.json
+/tests/data/jsonTest.json
 /tests/coverage.xml
-/tests/newJson.json
-/tests/invalid_json_test.json
+/tests/data/newJson.json
+/tests/data/invalid_json_test.json
 
 /bin
 /dist

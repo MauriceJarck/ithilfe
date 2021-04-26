@@ -4,6 +4,7 @@ from PySide2 import QtCore
 from PySide2.QtWidgets import QMessageBox
 
 from it_hilfe.it_hilfe_gui2 import MainWindowUi, StartScreenUi, ComboDelegate
+from it_hilfe.validate_json import ItHilfeDataSchema, ItHilfeUserPreferencesSchema
 
 
 @pytest.fixture
@@ -21,6 +22,7 @@ def start_screen(qtbot):
     var.show()
     return var
 
+
 @pytest.fixture
 def combo_delegate(qtbot):
     var = ComboDelegate()
@@ -31,20 +33,24 @@ def combo_delegate(qtbot):
 
 @pytest.fixture(scope="function")
 def create_valid_json(main_window):
-    with open("jsonTest.json", "w") as f:
+    with open("data/jsonTest.json", "w") as f:
         f.truncate()
 
-    with open("jsonTest.json", "w") as f:
+    with open("data/jsonTest.json", "w") as f:
         data = {
             "devices": {"0": ["007", "peter", "Win7", "Macbook", "this is a comment", "2021-03-19 13:56:40.509002"]},
-            "last_open_file_path": "C:/Users/maurice.jarck/Documents/Projects/it_hilfe/it_hilfe/data"}
+            "last_open_file_dir": "C:/Users/maurice.jarck/Documents/Projects/it_hilfe/it_hilfe/data"}
         json.dump(data, f)
 
+
 def test_startscreen(start_screen):
+    start_screen.conf_file = "../it_hilfe/data/user_config.json"
     assert start_screen.txt_label.text() == "Welcome"
 
 
-def test_p_register_validate_open(main_window, qtbot, create_valid_json):
+def test_p_register_validate_open(main_window, qtbot, create_valid_json, mocker):
+    mocker.patch.object(QMessageBox, "question", return_value=QMessageBox.No)
+
     # check "registerNew" button
     qtbot.mouseClick(main_window.bt_register_new, QtCore.Qt.LeftButton)
     assert main_window.stacked_widget.currentIndex() == 1
@@ -67,7 +73,7 @@ def test_p_register_validate_open(main_window, qtbot, create_valid_json):
 
     main_window.in_username.clear()
     main_window.in_devicename.clear()
-    main_window.file_path = "jsonTest.json"
+    main_window.file_path = "./data/jsonTest.json"
 
     # comboboxes not filled
     main_window.in_username.setText("maurice")
@@ -150,9 +156,17 @@ def test_p_register_validate_open(main_window, qtbot, create_valid_json):
     # test delegate aka change values in p_view
 
 
+def test_reopen_last_file(main_window, mocker, qtbot):
+    mocker.patch.object(QMessageBox, "question", return_value=QMessageBox.Yes)
+    main_window.reopen_last_file()
+    assert main_window.model.rowCount() == 2
+
+
 def test_delete(main_window, mocker, create_valid_json):
-    main_window.file_path = "jsonTest.json"
+
+    main_window.file_path = "data/jsonTest.json"
     main_window.load()
+
     assert main_window.model.rowCount() == 1
     assert len(main_window.registered_devices) == 1
 
@@ -165,12 +179,29 @@ def test_delete(main_window, mocker, create_valid_json):
     assert len(main_window.registered_devices) == 0
 
 
-def test_toggle_theme(main_window):
-    assert main_window.current_theme == "dark"
-    main_window.toggle_theme()
-    assert main_window.current_theme == "standard"
-    main_window.toggle_theme()
-    assert main_window.current_theme == "dark"
+def test_change_theme(main_window):
+
+    with open("./data/light_theme.css") as file:
+        light_stylesheed = " ".join(file.readlines())
+        assert main_window.styleSheet() == light_stylesheed
+        assert main_window.p_preferences.styleSheet() == light_stylesheed
+
+    assert main_window.in_combo_themes.currentText() == "light_theme"
+    main_window.change_theme("dark_theme")
+
+    with open("./data/dark_theme.css") as file:
+        light_stylesheed = " ".join(file.readlines())
+        assert main_window.styleSheet() == light_stylesheed
+        assert main_window.p_preferences.styleSheet() == light_stylesheed
+
+    main_window.change_theme("light_theme")
+
+    with open("./data/light_theme.css") as file:
+        light_stylesheed = " ".join(file.readlines())
+        assert main_window.styleSheet() == light_stylesheed
+        assert main_window.p_preferences.styleSheet() == light_stylesheed
+
+    assert main_window.in_combo_themes.currentText() == "light_theme"
 
 
 def test_hide_show_ani(main_window, qtbot):
@@ -191,14 +222,15 @@ def test_hide_show(main_window):
     assert main_window.bt_register_new.isVisible() is True
 
 
-def test_json_validatation(qtbot, main_window, mocker):
-    validate = main_window.validate(command=main_window.register, file_path="", forbidden=[""])
+def test_json_validatation(qtbot, main_window):
+
+    validate = main_window.validate(command=main_window.register, file_path="", forbidden=[""], schema=ItHilfeDataSchema)
     assert validate == 'problem\ncommand: register\nfails: 1'
     assert main_window.statusbar.currentMessage() == "select a file to continue"
 
     main_window.validate(command=main_window.stacked_widget.setCurrentWidget, data=main_window.p_register,
-                             file_path="./jsonTest.json",
-                             forbidden=[""])
+                         file_path="data/jsonTest.json",
+                         forbidden=[""], schema=ItHilfeDataSchema)
 
     assert main_window.stacked_widget.currentWidget() == main_window.p_register
 
@@ -212,12 +244,12 @@ def test_print(qtbot, main_window, create_valid_json):
     qtbot.keyClick(main_window, "p", modifier=QtCore.Qt.ControlModifier)
     assert main_window.statusbar.currentMessage() == "no file path specified, visit Ctrl+o or menuebar/edit/open to fix"
 
-    main_window.file_path = "jsonTest.json"
+    main_window.file_path = "data/jsonTest.json"
     main_window.load()
     assert main_window.statusbar.currentMessage() == ""
     main_window.print(True)
     assert repr(
-        main_window.data) == '\'{\\n      "devices"={\\n            "0"=[\\n                  ' '"007".\\n                  "peter".\\n                  ' '"Win7".\\n                  "Macbook".\\n                  "this is a ' 'comment".\\n                  "2021-03-19 13:56:40.509002"\\n            ' ']\\n      }.\\n      ' '"last_open_file_path"="C:/Users/maurice.jarck/Documents/Projects/it_hilfe/it_hilfe/data"\\n}\''
+        main_window.data) == '\'{\\n      "devices"={\\n            "0"=[\\n                  ' '"007".\\n                  "peter".\\n                  ' '"Win7".\\n                  "Macbook".\\n                  "this is a ' 'comment".\\n                  "2021-03-19 13:56:40.509002"\\n            ' ']\\n      }.\\n      ' '"last_open_file_dir"="C:/Users/maurice.jarck/Documents/Projects/it_hilfe/it_hilfe/data"\\n}\''
 
 
 def test_new(main_window, qtbot):
@@ -228,3 +260,4 @@ def test_new(main_window, qtbot):
 
     qtbot.mouseClick(main_window.bt_create, QtCore.Qt.LeftButton)
     assert main_window.stacked_widget.currentWidget() == main_window.p_view
+

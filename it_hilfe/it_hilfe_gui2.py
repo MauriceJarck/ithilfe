@@ -1,14 +1,15 @@
 import datetime
 import json
 import sys
-import qdarkstyle
 from marshmallow import ValidationError
 
-from PySide2.QtCore import QSortFilterProxyModel, QPropertyAnimation, QSize, QEasingCurve, QAbstractItemModel
+from PySide2.QtCore import QSortFilterProxyModel, QPropertyAnimation, QSize, QEasingCurve
 from PySide2.QtGui import QPixmap, QIcon, QFont, QKeySequence, Qt, QStandardItemModel, QStandardItem
 from PySide2.QtPrintSupport import QPrinter, QPrintPreviewDialog
-from PySide2.QtWidgets import QMainWindow, QWidget, QApplication, QFileDialog, QItemDelegate, QComboBox, QLineEdit, \
-    QHeaderView, QFrame, QPushButton, QSizePolicy, QLabel, QHBoxLayout, QMessageBox, QCompleter
+from PySide2.QtWidgets import \
+    QMainWindow, QWidget, QApplication, QFileDialog, QItemDelegate, QComboBox, QLineEdit, \
+    QHeaderView, QFrame, QPushButton, QSizePolicy, QLabel, QHBoxLayout, QMessageBox, QCompleter, QAction, \
+    QStackedWidget, QListWidget, QGridLayout, QTextEdit, QSlider
 from PySide2 import QtWidgets, QtCore
 
 import it_hilfe.devices as devices
@@ -31,7 +32,8 @@ class FilterHeader(QHeaderView):
         super().__init__(QtCore.Qt.Horizontal, parent)
         self.editors = []
         self.setStretchLastSection(True)
-        self.setDefaultAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.setDefaultAlignment(QtCore.Qt.AlignCenter)
+        self.sectionSize(0)
         self.setSortIndicatorShown(False)
         self.sectionResized.connect(self.adjust_in_filter_positions)
 
@@ -162,27 +164,32 @@ class MainWindowUi(QMainWindow):
         self.resize(820, 450)
         self.setWindowIcon(QIcon("./data/favicon2.png"))
         self.setMinimumSize(700, 250)
+
         self.file_path = None
         self.dir = None
         self.last_open_file_path = None
+        self.last_open_file_dir = None
+        self.initial_theme = None
         self.registered_devices = {}
-
-        # inital theme
-        self.setStyleSheet(qdarkstyle.load_stylesheet_pyside2())
-        self.current_theme = "dark"
-        self.setWindowIcon(QIcon("./data/favicon2.png"))
-
-        # setup statusbar
-        self.statusbar = self.statusBar()
+        self.user_config_file = "./data/user_config.json"
 
         # setup stackedwidget
-        self.stacked_widget = QtWidgets.QStackedWidget()
+        self.stacked_widget = QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
         self.setup_menubar()
         self.setup_p_view()
         self.setup_p_register()
         self.setup_p_create()
+        self.setup_p_preferences()
         self.setup_signals()
+
+        self.font = QFont()
+        self.font.setPointSize(9)
+
+        self.validate(self.set_user_preferences, file_path=self.user_config_file, schema=validate_json.ItHilfeUserPreferencesSchema, forbidden=[""])
+
+        # setup statusbar
+        self.statusbar = self.statusBar()
 
         self.stacked_widget.setCurrentWidget(self.p_view)
 
@@ -194,11 +201,12 @@ class MainWindowUi(QMainWindow):
         self.menu_Bar = self.menuBar()
 
         menu_file = self.menu_Bar.addMenu("file")
-        self.action_open = QtWidgets.QAction("open")
-        self.action_save = QtWidgets.QAction("save")
-        self.action_new = QtWidgets.QAction("new")
-        self.action_print = QtWidgets.QAction("print")
-        self.action_hide_menu_bar = QtWidgets.QAction("hide menubar")
+        self.action_open = QAction("open")
+        self.action_save = QAction("save")
+        self.action_new = QAction("new")
+        self.action_print = QAction("print")
+        self.action_preferences = QAction("preferences")
+        self.action_hide_menu_bar = QAction("hide menubar")
         self.action_print.setShortcut(QKeySequence("Ctrl+p"))
         self.action_open.setShortcut(QKeySequence("Ctrl+o"))
         self.action_save.setShortcut(QKeySequence("Ctrl+s"))
@@ -208,24 +216,22 @@ class MainWindowUi(QMainWindow):
         self.action_open.setIcon(QIcon("./data/open.ico"))
         self.action_save.setIcon(QIcon("./data/save.ico"))
         self.action_new.setIcon(QIcon("./data/newfile.ico"))
+        self.action_preferences.setIcon(QIcon("./data/preferences.ico"))
 
         menu_file.addAction(self.action_open)
         menu_file.addAction(self.action_save)
         menu_file.addAction(self.action_new)
         menu_file.addAction(self.action_print)
+        menu_file.addAction(self.action_preferences)
 
         menu_edit = self.menu_Bar.addMenu("edit")
-        self.action_register = QtWidgets.QAction("register")
+        self.action_register = QAction("register")
         self.action_register.setShortcut(QKeySequence("Ctrl+n"))
         self.action_register.setIcon(QIcon("./data/register.ico"))
 
         menu_edit.addAction(self.action_register)
 
         menu_view = self.menu_Bar.addMenu("view")
-        self.action_toggle_theme = QtWidgets.QAction("toggle theme")
-        self.action_toggle_theme.setIcon(QIcon("./data/theme.ico"))
-
-        menu_view.addAction(self.action_toggle_theme)
         menu_view.addAction(self.action_hide_menu_bar)
 
     def setup_p_view(self) -> None:
@@ -263,21 +269,25 @@ class MainWindowUi(QMainWindow):
         self.bt_burger = QPushButton(self.p_view)
         self.bt_burger.setIcon(QIcon("./data/menu2.svg"))
         self.bt_burger.setIconSize(QSize(30, 30))
+        self.bt_burger.setToolTip('slide out description')
         l_burger = QLabel("menu", self.p_view)
 
         self.bt_register_new = QPushButton(self.p_view)
         self.bt_register_new.setIcon(QIcon("./data/add.ico"))
         self.bt_register_new.setIconSize(QSize(30, 30))
+        self.bt_register_new.setToolTip("register new")
         l_register_new = QLabel("register new", self.p_view)
 
         self.bt_delete_column = QPushButton(self.p_view)
         self.bt_delete_column.setIcon(QIcon("./data/remove.ico"))
         self.bt_delete_column.setIconSize(QSize(30, 30))
+        self.bt_delete_column.setToolTip("delete columns with min 1 cell selected")
         l_delete = QLabel("delete column", self.p_view)
 
         self.bt_hide_show_filter = QPushButton(self.p_view)
-        self.bt_hide_show_filter.setIcon(QIcon("./data/theme.ico"))
+        self.bt_hide_show_filter.setIcon(QIcon("./data/show_hide.ico"))
         self.bt_hide_show_filter.setIconSize(QSize(30, 30))
+        self.bt_hide_show_filter.setToolTip("hide/show filter input")
         l_hide_show = QLabel("hide/show", self.p_view)
 
         self.left_btn_frame = QFrame(self.p_view)
@@ -287,8 +297,6 @@ class MainWindowUi(QMainWindow):
         self.left_menu_frame = QFrame(self.p_view)
         self.left_menu_frame.setMaximumWidth(0)
         self.left_menu_frame.setContentsMargins(0, 0, 0, 0)
-        self.left_menu_frame.setStyleSheet(u"")
-        self.left_menu_frame.setStyleSheet(u" border: 0px solid;")
 
         p_view_layout2 = QtWidgets.QVBoxLayout(self.left_btn_frame)
         p_view_layout2.addWidget(self.bt_burger)
@@ -319,11 +327,7 @@ class MainWindowUi(QMainWindow):
         self.p_view.addAction(self.action_new)
         self.p_view.addAction(self.action_print)
         self.p_view.addAction(self.action_register)
-        self.p_view.addAction(self.action_toggle_theme)
         self.p_view.addAction(self.action_hide_menu_bar)
-
-        self.left_menu_frame.setStyleSheet(u"border: 0px solid;")
-        self.left_btn_frame.setStyleSheet(u"background: rgb(55,65,79); border: 0px solid;")
 
     def setup_p_register(self) -> None:
         """inits stacked widget page widgets
@@ -388,6 +392,57 @@ class MainWindowUi(QMainWindow):
         p_create_layout.addWidget(self.bt_create)
         p_create_layout.addWidget(self.bt_cancel_create)
 
+    def setup_p_preferences(self) -> None:
+        """inits setup_p_preferences stacked widget page widget
+
+            Returns:
+                None"""
+
+        self.p_preferences = QWidget()
+        self.p_preferences.resize(500, 250)
+        self.p_preferences.setWindowTitle("preferences")
+        self.list_Widget = QListWidget(self.p_preferences)
+        self.list_Widget.addItems(["appearance", "about"])
+        self.list_Widget.setMaximumWidth(100)
+
+        self.stacked_widget_preferences = QStackedWidget(self.p_preferences)
+
+        # setup appearance
+        self.apperence_widget = QWidget()
+        self.stacked_widget_preferences.addWidget(self.apperence_widget)
+        self.in_combo_themes = QComboBox(self.apperence_widget)
+        self.in_combo_themes.addItems(["dark_theme", "light_theme"])
+
+        self.in_combo_theme_initial = QComboBox(self.apperence_widget)
+        self.in_combo_theme_initial.addItems(["dark_theme", "light_theme"])
+
+        self.text_size_slider = QSlider(QtCore.Qt.Orientation.Horizontal, self.apperence_widget)
+        self.text_size_slider.setTickPosition(QSlider.TickPosition.TicksAbove)
+        self.text_size_slider.setMaximum(15)
+        self.text_size_slider.setMinimum(8)
+
+        stacked_widget_preferences_layout = QGridLayout(self.apperence_widget)
+        stacked_widget_preferences_layout.setAlignment(QtCore.Qt.AlignTop)
+        stacked_widget_preferences_layout.addWidget(QLabel("theme"), 0, 0)
+        stacked_widget_preferences_layout.addWidget(self.in_combo_themes, 0, 1)
+        stacked_widget_preferences_layout.addWidget(QLabel("initial theme"), 1, 0)
+        stacked_widget_preferences_layout.addWidget(self.in_combo_theme_initial, 1, 1)
+        stacked_widget_preferences_layout.addWidget(QLabel("Fontsize"), 2, 0)
+        stacked_widget_preferences_layout.addWidget(self.text_size_slider, 2, 1)
+
+        self.about_widget = QWidget()
+        self.stacked_widget_preferences.addWidget(self.about_widget)
+
+        about_text_edit = QTextEdit(self.about_widget)
+        about_text_edit.setText("developed by Maurice Jarck\nwith kind support from Shuai Lou\n07.2020-04.2021")
+        about_text_edit.setEnabled(False)
+        stacked_widget_about_layout = QGridLayout(self.about_widget)
+        stacked_widget_about_layout.addWidget(about_text_edit)
+
+        p_apperance_layout = QHBoxLayout(self.p_preferences)
+        p_apperance_layout.addWidget(self.list_Widget)
+        p_apperance_layout.addWidget(self.stacked_widget_preferences)
+
     def setup_signals(self) -> None:
         """connects signals
 
@@ -405,9 +460,13 @@ class MainWindowUi(QMainWindow):
         # comboboxes
         self.in_combobox_devicetype.addItems(["choose here"] + [x.__name__ for x in valid_devices])
         self.in_combobox_devicetype.currentIndexChanged.connect(lambda: self.update_combobox(self.in_combobox_os,
-                                            valid_devices[self.in_combobox_devicetype.currentIndex() - 1].expected_OS))
+                                                                                             valid_devices[
+                                                                                                 self.in_combobox_devicetype.currentIndex() - 1].expected_OS))
+        self.in_combo_themes.currentIndexChanged.connect(lambda: self.change_theme(self.in_combo_themes.currentText()))
+        self.in_combo_theme_initial.currentTextChanged.connect(lambda: setattr(self, "initial_theme", self.in_combo_theme_initial.currentText()))
         # btns
         self.bt_delete_column.clicked.connect(self.delete)
+        # self.bt_hide_show_filter.clicked.connect(lambda: self.toggle_hide_show_ani(37, 47, "height", self.header, b"maximumHeight"))
         self.bt_hide_show_filter.clicked.connect(self.header.hide_show)
         # self.bt_hide_show_filter.clicked.connect(lambda: self.toggle_hide_show_ani(30, 44, "height", self.header, b"maximumHeight"))
         self.bt_register_new.clicked.connect(lambda: self.stacked_widget.setCurrentWidget(self.p_register))
@@ -418,51 +477,55 @@ class MainWindowUi(QMainWindow):
         self.bt_create.clicked.connect(
             lambda: self.validate(self.new, line_edit_list=[self.in_new_filepath, self.in_new_filename], data=False))
         self.bt_mod_new_path.clicked.connect(lambda: self.new(True))
-        self.bt_burger.clicked.connect(lambda: self.toggle_hide_show_ani(0, 66, "width", self.left_menu_frame,
-                                                                         b"maximumWidth", ))
+        self.bt_burger.clicked.connect(lambda: self.toggle_hide_show_ani(0, 66, "width", self.left_menu_frame, b"maximumWidth", ))
         # menu bar
         self.action_register.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.p_register))
         self.action_open.triggered.connect(self.get_open_file_path)
         self.action_save.triggered.connect(self.save)
         self.action_new.triggered.connect(lambda: self.new(True))
         self.action_print.triggered.connect(lambda: self.validate(self.print, data=False, checkfname=True))
-        self.action_toggle_theme.triggered.connect(self.toggle_theme)
         self.action_hide_menu_bar.triggered.connect(lambda: self.toggle_hide_show(self.menu_Bar))
-        # # cancel
+        self.action_preferences.triggered.connect(self.p_preferences.show)
+        # cancel
         self.bt_cancel_register.clicked.connect(lambda: self.cancel(
             [self.in_username, self.in_devicename, self.in_combobox_os, self.in_comment]))
 
-    def toggle_theme(self) -> None:
-        """toggles between standard and dark theme
+        # list widget
+        self.list_Widget.currentRowChanged.connect(lambda: self.stacked_widget_preferences.setCurrentIndex(self.list_Widget.currentIndex().row()))
+
+        # slider
+        self.text_size_slider.sliderMoved.connect(lambda: self.change_font_size(self.text_size_slider.value()))
+        # self.text_size_slider.sliderMoved.connect(lambda: print(self.text_size_slider.value()))
+
+    def change_theme(self, theme) -> None:
+        """changes theme according to combobox selection
 
         Returns:
             None"""
-        if self.current_theme == "dark":
-            self.current_theme = "standard"
-            self.setWindowIcon(QIcon("./data/favicon.ico"))
-            self.setStyleSheet("")
-            self.bt_burger.setStyleSheet("border: 0px solid;")
-            self.bt_register_new.setStyleSheet("border: 0px solid;")
-            self.bt_delete_column.setStyleSheet("border: 0px solid;")
-            self.bt_hide_show_filter.setStyleSheet("border: 0px solid;")
-            self.left_menu_frame.setStyleSheet("")
-            self.left_btn_frame.setStyleSheet("")
+
+        with open(f"./data/{theme}.css", "r") as file:
+            stylesheed = " ".join(file.readlines())
+            self.setStyleSheet(stylesheed)
+            self.p_preferences.setStyleSheet(stylesheed)
+
+        if self.in_combo_themes.currentText() == "dark_theme":
+
+            self.left_btn_frame.setStyleSheet(u"background: #455364; border: 0px solid;")
             self.p_view_layout3.setSpacing(30)
 
-
         else:
-            self.setStyleSheet(qdarkstyle.load_stylesheet_pyside2())
-            self.current_theme = "dark"
+            self.left_btn_frame.setStyleSheet(u"background: #ADADAD; border: 0px solid;")
             self.p_view_layout3.setSpacing(25)
-            self.setWindowIcon(QIcon("./data/favicon2.png"))
-            self.left_btn_frame.setStyleSheet(u"background: rgb(55,65,79); border: 0px solid;")
-            self.left_menu_frame.setStyleSheet(u" border: 0px solid;")
 
-    def toggle_hide_show_ani(self, collapsed_val, expanded_val, actual, to_animate, property):
+        return self.in_combo_themes.currentText()
+
+    def toggle_hide_show_ani(self, collapsed_val: int, expanded_val: int, actual: str, to_animate, property: bytes):
+        """interpolates over a defined range of vales and sets it to a given property of a given widget"""
         if getattr(to_animate, actual)() == expanded_val:
             destination = collapsed_val
         else:
             destination = expanded_val
+        print(getattr(to_animate, actual)(), destination)
         self.ani = QPropertyAnimation(to_animate, property)
         self.ani.setDuration(300)
         self.ani.setStartValue(getattr(to_animate, actual)())
@@ -481,6 +544,51 @@ class MainWindowUi(QMainWindow):
             widget.hide()
         else:
             widget.show()
+
+    def reopen_last_file(self)-> None:
+        """asks for reopening of the last opened file"""
+        if self.last_open_file_path != "" or self.last_open_file_path is not None:
+            reopen_dialog = QMessageBox.question(self.p_view, "reopen last file?", "Do you want to reopen the last edited file?", QMessageBox.Yes | QMessageBox.No)
+            if reopen_dialog == QMessageBox.Yes:
+                self.file_path = self.last_open_file_path
+                self.load()
+
+    def change_font_size(self, size: int) -> None:
+        """changes all font sizes"""
+        self.font.setPointSize(size)
+        self.menu_Bar.setFont(self.font)
+        self.header.setFont(self.font)
+        self.table.setFont(self.font)
+        self.p_preferences.setFont(self.font)
+
+    def set_user_preferences(self) -> None:
+        """Reads user_config file and sets its propertys"""
+        with open(self.user_config_file, "r") as config_file:
+            data = dict(json.load(config_file))
+
+            self.last_open_file_path = data["last_open_file_path"]
+            self.initial_theme = data['initial_theme']
+            self.change_font_size(data['font_size'])
+            self.text_size_slider.setValue(data['font_size'])
+            self.in_combo_theme_initial.setCurrentText(self.initial_theme)
+            self.in_combo_themes.setCurrentText(self.initial_theme)
+
+            with open(f"./data/{self.initial_theme}.css") as file:
+                style_sheed = " ".join(file.readlines())
+                self.setStyleSheet(style_sheed)
+                self.p_preferences.setStyleSheet(style_sheed)
+
+            self.bt_burger.setStyleSheet("border: 0px solid; background: transparent;")
+            self.bt_register_new.setStyleSheet("border: 0px solid; background: transparent;")
+            self.bt_delete_column.setStyleSheet("border: 0px solid; background: transparent;")
+            self.bt_hide_show_filter.setStyleSheet("border: 0px solid; background: transparent;")
+            self.left_menu_frame.setStyleSheet(u" border: 0px solid;")
+
+            if self.initial_theme == "dark_theme":
+                self.left_btn_frame.setStyleSheet(u"background: #455364; border: 0px solid;")
+
+            else:
+                self.left_btn_frame.setStyleSheet(u"background: #ADADAD; border: 0px solid;")
 
     def cancel(self, widgets: list) -> None:
         """click event for all cancel buttons
@@ -510,7 +618,7 @@ class MainWindowUi(QMainWindow):
         box.clear()
         box.addItems(["choose here"] + data)
 
-    def validate(self, command, file_path: str = None, line_edit_list: list = None, combo_box_list: list = None,
+    def validate(self, command, file_path: str = None, schema= None, line_edit_list: list = None, combo_box_list: list = None,
                  data=None, forbidden: list = None, checkfname: bool = None) -> None:
         """validates user input
 
@@ -544,14 +652,15 @@ class MainWindowUi(QMainWindow):
             fails += 1
 
         if file_path is not None:
-            if file_path in forbidden:
+            if forbidden is not None and file_path in forbidden:
                 fails += 1
                 self.statusbar.showMessage("select a file to continue")
             else:
                 try:
-                    validate_json.validate(file_path)
+                    validate_json.validate(file_path, schema)
                 except ValidationError as e:
-                    self.msg_box = QtWidgets.QMessageBox.critical(self, "validation failed", f"Invalid Json file, problem in: {e.messages}")
+                    self.msg_box = QtWidgets.QMessageBox.critical(self, "validation failed",
+                                                                  f"Invalid Json file, problem in: {e.messages}")
                     fails += 1
         if fails == 0:
             if data is None:
@@ -597,7 +706,6 @@ class MainWindowUi(QMainWindow):
         """deletes all rows associated with min 1 slected cell
         Returns:
             None"""
-        # print(self.table.selectedIndexes())
         rows = sorted(set(index.row() for index in self.table.selectedIndexes()), reverse=True)
         qb = QMessageBox()
         answ = qb.question(self, 'delete rows', f"Are you sure to delete {rows} rows?", qb.Yes | qb.No)
@@ -618,9 +726,9 @@ class MainWindowUi(QMainWindow):
             None"""
 
         self.file_path = \
-            QFileDialog.getOpenFileName(self, "open file", f"{self.last_open_file_path or 'c://'}",
+            QFileDialog.getOpenFileName(self, "open file", f"{self.last_open_file_dir or 'c://'}",
                                         "json files (*json)")[0]
-        self.validate(command=self.load, file_path=self.file_path, forbidden=[""])
+        self.validate(command=self.load, file_path=self.file_path, schema=validate_json.ItHilfeDataSchema, forbidden=[""])
 
     def load(self) -> None:
         """opens json file and loads its content into registered devices
@@ -633,7 +741,7 @@ class MainWindowUi(QMainWindow):
         with open(self.file_path, "r") as file:
             data = dict(json.load(file))
             devices = data["devices"].values()
-            self.last_open_file_path = data["last_open_file_path"]
+            self.last_open_file_dir = data["last_open_file_dir"]
             for value in devices:
                 row = []
                 for i, item in enumerate(value):
@@ -669,10 +777,13 @@ class MainWindowUi(QMainWindow):
             with open(self.file_path, 'w', ) as file:
                 devices = {k: [v.name, v.user, v.OS, v.__class__.__name__, v.comment, v.datetime] for (k, v) in
                            enumerate(self.registered_devices.values())}
-                last_open_file_path = "/".join(self.file_path.split("/")[:-1])
-                resulting_dict = {"devices": devices, "last_open_file_path": last_open_file_path}
+                last_open_file_dir = "/".join(self.file_path.split("/")[:-1])
+                resulting_dict = {"devices": devices, "last_open_file_dir": last_open_file_dir}
                 json.dump(resulting_dict, file)
                 self.statusbar.showMessage("saved file")
+
+        with open(self.user_config_file, "w") as user_preferences_file:
+            json.dump({"last_open_file_path": self.last_open_file_path, "initial_theme": self.initial_theme, "font_size": self.text_size_slider.value()}, user_preferences_file)
 
     def new(self, stage: bool, test: bool = False) -> None:
         """creates new csv file to save into
@@ -707,7 +818,6 @@ class MainWindowUi(QMainWindow):
             self.data = json.dumps(dict(json.load(f)), sort_keys=True, indent=6, separators=(".", "="))
         self.document = QtWidgets.QTextEdit()
         self.document.setText(self.data)
-        # print(repr(self.data), self.document.toPlainText())
 
         if not test:
             printer = QPrinter()
@@ -727,6 +837,7 @@ class StartScreenUi(QWidget):
 
         super(StartScreenUi, self).__init__()
         self.setWindowTitle("It_Hilfe")
+        self.conf_file = "./data/user_config.json"
         self.setup_startscreen()
         self.show()
 
@@ -739,6 +850,7 @@ class StartScreenUi(QWidget):
         Returns:
             None"""
         main_window.show()
+        main_window.reopen_last_file()
         self.close()
 
     def setup_startscreen(self):
@@ -748,15 +860,20 @@ class StartScreenUi(QWidget):
             None"""
         self.pic_label = QtWidgets.QLabel(self)
         self.pic_label.setPixmap(QPixmap("./data/startscreenPic2.png"))
-        self.setStyleSheet(qdarkstyle.load_stylesheet_pyside2())
+
+        with open(self.conf_file, "r") as config_file:
+            data = dict(json.load(config_file))
+
+            with open(f"./data/{data['initial_theme']}.css") as file:
+                self.setStyleSheet(" ".join(file.readlines()))
 
         self.txt_label = QtWidgets.QLabel(self)
         self.txt_label.setText("Welcome")
-        font = QFont()
-        font.setPointSize(19)
-        font.setBold(True)
-        font.setWeight(75)
-        self.txt_label.setFont(font)
+        b_font = QFont()
+        b_font.setPointSize(19)
+        b_font.setBold(True)
+        b_font.setWeight(75)
+        self.txt_label.setFont(b_font)
         self.txt_label.setAlignment(QtCore.Qt.AlignCenter)
 
         self.resize(507, 300)
