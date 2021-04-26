@@ -44,7 +44,6 @@ def create_valid_json(main_window):
 
 
 def test_startscreen(start_screen):
-    start_screen.conf_file = "../it_hilfe/data/user_config.json"
     assert start_screen.txt_label.text() == "Welcome"
 
 
